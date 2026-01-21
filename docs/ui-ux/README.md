@@ -3,19 +3,19 @@ The following HTML code is provided as design reference only to show the UI stru
 
 Screen 1 Screen saver (Load Before access Landing page) - [Design Syntax](./screensaver/)
 
-Screen 2 Landing Page - [Design Syntax](/landing-page/)
+Screen 2 Landing Page - [Design Syntax](./landing-page/)
 
-Screen 3 Media Player - [Design Syntax](/media-player/)
+Screen 3 Media Player - [Design Syntax](./media-player/)
 
-Screen 4 Swap Assets - [Design Syntax](/swap/)
+Screen 4 Swap Assets - [Design Syntax](./swap/)
 
-Sreen 5 Help Docs - [Design Syntax](/swap/)
+Sreen 5 Help Docs - [Design Syntax](./helpdocs/)
 
-Screen 6 Terminal - [Design Syntax](/terminal/)
+Screen 6 Terminal - [Design Syntax](./terminal/)
 
-Screen 7 Notice pop up 402 payment required (use this before access paywall) - [Design Syntax](/popup/)
+Screen 7 Notice pop up 402 payment required (use this before access paywall) - [Design Syntax](./popup/)
 
-Screen 8 Settings - [Design Syntax](/settings/)
+Screen 8 Settings - [Design Syntax](./settings/)
 
 Screen 9 Leaderboard - Soon Feature 
 Screen 10 User Profile - Soon Feature 
