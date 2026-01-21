@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3713ec;
+  --color-primary: #9d47ff;
   --color-background-light: #f6f6f8;
-  --color-background-dark: #131022;
+  --color-background-dark: #0a0a0c;
   --color-card-dark: #1e1933;
   --color-text-muted: #9b92c9;
   --color-background: #0a0a0f;
@@ -11,6 +11,7 @@
   --color-base-blue: #0052FF;
   --color-solana-purple: #9945FF;
   --color-neon-green: #14F195;
+  --color-retro-gray: #c0c0c0;
 }
 
 body {
@@ -95,4 +96,98 @@ body {
 
 .material-symbols-outlined.filled {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Win95-style Shadows and Effects */
+.win95-shadow {
+  box-shadow: inset 1px 1px #fff, inset -1px -1px #808080, 2px 2px 0px 0px #000;
+}
+
+.win95-button-active {
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #fff, 1px 1px 0px 0px #000;
+  transform: translate(1px, 1px);
+}
+
+.win95-recessed {
+  box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+
+.win95-bevel {
+  box-shadow: inset 1px 1px #fff, inset -1px -1px #808080, 1px 1px 0px 0px #000;
+}
+
+.hard-shadow {
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.4);
+}
+
+/* Glass and Retro Effects */
+.glass-panel {
+  background: rgba(25, 15, 36, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(157, 71, 255, 0.2);
+}
+
+.glass-modal {
+  backdrop-filter: blur(8px);
+  background-color: rgba(192, 192, 192, 0.85);
+}
+
+.neon-glow-green {
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+/* Taskbar and Start Menu */
+.taskbar-3d-border {
+  border-top: 2px solid #ffffff;
+}
+
+.start-menu-sidebar {
+  background: linear-gradient(to bottom, #000080, #1084d0);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.menu-item-hover:hover {
+  background: linear-gradient(90deg, #2563eb, #9d47ff);
+  color: white;
+}
+
+/* Desktop Icons */
+.desktop-icon-label {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.desktop-icon-selected {
+  background-color: rgba(0, 0, 128, 0.6);
+  outline: 1px dotted #ffffff;
+}
+
+/* Retro Title Bar Gradient */
+.retro-title-gradient {
+  background: linear-gradient(90deg, #135bec 0%, #a855f7 100%);
+}
+
+/* Grid Background Pattern (similar to landing page design) */
+.grid-bg {
+  background-image: radial-gradient(#34204b 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* CRT and Scanline Effects */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Glitch Text Effect */
+.glitch-text {
+  text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
 }
