@@ -3,8 +3,8 @@ import "./fonts.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Halaman Utama X402 - Decentralized Content Protocol",
-  description: "Decentralized Monetization for Creators. Own your content. Unlock exclusive articles, podcasts, and videos directly with X402 Protocol.",
+  title: "Sleepy Gatekeeper ($402) - Payment Required",
+  description: "The internet's toll booth is finally open on Solana. Dormant since 1997. Woken up by Base. Running on Solana for speed.",
 };
 
 export default function RootLayout({
