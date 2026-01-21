@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5b2bee",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#151022",
+                        "neon-yellow": "#f4ff00",
+                        "neon-cyan": "#00f0ff",
+                        "neon-green": "#39ff14",
+                        "neon-red": "#ff3131",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .crt-curve {
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+            pointer-events: none;
+        }
+        .arcade-window {
+            box-shadow: 0 0 20px rgba(91, 43, 238, 0.4), inset 0 0 15px rgba(91, 43, 238, 0.2);
+            border: 4px solid #2c2348;
+        }
+        .neon-grid {
+            background-image: 
+                linear-gradient(rgba(91, 43, 238, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(91, 43, 238, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .arcade-btn-red {
+            background: radial-gradient(circle, #ff4d4d 0%, #990000 100%);
+            box-shadow: 0 4px 0 #660000, 0 8px 15px rgba(0,0,0,0.5);
+        }
+        .arcade-btn-purple {
+            background: radial-gradient(circle, #7c4dff 0%, #311b92 100%);
+            box-shadow: 0 4px 0 #1a0b5e, 0 8px 15px rgba(0,0,0,0.5);
+        }
+        .high-score-glow {
+            text-shadow: 0 0 8px currentColor;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .animate-blink {
+            animation: blink 1s infinite;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display overflow-x-hidden min-h-screen">
+<div class="crt-overlay"></div>
+<div class="layout-container flex h-full grow flex-col items-center justify-center py-10 px-4 md:px-10 lg:px-40 relative z-10">
+<!-- Arcade Top Navigation -->
+<div class="layout-content-container flex flex-col max-w-[960px] w-full mb-6">
+<header class="flex items-center justify-between whitespace-nowrap border-b-2 border-solid border-primary/40 bg-black/40 backdrop-blur-sm px-6 py-4 rounded-t-xl">
+<div class="flex items-center gap-4 text-white">
+<div class="size-8 text-primary drop-shadow-[0_0_8px_rgba(91,43,238,1)]">
+<span class="material-symbols-outlined text-4xl">videogame_asset</span>
+</div>
+<div class="flex flex-col">
+<h2 class="text-white text-xl font-black leading-tight tracking-tight uppercase">Sleepy Gatekeeper</h2>
+<span class="text-neon-cyan text-xs font-bold tracking-[0.2em]">$402 JACKPOT</span>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6">
+<div class="hidden md:flex items-center gap-8">
+<a class="text-white/70 hover:text-primary text-sm font-bold uppercase tracking-widest transition-colors" href="#">History</a>
+<a class="text-white/70 hover:text-primary text-sm font-bold uppercase tracking-widest transition-colors" href="#">Winners</a>
+</div>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full arcade-btn-red flex items-center justify-center cursor-pointer active:translate-y-1 active:shadow-none transition-all">
+<span class="material-symbols-outlined text-white text-lg">power_settings_new</span>
+</div>
+</div>
+</div>
+</header>
+</div>
+<!-- Main Arcade Window -->
+<div class="layout-content-container flex flex-col max-w-[960px] w-full arcade-window bg-black relative overflow-hidden rounded-xl crt-curve">
+<div class="neon-grid absolute inset-0 opacity-40"></div>
+<!-- Page Heading -->
+<div class="relative z-10 flex flex-col items-center justify-center p-8 text-center border-b border-primary/20">
+<div class="bg-primary/10 px-4 py-1 rounded-full mb-2 border border-primary/30">
+<p class="text-primary text-xs font-black tracking-[0.3em] uppercase">Arcade Session Active</p>
+</div>
+<h1 class="text-white text-4xl md:text-5xl font-black leading-tight tracking-[-0.033em] uppercase drop-shadow-[0_0_10px_rgba(91,43,238,0.8)]">
+                    TOP GATEKEEPERS
+                </h1>
+<p class="text-neon-cyan/80 text-lg font-medium tracking-widest mt-2 uppercase">Hall of Fame</p>
+</div>
+<!-- New High Score Banner Overlay (Decorative) -->
+<div class="absolute top-[280px] left-[-50px] bg-neon-yellow text-black font-black py-2 px-20 -rotate-12 z-20 animate-blink shadow-[0_0_20px_#f4ff00]">
+                NEW HIGH SCORE DETECTED
+            </div>
+<!-- Table Container -->
+<div class="px-4 py-3 relative z-10">
+<div class="flex overflow-hidden rounded-lg border border-primary/30 bg-black/60 backdrop-blur-md">
+<table class="flex-1 text-left">
+<thead>
+<tr class="bg-primary/20 border-b border-primary/30">
+<th class="px-6 py-4 text-white text-xs font-black uppercase tracking-[0.2em]">Rank</th>
+<th class="px-6 py-4 text-white text-xs font-black uppercase tracking-[0.2em]">Name</th>
+<th class="px-6 py-4 text-white text-xs font-black uppercase tracking-[0.2em]">Tolls Paid</th>
+<th class="px-6 py-4 text-white text-xs font-black uppercase tracking-[0.2em]">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/10">
+<!-- Rank 1 -->
+<tr class="bg-white/5">
+<td class="px-6 py-5 text-neon-yellow text-xl font-black high-score-glow">01</td>
+<td class="px-6 py-5 text-neon-cyan text-lg font-bold tracking-widest high-score-glow">SOL</td>
+<td class="px-6 py-5 text-white text-lg font-medium">1,240</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-neon-green animate-pulse shadow-[0_0_8px_#39ff14]"></div>
+<span class="text-neon-green text-sm font-black uppercase tracking-tighter">Awake</span>
+</div>
+</td>
+</tr>
+<!-- Rank 2 -->
+<tr>
+<td class="px-6 py-5 text-neon-yellow/80 text-xl font-black">02</td>
+<td class="px-6 py-5 text-neon-cyan/80 text-lg font-bold tracking-widest">MAX</td>
+<td class="px-6 py-5 text-white/80 text-lg font-medium">1,190</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-neon-green/50"></div>
+<span class="text-neon-green/80 text-sm font-black uppercase tracking-tighter">Awake</span>
+</div>
+</td>
+</tr>
+<!-- Rank 3 -->
+<tr>
+<td class="px-6 py-5 text-neon-yellow/80 text-xl font-black">03</td>
+<td class="px-6 py-5 text-neon-cyan/80 text-lg font-bold tracking-widest">XYZ</td>
+<td class="px-6 py-5 text-white/80 text-lg font-medium">1,050</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-neon-red shadow-[0_0_8px_#ff3131]"></div>
+<span class="text-neon-red text-sm font-black uppercase tracking-tighter">Sleeping</span>
+</div>
+</td>
+</tr>
+<!-- Rank 4 -->
+<tr>
+<td class="px-6 py-5 text-neon-yellow/80 text-xl font-black">04</td>
+<td class="px-6 py-5 text-neon-cyan/80 text-lg font-bold tracking-widest">ACE</td>
+<td class="px-6 py-5 text-white/80 text-lg font-medium">980</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-neon-green/50"></div>
+<span class="text-neon-green/80 text-sm font-black uppercase tracking-tighter">Awake</span>
+</div>
+</td>
+</tr>
+<!-- Rank 5 -->
+<tr>
+<td class="px-6 py-5 text-neon-yellow/80 text-xl font-black">05</td>
+<td class="px-6 py-5 text-neon-cyan/80 text-lg font-bold tracking-widest">BOB</td>
+<td class="px-6 py-5 text-white/80 text-lg font-medium">870</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-neon-red shadow-[0_0_8px_#ff3131]"></div>
+<span class="text-neon-red text-sm font-black uppercase tracking-tighter">Sleeping</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Footer: Insert Coin Prompt -->
+<div class="relative z-10 flex flex-col items-center py-8 gap-4">
+<div class="flex items-center gap-3 group cursor-pointer">
+<div class="w-8 h-12 bg-zinc-800 rounded-md border-2 border-zinc-600 flex items-center justify-center shadow-inner">
+<div class="w-1 h-8 bg-black rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.1)]"></div>
+</div>
+<p class="text-white text-xl font-black tracking-[0.2em] uppercase animate-blink">
+                        Insert Coin to climb rankings
+                    </p>
+</div>
+<p class="text-primary text-[10px] font-bold tracking-[0.5em] uppercase opacity-50">System Version 4.0.2 // Ready</p>
+</div>
+</div>
+<!-- Arcade Physical Buttons -->
+<div class="layout-content-container flex max-w-[960px] w-full mt-10 justify-between items-end px-4">
+<div class="flex gap-6">
+<div class="flex flex-col items-center gap-2">
+<button class="size-16 rounded-full arcade-btn-purple flex items-center justify-center active:translate-y-1 active:shadow-none transition-all">
+<span class="material-symbols-outlined text-white text-3xl font-bold">arrow_back</span>
+</button>
+<span class="text-white/40 text-[10px] font-black tracking-widest uppercase">Prev</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<button class="size-16 rounded-full arcade-btn-purple flex items-center justify-center active:translate-y-1 active:shadow-none transition-all">
+<span class="material-symbols-outlined text-white text-3xl font-bold">arrow_forward</span>
+</button>
+<span class="text-white/40 text-[10px] font-black tracking-widest uppercase">Next</span>
+</div>
+</div>
+<div class="hidden md:block">
+<img alt="Retro pixel character mascot" class="h-24 opacity-60 grayscale hover:grayscale-0 transition-all cursor-pointer" data-alt="A small pixel art pixelated monster character" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKOZiSeEJt5ECXBlCFiNLeM1aVqnJNiNA88b5HyhuPQMwo4XPMgQkhnlCg6hqiKEo4rEPiTclGDiVYl5zFj8Vc4bm4Lf77ssY1sZnYLgoOWfpowCGtnNQJ34lWT53S69r02Fq2CU7rsStormK4824qRVICFbN_IfmsvVRAeCTtuWLZDcNb7QV18V6lzp8nzdtZDp6Z0KscjDdcF4LsGTTIUga2WCf3SspEuwNNLaL4LXvCAa88YaUX8M_OQmQw0_zCnH-DcW6XpiY"/>
+</div>
+<div class="flex flex-col items-center gap-2">
+<button class="size-20 rounded-full arcade-btn-red flex items-center justify-center active:translate-y-1 active:shadow-none transition-all border-4 border-black/20">
+<span class="text-white font-black text-xl uppercase italic">Exit</span>
+</button>
+<span class="text-white/40 text-[10px] font-black tracking-widest uppercase">Panic Button</span>
+</div>
+</div>
+<!-- Bottom Metadata -->
+<div class="mt-12 text-center">
+<p class="text-white/20 text-xs font-medium uppercase tracking-[0.4em]">
+                © 1994 Gatekeeper Systems Ltd. // All Rights Reserved
+            </p>
+</div>
+</div>
+<!-- Background Decoration -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 opacity-10">
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-cyan rounded-full blur-[120px]"></div>
+</div>
+</body></html>

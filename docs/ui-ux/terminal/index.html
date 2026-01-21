@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sleepy Gatekeeper ($402) - Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0df20d",
+                        "background-light": "#f5f8f5",
+                        "background-dark": "#102210",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(18, 16, 16, 0) 50%,
+                rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+        .crt-glow {
+            text-shadow: 0 0 5px rgba(13, 242, 13, 0.7), 0 0 10px rgba(13, 242, 13, 0.3);
+        }
+        .pixel-text {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        .glass-morphism {
+            background: rgba(16, 34, 16, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(13, 242, 13, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary selection:text-black min-h-screen overflow-hidden">
+<!-- OS Desktop Environment Background -->
+<div class="fixed inset-0 z-0 bg-gradient-to-br from-[#0a150a] via-[#102210] to-[#1a0a1a] opacity-90">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#0df20d 0.5px, transparent 0.5px); background-size: 20px 20px;"></div>
+</div>
+<div class="relative z-10 flex flex-col h-screen">
+<!-- Top Navigation Bar (OS Menu Bar) -->
+<header class="flex items-center justify-between px-6 py-2 bg-black/40 border-b border-primary/20 backdrop-blur-md">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg">terminal</span>
+<h2 class="text-sm font-bold tracking-widest uppercase">Gate-OS 1.0</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-xs font-medium text-white/60 hover:text-primary transition-colors" href="#">File</a>
+<a class="text-xs font-medium text-white/60 hover:text-primary transition-colors" href="#">Edit</a>
+<a class="text-xs font-medium text-white/60 hover:text-primary transition-colors" href="#">View</a>
+<a class="text-xs font-medium text-white/60 hover:text-primary transition-colors" href="#">Special</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-xs font-mono text-primary/80 bg-primary/10 px-2 py-1 rounded border border-primary/20">
+                    TOKEN_PRICE: $402.00
+                </div>
+<div class="size-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center overflow-hidden">
+<div class="w-full h-full bg-cover bg-center" data-alt="Cyberpunk character profile avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4iptTUYMPxGIhzyYF5jIybXMA52mY-U2seXMVSJcOLpTdXY9tufRtk1UGioJ4wmWl-b7v7wXBl94550q7kAftY1W4zYGGvnChvqWPIavhmfMo79uLg9I5IxZC48A8iTRWmt28owuLagQsRVRG4RFRjxA_PpHiaRJlzpJxvrnmxEWtn1dcw1V19lZeIV0oizsg6FFnFqmaRxfOK6a44V_FyQxGMzZDSAk7tBxFPIGu25CY3XWLBPjCBZIFh1uvUT48xn1WUfOpJGo')"></div>
+</div>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="flex-1 flex items-center justify-center p-4 md:p-10 relative">
+<!-- Terminal Window Container -->
+<div class="w-full max-w-5xl h-[80vh] flex flex-col glass-morphism rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden relative border border-primary/30">
+<!-- CRT Scanline Overlay -->
+<div class="absolute inset-0 scanlines z-50 rounded-xl"></div>
+<!-- Window Title Bar -->
+<div class="h-10 bg-gradient-to-r from-blue-600 via-indigo-700 to-purple-800 flex items-center justify-between px-4 shrink-0 border-b border-white/10">
+<div class="flex items-center gap-3">
+<div class="flex gap-1.5">
+<div class="size-3 rounded-full bg-[#ff5f56]"></div>
+<div class="size-3 rounded-full bg-[#ffbd2e]"></div>
+<div class="size-3 rounded-full bg-[#27c93f]"></div>
+</div>
+<span class="text-xs font-mono font-bold tracking-tight text-white/90 drop-shadow-sm">C:\GATEKEEPER\SYSTEM\FEED.EXE</span>
+</div>
+<div class="text-[10px] font-mono text-white/50 uppercase tracking-widest">Administrator: Secure Shell</div>
+</div>
+<!-- Terminal Content Area -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar (System Info) -->
+<aside class="w-56 border-r border-primary/20 bg-black/40 p-6 flex flex-col gap-8 shrink-0 hidden md:flex">
+<div class="space-y-4">
+<h3 class="text-primary/40 text-[10px] font-bold tracking-[0.2em] uppercase">Hardware Status</h3>
+<div class="space-y-3">
+<div class="space-y-1">
+<p class="text-white/40 text-[10px] uppercase">CPU Clock</p>
+<p class="text-primary crt-glow font-mono text-lg">402MHz</p>
+<div class="w-full h-1 bg-primary/10 rounded-full overflow-hidden">
+<div class="w-[42%] h-full bg-primary"></div>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-white/40 text-[10px] uppercase">Memory</p>
+<p class="text-primary crt-glow font-mono text-lg">64MB</p>
+<div class="w-full h-1 bg-primary/10 rounded-full overflow-hidden">
+<div class="w-[88%] h-full bg-primary"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="text-primary/40 text-[10px] font-bold tracking-[0.2em] uppercase">Network</h3>
+<div class="space-y-2 font-mono text-[11px]">
+<div class="flex justify-between">
+<span class="text-white/40">LATENCY</span>
+<span class="text-primary">12ms</span>
+</div>
+<div class="flex justify-between">
+<span class="text-white/40">NODES</span>
+<span class="text-primary">Active</span>
+</div>
+<div class="flex justify-between">
+<span class="text-white/40">ENCRYPT</span>
+<span class="text-primary">AES-402</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-primary/10">
+<div class="p-3 bg-primary/5 rounded border border-primary/10">
+<p class="text-[9px] text-primary/60 leading-tight">Uptime: 99.9%<br/>Last Reboot: 402 days ago</p>
+</div>
+</div>
+</aside>
+<!-- Main Feed Terminal -->
+<div class="flex-1 flex flex-col bg-black/60 relative">
+<!-- Header Stats Row -->
+<div class="flex items-center gap-4 p-4 border-b border-primary/10 bg-primary/5">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#0df20d]"></span>
+<span class="text-[10px] font-mono text-primary font-bold">LIVE FEED CONNECTED</span>
+</div>
+<div class="h-4 w-px bg-primary/20"></div>
+<span class="text-[10px] font-mono text-primary/60">BLOCK: #29402100</span>
+</div>
+<!-- Scrolling Feed Area -->
+<div class="flex-1 p-6 font-mono text-sm space-y-3 overflow-y-auto pixel-text">
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:01]</span>
+<span class="text-primary crt-glow uppercase">Initializing gatekeeper security protocols...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:05]</span>
+<span class="text-primary crt-glow">NEW TRANSACTION: <span class="font-bold">50.4 SOL</span> -&gt; <span class="text-white bg-primary/20 px-1">$402</span> [0x...8a21]</span>
+</div>
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:10]</span>
+<span class="text-primary/80">BLOCK CONFIRMED: #29402100 - VALIDATED BY NODE_402</span>
+</div>
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:15]</span>
+<span class="text-primary crt-glow">TOLL COLLECTED: <span class="text-primary">0.0001 USDC</span> [FEE_VAULT_INIT]</span>
+</div>
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:22]</span>
+<span class="text-primary/80">NEW TRANSACTION: <span class="font-bold">120.0 SOL</span> -&gt; <span class="text-white bg-primary/20 px-1">$402</span> [0x...f2e0]</span>
+</div>
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:28]</span>
+<span class="text-primary/80">SYSTEM: CURSOR_INITIATED_</span>
+</div>
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:35]</span>
+<span class="text-primary crt-glow">SCANNING PERIMETER... NO THREATS DETECTED.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-primary/30">[12:04:42]</span>
+<span class="text-yellow-400/80 uppercase">Warning: Sleepy Gatekeeper protocol idling at 402% efficiency</span>
+</div>
+</div>
+<!-- Command Input -->
+<div class="p-4 border-t border-primary/20 bg-black/80 flex items-center gap-3">
+<span class="text-primary font-bold font-mono text-lg">&gt;</span>
+<div class="flex-1 flex items-center">
+<input class="w-full bg-transparent border-none focus:ring-0 text-primary font-mono text-lg p-0 placeholder:text-primary/20" placeholder="enter system command..." type="text"/>
+<span class="w-2.5 h-6 bg-primary cursor-blink ml-1 shadow-[0_0_8px_#0df20d]"></span>
+</div>
+<button class="bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-all">
+                                Execute
+                            </button>
+</div>
+</div>
+</div>
+<!-- Status Bar Footer -->
+<footer class="h-8 bg-black/80 border-t border-primary/20 px-4 flex items-center justify-between text-[10px] font-mono text-primary/40">
+<div class="flex gap-4">
+<span>SYS_LOG: ENABLED</span>
+<span>ENC: RSA-4096</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">lan</span>
+<span>192.168.1.402</span>
+<div class="h-3 w-px bg-primary/20"></div>
+<span>GATEKEEPER_CORE v1.0.402</span>
+</div>
+</footer>
+</div>
+<!-- Desktop Icon Ornaments -->
+<div class="absolute left-10 top-24 flex flex-col items-center gap-8 opacity-40 hover:opacity-100 transition-opacity">
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="size-12 rounded bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20">
+<span class="material-symbols-outlined text-primary text-2xl">folder</span>
+</div>
+<span class="text-[10px] uppercase font-bold text-primary/60">Archives</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="size-12 rounded bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20">
+<span class="material-symbols-outlined text-primary text-2xl">database</span>
+</div>
+<span class="text-[10px] uppercase font-bold text-primary/60">Blockchain</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="size-12 rounded bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 text-red-500">
+<span class="material-symbols-outlined text-2xl">delete</span>
+</div>
+<span class="text-[10px] uppercase font-bold text-primary/60">Trash</span>
+</div>
+</div>
+</main>
+</div>
+<!-- Taskbar (OS Bottom Bar) -->
+<div class="fixed bottom-0 left-0 right-0 h-12 bg-black/60 border-t border-primary/20 backdrop-blur-md flex items-center px-4 z-50">
+<button class="bg-primary/20 border border-primary/40 size-10 rounded flex items-center justify-center hover:bg-primary/30 transition-all mr-4">
+<span class="material-symbols-outlined text-primary">apps</span>
+</button>
+<div class="flex gap-2 h-full py-2">
+<div class="h-full px-4 rounded bg-primary/10 border border-primary/30 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">feed</span>
+<span class="text-xs font-bold uppercase tracking-wider">Feed.exe</span>
+</div>
+<div class="h-full px-4 rounded hover:bg-white/5 flex items-center gap-2 text-white/40">
+<span class="material-symbols-outlined text-sm">shield</span>
+<span class="text-xs font-bold uppercase tracking-wider">Guard</span>
+</div>
+</div>
+<div class="ml-auto flex items-center gap-6 pr-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-sm text-primary/60">wifi</span>
+<span class="material-symbols-outlined text-sm text-primary/60">volume_up</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-primary leading-none">12:04 PM</p>
+<p class="text-[8px] text-primary/40 font-mono">2024-04-02</p>
+</div>
+</div>
+</div>
+</body></html>

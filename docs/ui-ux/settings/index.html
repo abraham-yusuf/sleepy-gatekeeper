@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sleepy Gatekeeper ($402) Control Panel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b6cee",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .win95-bevel-out {
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-bottom: 2px solid #848484;
+            border-right: 2px solid #848484;
+        }
+        .win95-bevel-in {
+            border-top: 2px solid #848484;
+            border-left: 2px solid #848484;
+            border-bottom: 2px solid #ffffff;
+            border-right: 2px solid #ffffff;
+        }
+        .win95-shadow {
+            box-shadow: 12px 12px 0px rgba(0,0,0,0.15);
+        }
+        .glass-effect {
+            backdrop-filter: blur(8px);
+            background-color: rgba(231, 235, 243, 0.85);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex items-center justify-center p-4">
+<!-- Desktop Window Container -->
+<div class="relative w-full max-w-[960px] win95-bevel-out bg-[#e7ebf3] dark:bg-slate-800 win95-shadow overflow-hidden flex flex-col glass-effect">
+<!-- Title Bar -->
+<header class="bg-primary flex items-center justify-between px-2 py-1 select-none">
+<div class="flex items-center gap-2">
+<div class="size-5 flex items-center justify-center bg-white rounded-sm">
+<svg class="size-4 text-primary" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+</svg>
+</div>
+<h1 class="text-white text-sm font-bold leading-tight tracking-wide">Sleepy Gatekeeper ($402) Control Panel</h1>
+</div>
+<div class="flex gap-1">
+<button class="win95-bevel-out bg-[#e7ebf3] hover:bg-[#d1d7e2] size-6 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">minimize</span>
+</button>
+<button class="win95-bevel-out bg-[#e7ebf3] hover:bg-[#d1d7e2] size-6 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check_box_outline_blank</span>
+</button>
+<button class="win95-bevel-out bg-[#e7ebf3] hover:bg-red-400 size-6 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</header>
+<!-- Menu Bar -->
+<nav class="flex items-center gap-4 px-4 py-1 border-b border-white/50 dark:border-slate-700 select-none">
+<a class="text-xs text-[#0d121b] dark:text-slate-200 hover:bg-primary hover:text-white px-2 py-0.5 rounded" href="#">File</a>
+<a class="text-xs text-[#0d121b] dark:text-slate-200 hover:bg-primary hover:text-white px-2 py-0.5 rounded" href="#">Edit</a>
+<a class="text-xs text-[#0d121b] dark:text-slate-200 hover:bg-primary hover:text-white px-2 py-0.5 rounded" href="#">View</a>
+<a class="text-xs text-[#0d121b] dark:text-slate-200 hover:bg-primary hover:text-white px-2 py-0.5 rounded" href="#">Help</a>
+</nav>
+<!-- Main Content Area -->
+<div class="flex flex-1 min-h-[500px] overflow-hidden">
+<!-- Sidebar Description Area -->
+<aside class="w-64 border-r border-white/50 dark:border-slate-700 flex flex-col bg-[#f0f2f6] dark:bg-slate-900/50 p-6 select-none">
+<div class="flex flex-col gap-4">
+<div class="size-16 bg-white dark:bg-slate-800 win95-bevel-in flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-4xl text-primary">settings</span>
+</div>
+<div class="flex flex-col gap-2">
+<h2 class="text-[#0d121b] dark:text-white text-lg font-bold leading-tight">Settings Description</h2>
+<div class="h-[1px] bg-slate-300 dark:bg-slate-700 w-full my-1"></div>
+<p class="text-[#4c669a] dark:text-slate-400 text-sm font-medium leading-relaxed italic">
+                            Select an item to view its description.
+                        </p>
+<p class="text-[#0d121b] dark:text-slate-300 text-sm leading-normal mt-2" id="description-text">
+                            Adjust your Gatekeeper display settings and terminal colors. Use these tools to customize the performance and security of the ($402) protocol.
+                        </p>
+</div>
+</div>
+</aside>
+<!-- Content Grid View -->
+<main class="flex-1 bg-white dark:bg-background-dark p-6 overflow-y-auto">
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+<!-- Display Setting -->
+<div class="group flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-primary/10 rounded transition-colors border border-transparent hover:border-primary/30">
+<div class="size-16 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg group-active:translate-y-0.5">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1">monitor</span>
+</div>
+<div class="text-center">
+<p class="text-[#0d121b] dark:text-white text-sm font-bold">Display</p>
+<p class="text-[#4c669a] dark:text-slate-500 text-[11px]">Monitor settings</p>
+</div>
+</div>
+<!-- Network Setting -->
+<div class="group flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-primary/10 rounded transition-colors border border-transparent hover:border-primary/30">
+<div class="size-16 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg group-active:translate-y-0.5">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1">hub</span>
+</div>
+<div class="text-center">
+<p class="text-[#0d121b] dark:text-white text-sm font-bold">Network</p>
+<p class="text-[#4c669a] dark:text-slate-500 text-[11px]">Connectivity</p>
+</div>
+</div>
+<!-- Audio Setting -->
+<div class="group flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-primary/10 rounded transition-colors border border-transparent hover:border-primary/30">
+<div class="size-16 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg group-active:translate-y-0.5">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1">volume_up</span>
+</div>
+<div class="text-center">
+<p class="text-[#0d121b] dark:text-white text-sm font-bold">Audio</p>
+<p class="text-[#4c669a] dark:text-slate-500 text-[11px]">System chimes</p>
+</div>
+</div>
+<!-- Security Setting -->
+<div class="group flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-primary/10 rounded transition-colors border border-transparent hover:border-primary/30">
+<div class="size-16 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg group-active:translate-y-0.5">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1">shield_lock</span>
+</div>
+<div class="text-center">
+<p class="text-[#0d121b] dark:text-white text-sm font-bold">Security</p>
+<p class="text-[#4c669a] dark:text-slate-500 text-[11px]">Permissions</p>
+</div>
+</div>
+<!-- Protocol Config Setting -->
+<div class="group flex flex-col items-center gap-2 p-4 cursor-pointer hover:bg-primary/10 rounded transition-colors border border-transparent hover:border-primary/30">
+<div class="size-16 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg group-active:translate-y-0.5">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1">settings_suggest</span>
+</div>
+<div class="text-center">
+<p class="text-[#0d121b] dark:text-white text-sm font-bold">Protocol Config</p>
+<p class="text-[#4c669a] dark:text-slate-500 text-[11px]">System logic</p>
+</div>
+</div>
+<!-- Add new placeholder -->
+<div class="group flex flex-col items-center gap-2 p-4 cursor-not-allowed opacity-40">
+<div class="size-16 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-4xl text-slate-400">add_circle</span>
+</div>
+<div class="text-center">
+<p class="text-[#0d121b] dark:text-white text-sm font-bold">Add New</p>
+<p class="text-[#4c669a] dark:text-slate-500 text-[11px]">Coming soon</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer / Action Area -->
+<footer class="flex flex-col border-t border-white/50 dark:border-slate-700 bg-[#e7ebf3] dark:bg-slate-800">
+<!-- Buttons -->
+<div class="flex justify-end gap-3 p-4">
+<button class="win95-bevel-out min-w-[84px] h-9 px-4 bg-primary text-white text-sm font-bold hover:brightness-110 active:win95-bevel-in active:translate-y-px">
+                    OK
+                </button>
+<button class="win95-bevel-out min-w-[84px] h-9 px-4 bg-[#e7ebf3] dark:bg-slate-700 text-[#0d121b] dark:text-white text-sm font-bold hover:bg-[#d1d7e2] active:win95-bevel-in active:translate-y-px">
+                    Cancel
+                </button>
+<button class="win95-bevel-out min-w-[84px] h-9 px-4 bg-[#e7ebf3] dark:bg-slate-700 text-[#0d121b] dark:text-white text-sm font-bold hover:bg-[#d1d7e2] active:win95-bevel-in active:translate-y-px opacity-50 cursor-not-allowed">
+                    Apply
+                </button>
+</div>
+<!-- Status Bar -->
+<div class="win95-bevel-in flex items-center justify-between px-3 py-1.5 bg-[#d1d7e2] dark:bg-slate-900 mx-1 mb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-green-600">check_circle</span>
+<p class="text-[#0d121b] dark:text-slate-300 text-[11px] font-medium leading-none">5 items found</p>
+</div>
+<div class="flex gap-4">
+<p class="text-[#0d121b] dark:text-slate-300 text-[11px] px-2 border-l border-white/30">Ready</p>
+<div class="bg-primary/20 size-3 rounded-full animate-pulse border border-primary/40"></div>
+</div>
+</div>
+</footer>
+</div>
+<!-- Background Decoration -->
+<div class="fixed top-12 left-12 -z-10 opacity-20 pointer-events-none">
+<div class="size-64 bg-primary/30 blur-[120px] rounded-full"></div>
+</div>
+<div class="fixed bottom-12 right-12 -z-10 opacity-20 pointer-events-none">
+<div class="size-96 bg-primary/20 blur-[150px] rounded-full"></div>
+</div>
+</body></html>

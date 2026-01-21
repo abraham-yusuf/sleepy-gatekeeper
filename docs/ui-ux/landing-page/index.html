@@ -1,0 +1,406 @@
+<html class="dark" lang="en"><head></head><body class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary/40 overflow-x-hidden pb-12">```html
+
+
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sleepy Gatekeeper ($402) - Payment Required</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#9d47ff",
+                        "background-light": "#f7f5f8",
+                        "background-dark": "#0a0a0c",
+                        "retro-gray": "#c0c0c0",
+                        "neon-green": "#39ff14",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .grid-bg {
+            background-image: radial-gradient(#34204b 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .win95-shadow {
+            box-shadow: inset 1px 1px #fff, inset -1px -1px #808080, 2px 2px 0px 0px #000;
+        }
+        .win95-button-active {
+            box-shadow: inset 1px 1px #808080, inset -1px -1px #fff, 1px 1px 0px 0px #000;
+            transform: translate(1px, 1px);
+        }
+        .win95-recessed {
+            box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+        }
+        .glass-panel {
+            background: rgba(25, 15, 36, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(157, 71, 255, 0.2);
+        }
+        .glitch-text {
+            text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+        }
+        .taskbar-3d-border {
+            border-top: 2px solid #ffffff;
+        }
+        .start-menu-sidebar {
+            background: linear-gradient(to bottom, #000080, #1084d0);
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+        .menu-item-hover:hover {
+            background: linear-gradient(90deg, #2563eb, #9d47ff);
+            color: white;
+        }
+        .desktop-icon-label {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        .desktop-icon-selected {
+            background-color: rgba(0, 0, 128, 0.6);
+            outline: 1px dotted #ffffff;
+        }
+    </style>
+
+
+<div class="crt-overlay"></div>
+<div class="relative min-h-screen flex flex-col grid-bg">
+<div class="fixed top-20 left-6 z-40 flex flex-col gap-8">
+<div class="group flex flex-col items-center w-24 gap-1 cursor-pointer">
+<div class="size-12 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-retro-gray group-hover:text-white transition-colors">computer</span>
+</div>
+<span class="text-[11px] text-white text-center font-sans desktop-icon-label px-1 leading-tight">My Node</span>
+</div>
+<div class="group flex flex-col items-center w-24 gap-1 cursor-pointer desktop-icon-selected py-1">
+<div class="size-12 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-[#1084d0]">delete</span>
+</div>
+<span class="text-[11px] text-white text-center font-sans desktop-icon-label px-1 leading-tight">Burn Address</span>
+</div>
+<div class="group flex flex-col items-center w-24 gap-1 cursor-pointer">
+<div class="size-12 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-neon-green group-hover:scale-110 transition-transform">table_chart</span>
+</div>
+<span class="text-[11px] text-white text-center font-sans desktop-icon-label px-1 leading-tight">Tokenomics.xls</span>
+</div>
+<div class="group flex flex-col items-center w-24 gap-1 cursor-pointer">
+<div class="size-12 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:text-white transition-colors">help_center</span>
+</div>
+<span class="text-[11px] text-white text-center font-sans desktop-icon-label px-1 leading-tight">Whitepaper.hlp</span>
+</div>
+</div>
+<header class="sticky top-0 z-50 w-full border-b border-primary/20 glass-panel px-6 py-2">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-1 rounded-sm win95-shadow">
+<svg class="size-6 text-white" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<span class="text-xl font-bold tracking-tighter uppercase font-mono italic">Gatekeeper v4.02</span>
+</div>
+<nav class="hidden md:flex gap-8 text-sm font-medium uppercase tracking-widest text-primary/80">
+<a class="hover:text-primary transition-colors" href="#">Files</a>
+<a class="hover:text-primary transition-colors" href="#">Terminal</a>
+<a class="hover:text-primary transition-colors" href="#">Vault</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="win95-shadow win95-button-active bg-gradient-to-r from-blue-600 to-primary px-4 py-1.5 text-xs font-bold uppercase tracking-tighter">
+                        Connect Wallet
+                    </button>
+<div class="size-8 rounded-full border border-primary/40 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDjAaYGqI1a_g9Znfe8fiLE6ajN7-VD_XjFMcuuM8aAuIOL_0slkqvWspmzCdMaGO6wuILG6C8LjXEAN1pno6NsuzaWgh9TgO93ah8BulGos2HRGlI1GYlyuGHrgK0iwHQ7gxHWjRQMpKDJQ_1fnN8blxtBReVdzlIMKnBI1fm8AwyfsuHDEM0KKdwQ0M9yO0cTw6UBXgqLIqoC8-h1QFMOohm1S_NlMVZO83VdQidN-USyxPo4U0EBPzPapmad_xRyc6oAFqO-84M");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full px-6 py-12 space-y-24 pb-20 relative z-10">
+<section class="flex flex-col items-center justify-center text-center py-20 relative">
+<div class="absolute inset-0 bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute z-40 top-[10%] md:top-[15%] left-1/2 -translate-x-1/2 md:translate-x-[-10%] w-[90%] max-w-[380px] win95-shadow pointer-events-auto">
+<div class="bg-gradient-to-r from-[#000080] to-[#1084d0] h-8 flex items-center justify-between px-2 cursor-move">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-white">warning</span>
+<span class="text-xs font-bold text-white font-mono uppercase tracking-wider">Error 402</span>
+</div>
+<button class="w-5 h-5 bg-retro-gray win95-shadow flex items-center justify-center text-black font-bold text-xs hover:bg-white transition-colors">
+                            X
+                        </button>
+</div>
+<div class="glass-panel p-6 flex flex-col gap-6 bg-retro-gray/90">
+<div class="flex items-start gap-4">
+<div class="bg-[#ffff00] border-2 border-black rounded-sm p-1 flex items-center justify-center win95-shadow shrink-0">
+<span class="material-symbols-outlined text-black text-3xl font-bold">priority_high</span>
+</div>
+<div class="text-left space-y-1">
+<h4 class="text-white font-bold text-sm text-black">System Error: Liquidity Overflow</h4>
+<p class="text-primary/70 text-xs font-mono">Error Code: 402 - Payment Required</p>
+</div>
+</div>
+<div class="flex justify-end gap-3 pt-2">
+<button class="px-6 py-1.5 bg-retro-gray text-black text-xs font-bold win95-shadow win95-button-active neon-glow-green hover:bg-white transition-colors">
+                                RETRY
+                            </button>
+<button class="px-6 py-1.5 bg-retro-gray text-black text-xs font-bold win95-shadow win95-button-active hover:bg-white transition-colors">
+                                ABORT
+                            </button>
+</div>
+</div>
+</div>
+<div class="relative space-y-8 max-w-3xl">
+<div class="inline-block border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-primary mb-4">
+                        Status: Dormant _ Protocol: Active
+                    </div>
+<h1 class="text-6xl md:text-8xl font-black leading-none glitch-text tracking-tighter">
+                        402: PAYMENT REQUIRED
+                    </h1>
+<p class="text-lg md:text-xl text-primary/60 max-w-xl mx-auto font-mono">
+                        The internet's toll booth is finally open on Solana. Pay the Gatekeeper to proceed.
+                    </p>
+<div class="pt-6">
+<button class="bg-[#c0c0c0] text-black px-10 py-4 font-bold uppercase tracking-tighter win95-shadow win95-button-active flex items-center gap-3 mx-auto hover:bg-white transition-colors">
+<span class="material-symbols-outlined">power_settings_new</span>
+                            Wake Up the Gatekeeper
+                        </button>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+<div class="space-y-6">
+<h2 class="text-3xl font-bold uppercase italic tracking-tighter text-primary">The Lore</h2>
+<div class="win95-shadow bg-retro-gray p-1 rounded-sm">
+<div class="bg-black aspect-video flex items-center justify-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Retro Mascot" class="w-2/3 grayscale hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEUBfmMvjiqrXbzP4Dx6IbtK18mw-RJoelJPDhU67S17kXz0TGCLDYZxjQvpT2tguAhOb2hsmaMJAMqvuB9MMUgib_xLetT_eS095mpBvhfPSkpQflCDjDk5XKVoWQSe1VV6u6oyQ-F5JFT1nNkpkwS07DblVPrxEXuDKnK2tzo0YKQfY4Ckk1BkpZY5VlQTRkiIX8W-ULs6ZLN_9_YfbL54hWlkmJtjFHPcMzUAwjCFfB2nJGsm1g3f30m_5TqtZBZbJ2V8l_DWE"/>
+<div class="absolute bottom-4 left-4 font-mono text-[10px] text-neon-green">
+                                SYSTEM_MASCOT_01.EXE
+                            </div>
+</div>
+</div>
+</div>
+<div class="win95-shadow bg-retro-gray rounded-sm flex flex-col h-full">
+<div class="bg-gradient-to-r from-blue-900 to-blue-600 px-2 py-1 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span class="text-xs font-bold text-white">System Terminal - [User@Solana]</span>
+</div>
+<div class="flex gap-1">
+<div class="w-4 h-4 bg-retro-gray win95-shadow flex items-center justify-center text-[10px] text-black">_</div>
+<div class="w-4 h-4 bg-retro-gray win95-shadow flex items-center justify-center text-[10px] text-black">X</div>
+</div>
+</div>
+<div class="bg-black p-6 flex-1 font-mono text-neon-green space-y-4">
+<div class="flex items-start gap-2">
+<span class="text-primary">&gt;</span>
+<p class="text-sm">Initializing legacy protocol x402...</p>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-primary">&gt;</span>
+<p class="text-sm">Dormant since 1997. Woken up by Base. Running on Solana for speed. The gatekeeper has seen the rise and fall of dial-up. Now it monitors the chain.</p>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-primary">&gt;</span>
+<p class="text-sm">Warning: Payment required to access deep liquidity nodes.</p>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-primary">&gt;</span>
+<div class="w-2 h-4 bg-neon-green animate-pulse"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="space-y-8">
+<div class="flex items-center gap-4">
+<h2 class="text-3xl font-bold uppercase italic tracking-tighter text-primary">Toll Booth Demo</h2>
+<div class="h-[1px] flex-1 bg-primary/20"></div>
+</div>
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-primary/50 to-blue-500/50 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+<div class="relative glass-panel rounded-xl overflow-hidden p-8 flex flex-col items-center text-center gap-8">
+<div class="max-w-md space-y-4">
+<div class="size-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto border border-primary/40">
+<span class="material-symbols-outlined text-3xl text-primary">lock</span>
+</div>
+<h3 class="text-2xl font-bold uppercase">Premium Content: 402 Payment Required</h3>
+<p class="text-sm text-primary/60">The data you are trying to access is behind a $402 Gate. Stake or pay to unlock the encrypted packets.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-lg">
+<div class="border border-primary/20 bg-primary/5 p-4 rounded text-left">
+<div class="text-[10px] text-primary/40 uppercase mb-1">Status</div>
+<div class="font-mono text-neon-green">LOCKED</div>
+</div>
+<div class="border border-primary/20 bg-primary/5 p-4 rounded text-left">
+<div class="text-[10px] text-primary/40 uppercase mb-1">Fee</div>
+<div class="font-mono">0.0001 USDC</div>
+</div>
+</div>
+<button class="w-full max-w-sm bg-primary hover:bg-primary/80 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02]">
+                            Pay 0.0001 USDC to Unlock
+                            <span class="material-symbols-outlined">payments</span>
+</button>
+</div>
+</div>
+</section>
+<section class="space-y-8">
+<h2 class="text-3xl font-bold uppercase italic tracking-tighter text-primary">Tokenomics.XLS</h2>
+<div class="win95-shadow bg-retro-gray p-1 rounded-sm overflow-x-auto">
+<table class="w-full border-collapse bg-white text-black font-mono text-sm">
+<thead>
+<tr class="bg-retro-gray border-b border-black">
+<th class="p-2 border-r border-black w-10"></th>
+<th class="p-2 border-r border-black text-left">PARAMETER</th>
+<th class="p-2 text-left">VALUE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-black/10">
+<td class="p-2 border-r border-black bg-retro-gray text-center font-bold">1</td>
+<td class="p-2 border-r border-black">TOTAL_SUPPLY</td>
+<td class="p-2 font-bold">402,000,000 $402</td>
+</tr>
+<tr class="border-b border-black/10">
+<td class="p-2 border-r border-black bg-retro-gray text-center font-bold">2</td>
+<td class="p-2 border-r border-black">TICKER</td>
+<td class="p-2 font-bold">$402</td>
+</tr>
+<tr class="border-b border-black/10">
+<td class="p-2 border-r border-black bg-retro-gray text-center font-bold">3</td>
+<td class="p-2 border-r border-black">NETWORK</td>
+<td class="p-2 font-bold text-primary">SOLANA</td>
+</tr>
+<tr class="border-b border-black/10">
+<td class="p-2 border-r border-black bg-retro-gray text-center font-bold">4</td>
+<td class="p-2 border-r border-black">TAX_MODEL</td>
+<td class="p-2 font-bold">0% / 0%</td>
+</tr>
+<tr class="border-b border-black/10">
+<td class="p-2 border-r border-black bg-retro-gray text-center font-bold">5</td>
+<td class="p-2 border-r border-black">LP_STATUS</td>
+<td class="p-2 font-bold text-neon-green">BURNED_FOREVER</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<footer class="mt-20 border-t border-primary/20 py-12 px-6 glass-panel mb-12">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-4 text-primary font-mono text-sm">
+<a class="hover:underline" href="#">X.COM</a>
+<a class="hover:underline" href="#">TELEGRAM</a>
+<a class="hover:underline" href="#">DEXSCREENER</a>
+</div>
+<p class="text-[10px] text-primary/40 uppercase tracking-[0.2em]">Powered by x402 Protocol. No refunds. v1.0.97</p>
+</div>
+<div class="bg-black/40 border border-primary/20 px-4 py-2 rounded font-mono text-[10px] text-primary/60">
+<div class="flex gap-4">
+<span>CPU: 402%</span>
+<span>MEM: 64MB</span>
+<span>LATENCY: 0.00ms</span>
+</div>
+</div>
+</div>
+</footer>
+<div class="fixed bottom-10 left-1 z-[1001] w-64 bg-retro-gray win95-shadow flex">
+<div class="start-menu-sidebar w-8 flex items-center justify-end pb-3">
+<span class="text-white font-black text-xl font-mono tracking-widest">$402</span>
+</div>
+<div class="flex-1 p-0.5 glass-panel bg-retro-gray/90">
+<div class="flex flex-col gap-0.5">
+<a class="flex items-center gap-3 px-3 py-2 text-black text-sm font-semibold menu-item-hover transition-all group" href="#">
+<span class="material-symbols-outlined text-[18px]">description</span>
+<span>Documentation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-black text-sm font-semibold menu-item-hover transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">monitoring</span>
+<span>Trade on Dexscreener</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-black text-sm font-semibold menu-item-hover transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Buy on Jupiter</span>
+</a>
+<div class="h-[1px] bg-white border-b border-[#808080] my-1 mx-1"></div>
+<div class="flex items-center justify-between px-3 py-2 text-black text-sm font-semibold menu-item-hover transition-all cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]">group</span>
+<span>Socials</span>
+</div>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 w-full h-10 bg-retro-gray/85 backdrop-blur-md taskbar-3d-border z-[1000] flex items-center justify-between px-1">
+<div class="flex items-center gap-1 h-full py-0.5">
+<button class="h-full flex items-center gap-2 px-2 bg-retro-gray win95-recessed translate-x-[1px] translate-y-[1px] hover:bg-white transition-colors">
+<div class="size-4 bg-primary flex items-center justify-center rounded-[1px]">
+<svg class="size-3 text-white" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<span class="text-sm font-black text-black tracking-tight leading-none pt-0.5">START</span>
+</button>
+<div class="w-1 h-2/3 border-l border-white border-r border-[#808080] mx-1"></div>
+<div class="flex items-center gap-1 h-full">
+<button class="h-full px-3 bg-retro-gray/50 win95-recessed flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-black">terminal</span>
+<span class="text-xs text-black font-semibold truncate max-w-[80px]">Terminal</span>
+</button>
+<button class="h-full px-3 bg-retro-gray win95-shadow flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-black">toll</span>
+<span class="text-xs text-black font-semibold truncate max-w-[80px]">Toll_Booth</span>
+</button>
+<button class="h-full px-3 bg-retro-gray win95-shadow flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-black">wallet</span>
+<span class="text-xs text-black font-semibold truncate max-w-[80px]">Wallet_Connect</span>
+</button>
+</div>
+</div>
+<div class="flex items-center h-full py-0.5">
+<div class="h-full px-2 win95-recessed flex items-center gap-3 bg-retro-gray/30">
+<div class="flex items-center gap-2">
+<a class="flex items-center justify-center" href="#">
+<svg class="size-4 text-[#000000]" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a>
+<a class="flex items-center justify-center" href="#">
+<svg class="size-4 text-[#000000]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"></path></svg>
+</a>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="size-1.5 bg-neon-green rounded-full shadow-[0_0_4px_#39ff14]"></div>
+<span class="text-[10px] text-black font-bold font-mono">11:59 PM</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+```</body></html>

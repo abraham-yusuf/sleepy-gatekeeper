@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sleepy Gatekeeper ($402) - Swap Dialog</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0df20d",
+                        "background-light": "#f5f8f5",
+                        "background-dark": "#102210",
+                        "win-grey": "#c0c0c0",
+                        "win-blue": "#000080",
+                        "win-dark-grey": "#808080",
+                        "win-highlight": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .win95-border {
+            box-shadow: inset 1.5px 1.5px 0px #ffffff, inset -1.5px -1.5px 0px #808080, 1.5px 1.5px 0px #000000;
+        }
+        .win95-inset {
+            box-shadow: inset 1.5px 1.5px 0px #808080, inset -1.5px -1.5px 0px #ffffff;
+        }
+        .win95-button {
+            box-shadow: inset 1.5px 1.5px 0px #ffffff, inset -1.5px -1.5px 0px #808080, 0.5px 0.5px 0px 1px #000000;
+        }
+        .win95-button:active {
+            box-shadow: inset 1.5px 1.5px 0px #808080, inset -1.5px -1.5px 0px #ffffff, 0.5px 0.5px 0px 1px #000000;
+            padding-top: 2px;
+            padding-left: 2px;
+        }
+        .glass-panel {
+            backdrop-filter: blur(8px);
+            background-color: rgba(192, 192, 192, 0.85);
+        }
+    </style>
+</head>
+<body class="bg-[#008080] font-display min-h-screen flex items-center justify-center p-4">
+<!-- Desktop Environment Mockup -->
+<div class="fixed inset-0 pointer-events-none opacity-20">
+<div class="absolute top-10 left-10 flex flex-col items-center gap-2">
+<div class="w-12 h-12 bg-white/20 win95-border"></div>
+<span class="text-white text-xs">My Computer</span>
+</div>
+<div class="absolute top-32 left-10 flex flex-col items-center gap-2">
+<div class="w-12 h-12 bg-white/20 win95-border"></div>
+<span class="text-white text-xs">Network Neighborhood</span>
+</div>
+</div>
+<!-- Main Swap Dialog Window -->
+<div class="relative w-full max-w-[520px] glass-panel win95-border p-1 shadow-2xl">
+<!-- Title Bar -->
+<div class="flex items-center justify-between bg-gradient-to-r from-win-blue to-[#1084d0] px-2 py-1 mb-4 select-none">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-sm">swap_horiz</span>
+<h1 class="text-white text-sm font-bold tracking-tight">Swapping Assets...</h1>
+</div>
+<div class="flex gap-1">
+<button class="win95-button bg-win-grey w-5 h-5 flex items-center justify-center text-xs font-bold leading-none">_</button>
+<button class="win95-button bg-win-grey w-5 h-5 flex items-center justify-center text-xs font-bold leading-none">X</button>
+</div>
+</div>
+<!-- Content Area -->
+<div class="px-6 py-2">
+<!-- Animation Section (File Transfer Style) -->
+<div class="flex items-center justify-around py-8 border-b border-win-dark-grey/30 mb-6">
+<div class="flex flex-col items-center gap-2">
+<div class="w-16 h-16 bg-win-grey win95-inset flex items-center justify-center overflow-hidden">
+<img alt="Solana pixel art logo" class="w-10 h-10 image-pixelated" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMJsJCyzQLYLAioWAhHPfGrzJsr9KXOrXwQ31w4jWQvZKl7fY57Ouwi093IrDSX87a4viBozC2A6AiTNeLXzHPjl7UIoquiCRGK37GhoPFymD3tYY4Pqouu0OsjosVVCfYoPqtiiFozlIc6SG4LzcNZwA2sRFzFljgvZln7MdVF43jSGtFciBCulcSx-WUcq8PBFhTCp7c26hNcJGXpQ_mc6fZXXDWlma5bXXSkDP8L1-Ee2t2Ov3YqPZjY_vgaJg_pxVjpqGREMM"/>
+</div>
+<span class="text-[10px] font-bold text-win-blue">SOLANA_MAIN</span>
+</div>
+<div class="flex flex-col items-center flex-1 px-4 relative">
+<div class="w-full h-[2px] bg-win-dark-grey relative">
+<!-- Animated "Flying" Item -->
+<div class="absolute -top-3 left-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">description</span>
+</div>
+</div>
+<span class="text-[10px] mt-4 text-win-dark-grey">Copying data packets...</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-16 h-16 bg-win-grey win95-inset flex items-center justify-center overflow-hidden">
+<img alt="Sleepy Gatekeeper token logo" class="w-10 h-10 image-pixelated" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaSrTCq_DNbp14bHX1dqrXXufXWUsP7a5BvBNvFo6qlov8IDUGgvmrLh7dFF2DR16Zk1Dwdx0J_lv4E_C3XZDQaCE19AqE2b2dcNRbZgZ4Ldxr9npePT_Bstq0mrAZM_AMcoa_OEBAady_2YpmItULvxF-RoIhEBhmjXjork0OETg6bbyc9Q8EBKOUygYWVXUMokuXTRGgudyJ-AnFVtBhUO5YY_-e94npDgsGwyt8s7_YvlUAlXEdYvfT7ZyW8h-cxJqFXKHaUnw"/>
+</div>
+<span class="text-[10px] font-bold text-primary">$402_GATE</span>
+</div>
+</div>
+<!-- Input Fields Section -->
+<div class="space-y-4 mb-6">
+<div class="flex items-center gap-4">
+<label class="w-12 text-sm font-bold text-[#0d1c0d]">From:</label>
+<div class="flex-1 flex win95-inset bg-white p-1">
+<input class="w-full border-none focus:ring-0 text-sm font-display py-1 px-2 text-[#0d1c0d]" placeholder="0.00" type="text" value="1.5"/>
+<span class="bg-win-grey px-3 py-1 text-xs font-bold border-l border-win-dark-grey flex items-center">SOL</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<label class="w-12 text-sm font-bold text-[#0d1c0d]">To:</label>
+<div class="flex-1 flex win95-inset bg-white p-1">
+<input class="w-full border-none focus:ring-0 text-sm font-display py-1 px-2 text-[#0d1c0d]" placeholder="0.00" type="text" value="40200.00"/>
+<span class="bg-win-grey px-3 py-1 text-xs font-bold border-l border-win-dark-grey flex items-center">$402</span>
+</div>
+</div>
+</div>
+<!-- Progress Bar Section -->
+<div class="mb-4">
+<p class="text-[11px] mb-2 text-[#0d1c0d]">Transferring liquidity from Solana Mainnet to Sleepy Gatekeeper...</p>
+<div class="win95-inset bg-[#f0f0f0] h-6 p-1 flex gap-[2px]">
+<!-- Segmented Progress Bar -->
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+<div class="w-4 h-full bg-primary/30"></div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="text-[10px] text-win-dark-grey italic">Estimated time remaining: 2 minutes</span>
+<span class="text-[10px] text-win-dark-grey italic">Items remaining: 1 token pair</span>
+</div>
+</div>
+<!-- Footer Buttons -->
+<div class="flex justify-between items-center mt-8 pb-4">
+<button class="win95-button bg-win-grey px-4 py-1.5 flex items-center gap-2 group">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span class="text-xs font-bold text-[#0d1c0d]">Options...</span>
+</button>
+<div class="flex gap-2">
+<button class="win95-button bg-primary px-8 py-2 text-sm font-bold text-[#0d1c0d] hover:brightness-110 active:scale-[0.98]">
+                        SWAP
+                    </button>
+<button class="win95-button bg-win-grey px-6 py-2 text-sm font-bold text-[#0d1c0d]">
+                        Cancel
+                    </button>
+</div>
+</div>
+</div>
+<!-- Classic 3D Shadow for the window -->
+<div class="absolute -z-10 top-2 left-2 w-full h-full bg-black/40 blur-[1px]"></div>
+</div>
+<!-- Taskbar Simulation (Optional Context) -->
+<div class="fixed bottom-0 left-0 right-0 h-10 bg-win-grey win95-border border-t-2 border-white flex items-center px-1">
+<button class="win95-button bg-win-grey h-8 px-2 flex items-center gap-2 font-bold text-sm">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+            Start
+        </button>
+<div class="mx-2 h-6 w-[2px] bg-win-dark-grey border-r border-white"></div>
+<div class="flex-1 flex gap-1">
+<div class="win95-inset bg-win-grey/50 px-4 h-8 flex items-center gap-2 max-w-[160px]">
+<span class="material-symbols-outlined text-sm">swap_horiz</span>
+<span class="text-xs truncate">Swapping Assets...</span>
+</div>
+</div>
+<div class="win95-inset px-3 h-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-sm">volume_up</span>
+<span class="material-symbols-outlined text-sm">wifi</span>
+<span class="text-xs font-bold">12:42 PM</span>
+</div>
+</div>
+</body></html>

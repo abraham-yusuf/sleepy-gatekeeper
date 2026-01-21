@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .win95-bevel {
+            box-shadow: inset 1px 1px #fff, inset -1px -1px #808080, 1px 1px 0px 0px #000;
+        }
+        .win95-button {
+            box-shadow: inset 1px 1px #fff, inset -1px -1px #808080, 1px 1px 0px 0px #000;
+            background-color: #c0c0c0;
+        }
+        .win95-button:active {
+            box-shadow: inset 1px 1px #808080, inset -1px -1px #fff, 1px 1px 0px 0px #000;
+            padding-top: 2px;
+            padding-left: 2px;
+        }
+        .retro-title-gradient {
+            background: linear-gradient(90deg, #135bec 0%, #a855f7 100%);
+        }
+        .glass-modal {
+            backdrop-filter: blur(8px);
+            background-color: rgba(192, 192, 192, 0.85);
+        }
+        .hard-shadow {
+            box-shadow: 12px 12px 0px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen overflow-hidden">
+<!-- Background Unlocked Content (Blurred/Pixelated) -->
+<div class="fixed inset-0 z-0 flex flex-col">
+<!-- TopNavBar Mockup -->
+<header class="flex items-center justify-between border-b border-solid border-b-[#e7ebf3] px-10 py-3 bg-white dark:bg-background-dark/50">
+<div class="flex items-center gap-4 text-[#0d121b] dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined">security</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Sleepy Gatekeeper</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9 dark:text-gray-300">
+<a class="text-sm font-medium" href="#">Home</a>
+<a class="text-sm font-medium" href="#">Protocol</a>
+<a class="text-sm font-medium" href="#">Docs</a>
+</div>
+<button class="flex min-w-[100px] items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold">
+                    Connected
+                </button>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center p-20 opacity-40 grayscale">
+<h1 class="text-[#0d121b] dark:text-white tracking-light text-6xl font-bold text-center mb-6">
+                Secret Gatekeeper Message: ACCESS GRANTED
+            </h1>
+<div class="w-full max-w-4xl grid grid-cols-2 gap-8">
+<div class="h-64 bg-gray-300 dark:bg-gray-800 rounded-xl flex items-center justify-center border-4 border-dashed border-primary/30">
+<p class="text-4xl font-mono text-primary/50">ENCRYPTED_DATA_01</p>
+</div>
+<div class="h-64 bg-gray-300 dark:bg-gray-800 rounded-xl flex items-center justify-center border-4 border-dashed border-primary/30">
+<p class="text-4xl font-mono text-primary/50">ENCRYPTED_DATA_02</p>
+</div>
+</div>
+<p class="mt-12 text-2xl text-center max-w-2xl font-mono">
+                The toll has been paid. You have successfully bypassed the Sleepy Gatekeeper. 
+                Welcome to the inner sanctum of the x402 Protocol.
+            </p>
+</main>
+</div>
+<!-- Success Popup Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+<!-- Window 95 Dialog Box -->
+<div class="w-[520px] glass-modal border-2 border-white win95-bevel hard-shadow p-1">
+<!-- Title Bar -->
+<div class="retro-title-gradient h-7 flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-sm">info</span>
+<span class="text-white text-sm font-bold tracking-wide">Payment Successful</span>
+</div>
+<button class="win95-button w-5 h-5 flex items-center justify-center text-black text-xs font-bold">
+                    ✕
+                </button>
+</div>
+<!-- Content Area -->
+<div class="px-6 pb-6 flex gap-6">
+<!-- Pixel Art Style Icon -->
+<div class="flex-shrink-0">
+<div class="w-16 h-16 bg-white border-2 border-gray-600 flex items-center justify-center win95-bevel">
+<span class="material-symbols-outlined text-green-600 text-5xl font-black" style="font-variation-settings: 'FILL' 1, 'wght' 700">
+                            check_circle
+                        </span>
+</div>
+</div>
+<!-- Text Content -->
+<div class="flex flex-col gap-3">
+<h3 class="text-xl font-bold text-black leading-tight">Transaction Confirmed!</h3>
+<p class="text-sm text-gray-800 font-medium leading-relaxed">
+                        0.0001 USDC received via x402 Protocol. Your credentials have been validated by the decentralized guardian.
+                    </p>
+<!-- Neon Status -->
+<div class="mt-2 py-2 px-3 bg-black rounded-sm border border-gray-700">
+<p class="font-mono text-xs text-[#39ff14] flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#39ff14] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-[#39ff14]"></span>
+</span>
+                            Gatekeeper status: <span class="uppercase font-bold tracking-widest shadow-[0_0_10px_#39ff14]">AWAKE</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex justify-center gap-4 py-4 border-t border-gray-400">
+<button class="win95-button min-w-[100px] h-10 px-6 text-sm font-bold text-black border-2 border-gray-400 uppercase tracking-tighter hover:bg-[#d0d0d0]">
+                    OK
+                </button>
+<button class="win95-button min-w-[120px] h-10 px-8 text-sm font-bold text-black border-2 border-gray-400 uppercase tracking-tighter hover:bg-[#d0d0d0]">
+                    FINISH
+                </button>
+</div>
+</div>
+</div>
+<!-- Hidden decorative images for grid requirement -->
+<div class="hidden">
+<div data-alt="Abstract pixel art green checkmark pattern"></div>
+<div data-alt="Retro computer window interface elements"></div>
+<div data-alt="Neon green cybersecurity status indicators"></div>
+</div>
+</body></html>
