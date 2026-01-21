@@ -68,8 +68,8 @@ export default function Home() {
       <div className="crt-overlay"></div>
 
       {/* Desktop Icons */}
-      <div className="fixed top-20 left-6 z-40 flex flex-col gap-8">
-        <DesktopIcon
+      {/* <div className="fixed top-20 left-6 z-40 flex flex-col gap-8"> */}
+      {/* <DesktopIcon
           icon={<span className="material-symbols-outlined text-4xl text-retro-gray group-hover:text-white transition-colors">computer</span>}
           label="My Node"
         />
@@ -86,7 +86,7 @@ export default function Home() {
           icon={<span className="material-symbols-outlined text-4xl text-primary group-hover:text-white transition-colors">help_center</span>}
           label="Whitepaper.hlp"
         />
-      </div>
+      </div> */}
 
       {/* Navbar */}
       <header className="sticky top-0 z-50 w-full border-b border-primary/20 glass-panel px-6 py-2">
