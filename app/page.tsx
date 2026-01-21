@@ -154,7 +154,7 @@ export default function Home() {
             </span>
           </div>
           <div className="text-left space-y-1">
-            <h4 className="text-white font-bold text-sm text-black">
+            <h4 className="font-bold text-black text-sm">
               System Error: Liquidity Overflow
             </h4>
             <p className="text-primary/70 text-xs font-mono">

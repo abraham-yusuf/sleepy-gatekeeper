@@ -18,7 +18,7 @@ export function GlassPanel({
 
   return (
     <div
-      className={`glass-panel backdrop-filter backdrop-blur-12px border ${variantClass} ${className}`}
+      className={`glass-panel backdrop-filter backdrop-blur-xl border ${variantClass} ${className}`}
     >
       {children}
     </div>

@@ -3,7 +3,7 @@
 interface TerminalLine {
   prefix?: string;
   text: string;
-  color?: "green" | "primary" | "white";
+  color?: "neon-green" | "primary" | "white";
 }
 
 interface TerminalProps {
@@ -23,7 +23,7 @@ export function Terminal({
         return "text-purple-400";
       case "white":
         return "text-white";
-      case "green":
+      case "neon-green":
       default:
         return "text-neon-green";
     }
