@@ -8,6 +8,7 @@ import {
   PopupDialog,
   Win95Window,
   Terminal,
+  ConnectWallet,
 } from "./components";
 
 export default function Home() {
@@ -121,9 +122,7 @@ export default function Home() {
             </a>
           </nav>
           <div className="flex items-center gap-4">
-            <button className="win95-shadow win95-button-active bg-gradient-to-r from-blue-600 to-primary px-4 py-1.5 text-xs font-bold uppercase tracking-tighter">
-              Connect Wallet
-            </button>
+            <ConnectWallet />
             <div
               className="size-8 rounded-full border border-primary/40 bg-cover bg-center"
               style={{

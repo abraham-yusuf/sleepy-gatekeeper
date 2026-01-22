@@ -11,3 +11,4 @@ export { SwapAsset } from "./SwapAsset";
 export { TerminalScreen } from "./TerminalScreen";
 export { HelpDocs } from "./HelpDocs";
 export { Settings } from "./Settings";
+export { ConnectWallet } from "./ConnectWallet";
