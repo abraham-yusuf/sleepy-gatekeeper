@@ -35,11 +35,11 @@ export const wagmiConfig = createConfig({
   connectors: [
     metaMask({
       dappMetadata: {
-        name: "xCreator402",
+        name: "Sleepy Gatekeeper $402",
       },
     }),
     coinbaseWallet({
-      appName: "xCreator402",
+      appName: "Sleepy Gatekeeper $402",
     }),
     injected({ target: "rainbow" }),
     walletConnect({
