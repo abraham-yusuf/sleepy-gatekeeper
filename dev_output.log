@@ -1,0 +1,53 @@
+
+> xCreator402@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 2.3s
+○ Compiling / ...
+ReferenceError: indexedDB is not defined
+    at getItem (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7356:238)
+    at _.getItem (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7392:40)
+    at O (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7454:30)
+    at new h (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7489:13)
+    at new Te (.next/dev/server/chunks/ssr/35896_@walletconnect_core_dist_index_es_4bc43b25.js:3126:779)
+    at new Ee (.next/dev/server/chunks/ssr/07794_@walletconnect_sign-client_dist_index_es_93c8d0d3.js:2367:32)
+    at Ee.init (.next/dev/server/chunks/ssr/07794_@walletconnect_sign-client_dist_index_es_93c8d0d3.js:2370:19)
+    at B.createClient (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13264:430)
+    at B.initialize (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13260:54)
+    at B.init (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13158:24)
+    at b.initialize (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13813:548)
+    at b.init (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13620:24)
+⨯ unhandledRejection: ReferenceError: indexedDB is not defined
+    at getItem (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7356:238)
+    at _.getItem (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7392:40)
+    at O (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7454:30)
+    at new h (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7489:13)
+    at new Te (.next/dev/server/chunks/ssr/35896_@walletconnect_core_dist_index_es_4bc43b25.js:3126:779)
+    at new Ee (.next/dev/server/chunks/ssr/07794_@walletconnect_sign-client_dist_index_es_93c8d0d3.js:2367:32)
+    at Ee.init (.next/dev/server/chunks/ssr/07794_@walletconnect_sign-client_dist_index_es_93c8d0d3.js:2370:19)
+    at B.createClient (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13264:430)
+    at B.initialize (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13260:54)
+    at B.init (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13158:24)
+    at b.initialize (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13813:548)
+    at b.init (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13620:24)
+⨯ unhandledRejection:  ReferenceError: indexedDB is not defined
+    at getItem (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7356:238)
+    at _.getItem (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7392:40)
+    at O (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7454:30)
+    at new h (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:7489:13)
+    at new Te (.next/dev/server/chunks/ssr/35896_@walletconnect_core_dist_index_es_4bc43b25.js:3126:779)
+    at new Ee (.next/dev/server/chunks/ssr/07794_@walletconnect_sign-client_dist_index_es_93c8d0d3.js:2367:32)
+    at Ee.init (.next/dev/server/chunks/ssr/07794_@walletconnect_sign-client_dist_index_es_93c8d0d3.js:2370:19)
+    at B.createClient (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13264:430)
+    at B.initialize (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13260:54)
+    at B.init (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13158:24)
+    at b.initialize (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13813:548)
+    at b.init (.next/dev/server/chunks/ssr/[root-of-the-server]__cb1a035e._.js:13620:24)
+ GET / 200 in 12.6s (compile: 11.2s, render: 1468ms)
+ GET / 200 in 103ms (compile: 27ms, render: 77ms)
+[?25h
