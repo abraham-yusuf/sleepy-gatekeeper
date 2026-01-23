@@ -36,7 +36,7 @@ export const paywall = createPaywall()
   .withNetwork(evmPaywall)
   .withNetwork(svmPaywall)
   .withConfig({
-    appName: process.env.APP_NAME || "Next x402 Demo",
+    appName: process.env.APP_NAME || "Sleepy Gatekeeper x402",
     appLogo: process.env.APP_LOGO || "/x402-icon-blue.png",
     testnet: true,
   })
