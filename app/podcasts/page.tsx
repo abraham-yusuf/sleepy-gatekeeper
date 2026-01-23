@@ -40,68 +40,102 @@ const podcasts = [
 
 export default function PodcastsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Premium Podcasts</h1>
-          <p className="text-gray-600">
-            Exclusive audio content powered by X402 Protocol
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {podcasts.map((podcast) => (
-            <div
-              key={podcast.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
-            >
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <MicrophoneIcon className="h-8 w-8 text-purple-600" />
-                  <span className="bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded-full">
-                    {podcast.price}
-                  </span>
-                </div>
-                <div className="mb-2">
-                  <span className="text-sm text-purple-600 font-semibold">
-                    {podcast.episode}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {podcast.title}
-                </h3>
-                <p className="text-gray-600 mb-4">{podcast.description}</p>
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2">
-                  {podcast.preview}
-                </p>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    <span>{podcast.date}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <ClockIcon className="h-4 w-4 mr-2" />
-                    <span>{podcast.duration}</span>
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    By {podcast.author}
-                  </div>
-                </div>
-                <Link
-                  href={`/podcasts/${podcast.id}`}
-                  className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-                >
-                  Listen Now
-                </Link>
-              </div>
+    <div className="min-h-screen bg-[#008080] font-pixel">
+      {/* Win95 Desktop Pattern */}
+      <div className="min-h-screen p-8">
+        {/* Main Window Container */}
+        <div className="max-w-7xl mx-auto">
+          {/* Win95 Window Title Bar */}
+          <div className="retro-title-gradient win95-shadow flex items-center justify-between px-2 py-1 mb-0">
+            <div className="flex items-center gap-2">
+              <MicrophoneIcon className="h-4 w-4 text-white" />
+              <span className="text-white text-xs">Premium Podcasts - X402 Protocol</span>
             </div>
-          ))}
-        </div>
+            <div className="flex gap-1">
+              <button className="bg-[#c0c0c0] win95-shadow px-2 text-xs hover:win95-button-active">_</button>
+              <button className="bg-[#c0c0c0] win95-shadow px-2 text-xs hover:win95-button-active">□</button>
+              <button className="bg-[#c0c0c0] win95-shadow px-2 text-xs hover:win95-button-active">✕</button>
+            </div>
+          </div>
 
-        <div className="mt-12 text-center">
-          <Link href="/" className="text-blue-600 hover:text-blue-700 font-medium">
-            ← Back to Home
-          </Link>
+          {/* Win95 Window Content */}
+          <div className="bg-[#c0c0c0] win95-shadow p-4">
+            {/* Header Section */}
+            <div className="mb-6 p-4 win95-recessed bg-white">
+              <h1 className="text-xl text-black mb-2">Premium Podcasts</h1>
+              <p className="text-sm text-black">
+                Exclusive audio content powered by X402 Protocol
+              </p>
+            </div>
+
+            {/* Podcasts Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {podcasts.map((podcast) => (
+                <div
+                  key={podcast.id}
+                  className="bg-[#c0c0c0] win95-bevel p-3"
+                >
+                  {/* Podcast Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="win95-recessed bg-purple-600 p-2">
+                      <MicrophoneIcon className="h-6 w-6 text-white" />
+                    </div>
+                    <span className="bg-purple-600 text-white text-[10px] px-2 py-0.5 win95-shadow">
+                      {podcast.price}
+                    </span>
+                  </div>
+
+                  {/* Episode Badge */}
+                  <div className="mb-2">
+                    <span className="bg-blue-600 text-white text-[9px] px-2 py-0.5 win95-shadow">
+                      {podcast.episode}
+                    </span>
+                  </div>
+
+                  {/* Podcast Info */}
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-bold text-black leading-relaxed">
+                      {podcast.title}
+                    </h3>
+                    <p className="text-[10px] text-black leading-relaxed">
+                      {podcast.description}
+                    </p>
+                    
+                    {/* Metadata */}
+                    <div className="win95-recessed bg-white p-2 space-y-1">
+                      <div className="flex items-center text-[9px] text-black">
+                        <span>📅 {podcast.date}</span>
+                      </div>
+                      <div className="flex items-center text-[9px] text-black">
+                        <span>⏱ {podcast.duration}</span>
+                      </div>
+                      <div className="text-[9px] text-black">
+                        By: {podcast.author}
+                      </div>
+                    </div>
+
+                    {/* Listen Button */}
+                    <Link
+                      href={`/podcasts/${podcast.id}`}
+                      className="block w-full text-center bg-[#c0c0c0] win95-shadow hover:win95-button-active text-black text-xs py-2 active:translate-x-[1px] active:translate-y-[1px]"
+                    >
+                      🎧 Listen Now
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Back Button */}
+            <div className="mt-6 flex justify-center">
+              <Link 
+                href="/" 
+                className="bg-[#c0c0c0] win95-shadow hover:win95-button-active text-black text-xs px-6 py-2 active:translate-x-[1px] active:translate-y-[1px]"
+              >
+                ← Back to Home
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
