@@ -111,8 +111,8 @@ export default function Home() {
             </span>
           </div>
           <nav className="hidden md:flex gap-8 text-sm font-medium uppercase tracking-widest text-primary/80">
-            <a className="hover:text-primary transition-colors" href="#">
-              Files
+            <a className="hover:text-primary transition-colors" href="/articles">
+              Blog
             </a>
             <a className="hover:text-primary transition-colors" href="#">
               Terminal
