@@ -123,19 +123,20 @@ function runTests() {
     process.exit(1);
   }
 
-  // Test middleware.ts exists
-  console.log("\n📄 Checking middleware.ts...");
-  try {
-    const middlewareContent = fs.readFileSync("./middleware.ts", "utf-8");
-    if (middlewareContent.includes('export { proxy as middleware')) {
-      console.log("   ✅ middleware.ts exists and exports proxy");
-    } else {
-      console.log("   ⚠️  middleware.ts exists but might not export proxy correctly");
-    }
-  } catch (error) {
-    console.error("   ❌ middleware.ts not found");
+  // Test proxy.ts exports
+  console.log("\n📄 Checking proxy.ts middleware configuration...");
+  if (!proxyContent.includes('export const proxy') || !proxyContent.includes('export const config')) {
+    console.error("   ❌ proxy.ts must export both 'proxy' and 'config'");
     process.exit(1);
   }
+  console.log("   ✅ proxy.ts exports proxy and config (Next.js will use this as middleware)");
+  
+  // Verify config.matcher includes all routes
+  if (!proxyContent.includes('matcher:')) {
+    console.error("   ❌ config.matcher not found in proxy.ts");
+    process.exit(1);
+  }
+  console.log("   ✅ config.matcher is configured");
 
   const tests = [
     { route: "/protected", description: "Premium music: x402 Remix" },
@@ -196,7 +197,7 @@ function runTests() {
     console.log("   - All routes have payment configurations");
     console.log("   - All routes support Solana devnet payments");
     console.log("   - All routes support EVM/Base payments");
-    console.log("   - middleware.ts is properly configured");
+    console.log("   - proxy.ts is properly configured as Next.js middleware");
     console.log("\n🎉 Protected content is ready!");
     console.log("\n📝 Next steps:");
     console.log("   1. Configure .env with valid addresses and facilitator URL");
