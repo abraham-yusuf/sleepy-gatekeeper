@@ -9,6 +9,7 @@ type WalletType = "solana" | "evm" | null;
 export function ConnectWallet() {
   const [selectedType, setSelectedType] = useState<WalletType>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [showWalletOptions, setShowWalletOptions] = useState(false);
 
   // Solana wallet state
   const solanaWallet = useWalletConnection();
@@ -33,28 +34,26 @@ export function ConnectWallet() {
     return "";
   };
 
-  const handleConnect = async (type: WalletType) => {
+  const handleWalletTypeSelect = (type: WalletType) => {
     setSelectedType(type);
     setShowMenu(false);
+    setShowWalletOptions(true);
+  };
 
-    if (type === "solana") {
-      try {
-        // Get the first available Solana connector
-        const connector = solanaWallet.connectors[0];
-        if (connector) {
-          await solanaWallet.connect(connector.id);
-        } else {
-          console.error("No Solana wallet connectors available");
-        }
-      } catch (error) {
-        console.error("Solana connection error:", error);
-      }
-    } else if (type === "evm") {
-      // Connect with the first available connector (usually injected/MetaMask)
-      const connector = connectors[0];
-      if (connector) {
-        connect({ connector });
-      }
+  const handleConnectSolana = async (connectorId: string) => {
+    try {
+      await solanaWallet.connect(connectorId);
+      setShowWalletOptions(false);
+    } catch (error) {
+      console.error("Solana connection error:", error);
+    }
+  };
+
+  const handleConnectEVM = (connectorId: string) => {
+    const connector = connectors.find((c) => c.id === connectorId);
+    if (connector) {
+      connect({ connector });
+      setShowWalletOptions(false);
     }
   };
 
@@ -68,6 +67,26 @@ export function ConnectWallet() {
     setSelectedType(null);
     setShowMenu(false);
   };
+
+  // Get available Solana wallets (Phantom, Solflare, etc.)
+  const solanaWallets = solanaWallet.connectors.filter((connector) => {
+    const name = connector.name.toLowerCase();
+    return name.includes("phantom") || name.includes("solflare") || name;
+  });
+
+  // Get available EVM wallets (MetaMask, Coinbase, Rainbow)
+  const evmWallets = connectors.filter((connector) => {
+    const name = connector.name.toLowerCase();
+    const id = connector.id.toLowerCase();
+    return (
+      name.includes("metamask") ||
+      name.includes("coinbase") ||
+      name.includes("rainbow") ||
+      id.includes("metamask") ||
+      id.includes("coinbase") ||
+      id.includes("rainbow")
+    );
+  });
 
   return (
     <div className="relative">
@@ -84,7 +103,7 @@ export function ConnectWallet() {
             <div className="absolute right-0 top-full mt-2 w-48 win95-shadow bg-retro-gray border-2 border-gray-700 z-50">
               <div className="p-1">
                 <button
-                  onClick={() => handleConnect("solana")}
+                  onClick={() => handleWalletTypeSelect("solana")}
                   className="w-full text-left px-3 py-2 text-sm font-bold text-black hover:bg-primary hover:text-white transition-colors flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-[16px]">
@@ -93,13 +112,93 @@ export function ConnectWallet() {
                   Solana Wallet
                 </button>
                 <button
-                  onClick={() => handleConnect("evm")}
+                  onClick={() => handleWalletTypeSelect("evm")}
                   className="w-full text-left px-3 py-2 text-sm font-bold text-black hover:bg-primary hover:text-white transition-colors flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-[16px]">
                     currency_exchange
                   </span>
                   EVM/Base Wallet
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showWalletOptions && selectedType === "solana" && (
+            <div className="absolute right-0 top-full mt-2 w-56 win95-shadow bg-retro-gray border-2 border-gray-700 z-50">
+              <div className="p-1">
+                <div className="px-3 py-2 border-b border-gray-600 bg-primary text-white">
+                  <div className="text-xs font-bold uppercase">
+                    Select Solana Wallet
+                  </div>
+                </div>
+                {solanaWallets.length > 0 ? (
+                  solanaWallets.map((connector) => (
+                    <button
+                      key={connector.id}
+                      onClick={() => handleConnectSolana(connector.id)}
+                      className="w-full text-left px-3 py-2 text-sm font-bold text-black hover:bg-primary hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        wallet
+                      </span>
+                      {connector.name}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-black/60">
+                    No Solana wallets detected. Please install Phantom or
+                    Solflare.
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    setShowWalletOptions(false);
+                    setShowMenu(true);
+                  }}
+                  className="w-full text-left px-3 py-2 text-xs text-black/60 hover:bg-gray-300 transition-colors border-t border-gray-600"
+                >
+                  ← Back
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showWalletOptions && selectedType === "evm" && (
+            <div className="absolute right-0 top-full mt-2 w-56 win95-shadow bg-retro-gray border-2 border-gray-700 z-50">
+              <div className="p-1">
+                <div className="px-3 py-2 border-b border-gray-600 bg-primary text-white">
+                  <div className="text-xs font-bold uppercase">
+                    Select EVM Wallet
+                  </div>
+                </div>
+                {evmWallets.length > 0 ? (
+                  evmWallets.map((connector) => (
+                    <button
+                      key={connector.id}
+                      onClick={() => handleConnectEVM(connector.id)}
+                      className="w-full text-left px-3 py-2 text-sm font-bold text-black hover:bg-primary hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        account_balance_wallet
+                      </span>
+                      {connector.name}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-black/60">
+                    No EVM wallets detected. Please install MetaMask, Coinbase,
+                    or Rainbow wallet.
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    setShowWalletOptions(false);
+                    setShowMenu(true);
+                  }}
+                  className="w-full text-left px-3 py-2 text-xs text-black/60 hover:bg-gray-300 transition-colors border-t border-gray-600"
+                >
+                  ← Back
                 </button>
               </div>
             </div>
