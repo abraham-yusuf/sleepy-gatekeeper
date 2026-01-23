@@ -9,7 +9,7 @@
  * 1. All protected routes have payment configurations
  * 2. Payment options include both Solana devnet and EVM/Base networks
  * 3. Payment configurations match expected prices and descriptions
- * 4. Middleware.ts exists and exports the proxy
+ * 4. proxy.ts exists and exports the proxy and config for Next.js middleware
  */
 
 import * as fs from "fs";
