@@ -12,6 +12,7 @@ Comprehensive documentation is available in the `/docs` directory:
 - **[Component Documentation](./docs/COMPONENTS.md)** - React components and pages reference
 - **[Usage Guide](./docs/USAGE_GUIDE.md)** - Step-by-step integration and usage instructions
 - **[Testing Guide](./TESTING.md)** - Manual and automated testing procedures
+- **[Protected Content Summary](./PROTECTED_CONTENT_SUMMARY.md)** - Implementation details for articles, podcasts, and videos with Solana payment
 
 ## Prerequisites
 
@@ -79,6 +80,27 @@ For detailed manual testing procedures, troubleshooting, and network-specific te
 ## Example Routes
 
 The app includes protected routes that require payment to access:
+
+### Premium Content Pages
+
+The application includes multiple types of premium content protected by x402 payments:
+
+- **Articles** - Premium written content about Web3, creator economy, and decentralized tech
+  - `/articles/web3-future` - $0.01
+  - `/articles/creator-economy` - $0.02
+  - `/articles/decentralized-content` - $0.015
+
+- **Podcasts** - Premium audio content with embedded players
+  - `/podcasts/web3-insights` - $0.02
+
+- **Videos** - Premium video content with embedded players
+  - `/videos/blockchain-basics` - $0.05
+
+All content supports **dual payment networks**:
+- ✅ **EVM/Base Sepolia** (`eip155:84532`) - Ethereum L2 testnet
+- ✅ **Solana Devnet** (`solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`) - Solana testnet
+
+For complete implementation details, see [PROTECTED_CONTENT_SUMMARY.md](./PROTECTED_CONTENT_SUMMARY.md).
 
 ### Protected Page Route
 

@@ -14,7 +14,9 @@
     "validate:config": "tsx scripts/validate-payment-config.ts",
     "validate:routes": "tsx scripts/validate-routes.ts",
     "validate:facilitator": "tsx scripts/test-facilitator.ts",
-    "validate:all": "npm run validate:config && npm run validate:routes && npm run validate:facilitator"
+    "test:protected": "tsx scripts/test-protected-content.ts",
+    "validate:all": "npm run validate:config && npm run validate:routes && npm run validate:facilitator",
+    "test:all": "npm run test:protected && npm run validate:all"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
