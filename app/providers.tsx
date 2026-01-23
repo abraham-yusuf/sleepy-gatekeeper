@@ -6,7 +6,12 @@ import { autoDiscover, createClient } from "@solana/client";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { injected, walletConnect } from "wagmi/connectors";
+import {
+  injected,
+  walletConnect,
+  coinbaseWallet,
+  metaMask,
+} from "wagmi/connectors";
 
 // Solana client configuration
 const solanaEndpoint =
@@ -28,7 +33,15 @@ const queryClient = new QueryClient();
 export const wagmiConfig = createConfig({
   chains: [base, baseSepolia],
   connectors: [
-    injected(),
+    metaMask({
+      dappMetadata: {
+        name: "xCreator402",
+      },
+    }),
+    coinbaseWallet({
+      appName: "xCreator402",
+    }),
+    injected({ target: "rainbow" }),
     walletConnect({
       projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "demo",
     }),
