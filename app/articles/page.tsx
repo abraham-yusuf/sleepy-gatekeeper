@@ -60,9 +60,9 @@ export default function ArticlesPage() {
                 <span className="text-white font-bold text-sm">Premium Articles - X402</span>
               </div>
               <div className="flex gap-1">
-                <div className="w-4 h-4 win95-button-active" style={{ backgroundColor: "#c0c0c0", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>_</div>
-                <div className="w-4 h-4 win95-button-active" style={{ backgroundColor: "#c0c0c0", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>□</div>
-                <div className="w-4 h-4 win95-button-active" style={{ backgroundColor: "#c0c0c0", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>×</div>
+                <div className="w-4 h-4 win95-shadow" style={{ backgroundColor: "#c0c0c0", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>_</div>
+                <div className="w-4 h-4 win95-shadow" style={{ backgroundColor: "#c0c0c0", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>□</div>
+                <div className="w-4 h-4 win95-shadow" style={{ backgroundColor: "#c0c0c0", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>×</div>
               </div>
             </div>
             <div className="p-4">
