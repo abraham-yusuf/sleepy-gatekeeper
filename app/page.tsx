@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   DesktopIcon,
-  // Taskbar,
+  Taskbar,
   StartMenu,
   PopupDialog,
   Win95Window,
@@ -45,13 +45,13 @@ export default function Home() {
   ];
 
   // Taskbar buttons
-  // const taskbarButtons = [
-    {/*
+    const taskbarButtons = [
+    {
       icon: <span className="material-symbols-outlined text-[16px] text-black">terminal</span>,
       label: "Terminal",
       active: true,
     }, 
-    {
+    {/*
       icon: <span className="material-symbols-outlined text-[16px] text-black">toll</span>,
       label: "Toll_Booth",
       active: false,
@@ -60,8 +60,8 @@ export default function Home() {
       icon: <span className="material-symbols-outlined text-[16px] text-black">wallet</span>,
       label: "Wallet_Connect",
       active: false,
-    }
-  ];*/
+    */}
+  ];
 
   return (
     <div className="relative flex flex-col min-h-screen w-full grid-bg text-white pb-12">
