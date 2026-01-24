@@ -45,7 +45,7 @@ export default function Home() {
   ];
 
   // Taskbar buttons
-//  const taskbarButtons = [
+   const taskbarButtons = [
     {/*
       icon: <span className="material-symbols-outlined text-[16px] text-black">terminal</span>,
       label: "Terminal",
