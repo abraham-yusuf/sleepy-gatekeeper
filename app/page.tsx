@@ -51,16 +51,16 @@ export default function Home() {
       label: "Terminal",
       active: true,
     },
-    {/*
+    /* {
       icon: <span className="material-symbols-outlined text-[16px] text-black">toll</span>,
       label: "Toll_Booth",
       active: false,
-    */},
-    {/*
+    }, */
+    /* {
       icon: <span className="material-symbols-outlined text-[16px] text-black">wallet</span>,
       label: "Wallet_Connect",
       active: false,
-    */}
+    } */
   ];
 
   return (
