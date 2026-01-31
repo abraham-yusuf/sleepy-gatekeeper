@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DesktopIcon,
   Taskbar,
@@ -15,6 +15,23 @@ export default function Home() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showStartMenu, setShowStartMenu] = useState(false);
   const [show402Popup, setShow402Popup] = useState(true);
+  const [currentDate, setCurrentDate] = useState("");
+
+  // Update current date
+  useEffect(() => {
+    const updateDate = () => {
+      const now = new Date();
+      const day = now.getDate();
+      const month = now.getMonth() + 1; // Months are 0-indexed
+      const year = now.getFullYear();
+      setCurrentDate(`${month}/${day}/${year}`);
+    };
+
+    updateDate(); // Set initial date
+    const interval = setInterval(updateDate, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Start menu items
   const startMenuItems = [
@@ -414,7 +431,7 @@ export default function Home() {
           <div className="flex items-center gap-1.5">
             <div className="size-1.5 bg-neon-green rounded-full shadow-[0_0_4px_#39ff14]"></div>
             <span className="text-[10px] text-black font-bold font-mono">
-              11:59 PM
+              {currentDate}
             </span>
           </div>
         </div>
