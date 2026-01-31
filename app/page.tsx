@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DesktopIcon,
   Taskbar,
@@ -15,6 +15,27 @@ export default function Home() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showStartMenu, setShowStartMenu] = useState(false);
   const [show402Popup, setShow402Popup] = useState(true);
+
+  // Initialize with current date to avoid flash of empty content
+  const getFormattedDate = () => {
+    const now = new Date();
+    const day = now.getDate();
+    const month = now.getMonth() + 1; // Months are 0-indexed
+    const year = now.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  const [currentDate, setCurrentDate] = useState(getFormattedDate());
+
+  // Update current date periodically
+  useEffect(() => {
+    // Update every hour instead of every minute since date changes infrequently
+    const interval = setInterval(() => {
+      setCurrentDate(getFormattedDate());
+    }, 3600000); // 1 hour = 3600000 ms
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Start menu items
   const startMenuItems = [
@@ -45,7 +66,7 @@ export default function Home() {
   ];
 
   // Taskbar buttons
-    const taskbarButtons = [
+  const taskbarButtons = [
     {
       icon: <span className="material-symbols-outlined text-[16px] text-black">terminal</span>,
       label: "Terminal",
@@ -153,12 +174,8 @@ export default function Home() {
             </span>
           </div>
           <div className="text-left space-y-1">
-            <h4 className="font-bold text-black text-sm">
-              System Error: Liquidity Overflow
-            </h4>
-            <p className="text-primary/70 text-xs font-mono">
-              Error Code: 402 - Payment Required
-            </p>
+            <h4 className="font-bold text-black text-sm">System Error: Liquidity Overflow</h4>
+            <p className="text-primary/70 text-xs font-mono">Error Code: 402 - Payment Required</p>
           </div>
         </div>
       </PopupDialog>
@@ -174,8 +191,7 @@ export default function Home() {
             402: PAYMENT REQUIRED
           </h1>
           <p className="text-lg md:text-xl text-primary/60 max-w-xl mx-auto font-mono">
-            The internet&apos;s toll booth is finally open on Solana. Pay the
-            Gatekeeper to proceed.
+            The internet&apos;s toll booth is finally open on Solana. Pay the Gatekeeper to proceed.
           </p>
           <div className="pt-6">
             <button className="bg-[#c0c0c0] text-black px-10 py-4 font-bold uppercase tracking-tighter win95-shadow win95-button-active flex items-center gap-3 mx-auto hover:bg-white transition-colors">
@@ -201,12 +217,8 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <div className="text-center p-8">
                     <div className="text-8xl mb-4">💤</div>
-                    <div className="font-pixel text-sm text-purple-400">
-                      Sleepy Robot
-                    </div>
-                    <div className="font-pixel text-xs text-gray-500 mt-2">
-                      Coming Soon
-                    </div>
+                    <div className="font-pixel text-sm text-purple-400">Sleepy Robot</div>
+                    <div className="font-pixel text-xs text-gray-500 mt-2">Coming Soon</div>
                   </div>
                   <div className="absolute bottom-4 left-4 font-mono text-[10px] text-neon-green">
                     SYSTEM_MASCOT_01.EXE
@@ -247,16 +259,21 @@ export default function Home() {
           <h2 className="font-pixel text-3xl md:text-4xl mb-12 text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             THE TOLL BOOTH
           </h2>
-          
+
           <div className="relative border-2 border-gray-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] rounded-lg overflow-hidden bg-gradient-to-br from-blue-600/5 to-purple-600/5">
             {/* Locked/Blurred Content */}
-            <div className={`p-8 transition-all duration-500 ${isUnlocked ? 'blur-none' : 'blur-md select-none'}`}>
+            <div
+              className={`p-8 transition-all duration-500 ${isUnlocked ? "blur-none" : "blur-md select-none"}`}
+            >
               <h3 className="text-2xl font-bold mb-4">🎉 Premium Content Unlocked!</h3>
               <p className="text-gray-300 mb-4">
-                Welcome to the exclusive content zone! You&apos;ve successfully paid the toll and unlocked this premium section.
+                Welcome to the exclusive content zone! You&apos;ve successfully paid the toll and
+                unlocked this premium section.
               </p>
               <p className="text-gray-300 mb-4">
-                This is a simulation of the x402 protocol in action. In a real implementation, this content would be protected by the x402 payment protocol, bridging Base and Solana technologies.
+                This is a simulation of the x402 protocol in action. In a real implementation, this
+                content would be protected by the x402 payment protocol, bridging Base and Solana
+                technologies.
               </p>
               <div className="bg-black/50 p-4 rounded font-mono text-xs text-green-400 terminal-glow">
                 <p>&gt; Transaction verified ✓</p>
@@ -264,15 +281,13 @@ export default function Home() {
                 <p>&gt; Access granted to premium content</p>
               </div>
             </div>
-            
+
             {/* Overlay when locked */}
             {!isUnlocked && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
                 <div className="text-center p-8">
                   <div className="text-6xl mb-4">🔒</div>
-                  <h3 className="font-pixel text-xl mb-4 text-yellow-400">
-                    402: Payment Required
-                  </h3>
+                  <h3 className="font-pixel text-xl mb-4 text-yellow-400">402: Payment Required</h3>
                   <p className="text-gray-300 mb-6 max-w-md">
                     This premium content is protected by the x402 protocol
                   </p>
@@ -302,9 +317,7 @@ export default function Home() {
               <thead>
                 <tr className="bg-retro-gray border-b border-black">
                   <th className="p-2 border-r border-black w-10"></th>
-                  <th className="p-2 border-r border-black text-left">
-                    PARAMETER
-                  </th>
+                  <th className="p-2 border-r border-black text-left">PARAMETER</th>
                   <th className="p-2 text-left">VALUE</th>
                 </tr>
               </thead>
@@ -342,9 +355,7 @@ export default function Home() {
                     5
                   </td>
                   <td className="p-2 border-r border-black">LP_STATUS</td>
-                  <td className="p-2 font-bold text-neon-green">
-                    BURNED_FOREVER
-                  </td>
+                  <td className="p-2 font-bold text-neon-green">BURNED_FOREVER</td>
                 </tr>
               </tbody>
             </table>
@@ -393,29 +404,19 @@ export default function Home() {
         <div className="h-full px-2 win95-recessed flex items-center gap-3 bg-retro-gray/30">
           <div className="flex items-center gap-2">
             <a className="flex items-center justify-center" href="#">
-              <svg
-                className="size-4 text-[#000000]"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="size-4 text-[#000000]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
               </svg>
             </a>
             <a className="flex items-center justify-center" href="#">
-              <svg
-                className="size-4 text-[#000000]"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="size-4 text-[#000000]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"></path>
               </svg>
             </a>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="size-1.5 bg-neon-green rounded-full shadow-[0_0_4px_#39ff14]"></div>
-            <span className="text-[10px] text-black font-bold font-mono">
-              11:59 PM
-            </span>
+            <span className="text-[10px] text-black font-bold font-mono">{currentDate}</span>
           </div>
         </div>
       </Taskbar>
