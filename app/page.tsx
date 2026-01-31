@@ -15,20 +15,24 @@ export default function Home() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showStartMenu, setShowStartMenu] = useState(false);
   const [show402Popup, setShow402Popup] = useState(true);
-  const [currentDate, setCurrentDate] = useState("");
+  
+  // Initialize with current date to avoid flash of empty content
+  const getFormattedDate = () => {
+    const now = new Date();
+    const day = now.getDate();
+    const month = now.getMonth() + 1; // Months are 0-indexed
+    const year = now.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+  
+  const [currentDate, setCurrentDate] = useState(getFormattedDate());
 
-  // Update current date
+  // Update current date periodically
   useEffect(() => {
-    const updateDate = () => {
-      const now = new Date();
-      const day = now.getDate();
-      const month = now.getMonth() + 1; // Months are 0-indexed
-      const year = now.getFullYear();
-      setCurrentDate(`${month}/${day}/${year}`);
-    };
-
-    updateDate(); // Set initial date
-    const interval = setInterval(updateDate, 60000); // Update every minute
+    // Update every hour instead of every minute since date changes infrequently
+    const interval = setInterval(() => {
+      setCurrentDate(getFormattedDate());
+    }, 3600000); // 1 hour = 3600000 ms
 
     return () => clearInterval(interval);
   }, []);
