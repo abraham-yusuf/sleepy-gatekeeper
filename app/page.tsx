@@ -55,6 +55,21 @@ export default function Home() {
       href: "#",
     },
     {
+      icon: <span className="material-symbols-outlined text-[18px]">article</span>,
+      label: "Articles",
+      href: "/articles",
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">podcast</span>,
+      label: "Podcasts",
+      href: "/podcasts",
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">video_library</span>,
+      label: "Videos",
+      href: "/videos",
+    },
+    {
       icon: <span className="material-symbols-outlined text-[18px]">group</span>,
       label: "separator",
     },
