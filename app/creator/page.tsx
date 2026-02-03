@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DocumentTextIcon, MicrophoneIcon, VideoCameraIcon, ChartBarIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon, MicrophoneIcon, VideoCameraIcon, ChartBarIcon, LightBulbIcon } from "@heroicons/react/24/outline";
 
 export default function CreatorDashboard() {
   return (
@@ -11,7 +11,7 @@ export default function CreatorDashboard() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -48,12 +48,21 @@ export default function CreatorDashboard() {
               <VideoCameraIcon className="h-8 w-8 text-red-600" />
             </div>
           </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Skills</p>
+                <p className="text-2xl font-bold text-gray-900">0</p>
+              </div>
+              <LightBulbIcon className="h-8 w-8 text-yellow-600" />
+            </div>
+          </div>
         </div>
 
         {/* Quick Actions */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Create Content</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Link
               href="/creator/articles/new"
               className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 group"
@@ -78,13 +87,21 @@ export default function CreatorDashboard() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">New Video</h3>
               <p className="text-gray-600">Upload and monetize video content</p>
             </Link>
+            <Link
+              href="/creator/skills/new"
+              className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 group"
+            >
+              <LightBulbIcon className="h-12 w-12 text-yellow-600 mb-4 group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">New Skill</h3>
+              <p className="text-gray-600">Create and sell AI skills & tools</p>
+            </Link>
           </div>
         </div>
 
         {/* Content Management */}
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Manage Content</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Link
               href="/creator/articles"
               className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
@@ -105,6 +122,13 @@ export default function CreatorDashboard() {
             >
               <h3 className="text-lg font-bold text-gray-900 mb-2">My Videos</h3>
               <p className="text-gray-600">Manage your video library</p>
+            </Link>
+            <Link
+              href="/creator/skills"
+              className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+            >
+              <h3 className="text-lg font-bold text-gray-900 mb-2">My Skills</h3>
+              <p className="text-gray-600">Manage your skill packages</p>
             </Link>
           </div>
         </div>

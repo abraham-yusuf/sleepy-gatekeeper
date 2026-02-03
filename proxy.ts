@@ -170,6 +170,69 @@ export const routeConfigurations = {
       ...declareDiscoveryExtension({}),
     },
   },
+  "/skills/ai-prompt-mastery": {
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.05",
+        network: "eip155:84532" as const,
+        payTo: evmAddress,
+      },
+      {
+        scheme: "exact",
+        price: "$0.05",
+        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+        payTo: svmAddress,
+      },
+    ],
+    description: "Premium Skill: AI Prompt Engineering Mastery",
+    mimeType: "text/html",
+    extensions: {
+      ...declareDiscoveryExtension({}),
+    },
+  },
+  "/skills/web3-development": {
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.10",
+        network: "eip155:84532" as const,
+        payTo: evmAddress,
+      },
+      {
+        scheme: "exact",
+        price: "$0.10",
+        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+        payTo: svmAddress,
+      },
+    ],
+    description: "Premium Skill: Web3 Development Starter Kit",
+    mimeType: "text/html",
+    extensions: {
+      ...declareDiscoveryExtension({}),
+    },
+  },
+  "/skills/blockchain-security": {
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.08",
+        network: "eip155:84532" as const,
+        payTo: evmAddress,
+      },
+      {
+        scheme: "exact",
+        price: "$0.08",
+        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+        payTo: svmAddress,
+      },
+    ],
+    description: "Premium Skill: Blockchain Security Best Practices",
+    mimeType: "text/html",
+    extensions: {
+      ...declareDiscoveryExtension({}),
+    },
+  },
 };
 
 // Build proxy
@@ -189,5 +252,8 @@ export const config = {
     "/articles/decentralized-content/:path*",
     "/podcasts/web3-insights/:path*",
     "/videos/blockchain-basics/:path*",
+    "/skills/ai-prompt-mastery/:path*",
+    "/skills/web3-development/:path*",
+    "/skills/blockchain-security/:path*",
   ],
 };
