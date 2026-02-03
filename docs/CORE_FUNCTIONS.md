@@ -461,10 +461,10 @@ Validates all route configurations defined in proxy.ts.
 
 ============================================================
 📊 Summary:
-   Total protected routes: 9
-   Routes with EVM support: 9
-   Routes with Solana support: 9
-   Routes with both networks: 9
+   Total protected routes: 8
+   Routes with EVM support: 8
+   Routes with Solana support: 8
+   Routes with both networks: 8
 
 ✅ All routes are properly configured for both networks!
 ```
