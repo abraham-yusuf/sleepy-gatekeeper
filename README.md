@@ -1,6 +1,6 @@
 # OS Sleepy Gatekeeper 402 App
 
-Next.js application demonstrating how to protect routes with a paywall using the `@x402/next` middleware.
+[![Tip in Crypto](https://tip.md/badge.svg)](https://tip.md/abraham-yusuf)
 
 ## 🚀 Project Roadmap
 
