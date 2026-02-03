@@ -138,7 +138,6 @@ interface PaymentRequirement {
 ```
 
 **Available Routes:**
-- `/protected` - Premium music content ($0.001)
 - `/articles/web3-future` - Web3 payments article ($0.01)
 - `/articles/creator-economy` - Creator economy article ($0.02)
 - `/articles/decentralized-content` - Content distribution article ($0.015)
@@ -150,9 +149,9 @@ interface PaymentRequirement {
 import { routeConfigurations } from './proxy';
 
 // Access configuration for a specific route
-const protectedConfig = routeConfigurations['/protected'];
-console.log(protectedConfig.description); // "Premium music: x402 Remix"
-console.log(protectedConfig.accepts[0].price); // "$0.001"
+const articleConfig = routeConfigurations['/articles/web3-future'];
+console.log(articleConfig.description); // "Premium Article: The Future of Web3 Payments"
+console.log(articleConfig.accepts[0].price); // "$0.01"
 ```
 
 **Usage in Validation:**
@@ -212,7 +211,6 @@ Next.js middleware configuration specifying which routes the payment proxy shoul
 ```typescript
 {
   matcher: [
-    "/protected/:path*",
     "/articles/web3-future/:path*",
     "/articles/creator-economy/:path*",
     "/articles/decentralized-content/:path*",
@@ -224,7 +222,7 @@ Next.js middleware configuration specifying which routes the payment proxy shoul
 
 **Pattern Format:**
 - `:path*` - Matches any subpath (including no subpath)
-- Example: `/protected/:path*` matches `/protected`, `/protected/song`, `/protected/a/b/c`
+- Example: `/articles/web3-future/:path*` matches `/articles/web3-future`, `/articles/web3-future/section1`, etc.
 
 ---
 
@@ -268,22 +266,22 @@ export const paywall = createPaywall()
 
 // Define route configurations
 export const routeConfigurations = {
-  "/protected": {
+  "/articles/web3-future": {
     accepts: [
       {
         scheme: "exact",
-        price: "$0.001",
+        price: "$0.01",
         network: "eip155:84532",
         payTo: evmAddress,
       },
       {
         scheme: "exact",
-        price: "$0.001",
+        price: "$0.01",
         network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
         payTo: svmAddress,
       }
     ],
-    description: "Premium music: x402 Remix",
+    description: "Premium Article: The Future of Web3 Payments",
     mimeType: "text/html",
   },
   // ... more routes
@@ -299,7 +297,7 @@ export const proxy = paymentProxy(
 
 // Export middleware configuration
 export const config = {
-  matcher: ["/protected/:path*", /* ... */]
+  matcher: ["/articles/web3-future/:path*", /* ... */]
 };
 ```
 
@@ -455,18 +453,18 @@ Validates all route configurations defined in proxy.ts.
 
 📋 Protected Routes Analysis:
 
-🔐 Route: /protected
-   Description: Premium music: x402 Remix
+🔐 Route: /articles/web3-future
+   Description: Premium Article: The Future of Web3 Payments
    Networks:
-      ✅ EVM/Base - Price: $0.001, Network: eip155:84532
-      ✅ Solana - Price: $0.001, Network: solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1
+      ✅ EVM/Base - Price: $0.01, Network: eip155:84532
+      ✅ Solana - Price: $0.01, Network: solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1
 
 ============================================================
 📊 Summary:
-   Total protected routes: 6
-   Routes with EVM support: 6
-   Routes with Solana support: 6
-   Routes with both networks: 6
+   Total protected routes: 9
+   Routes with EVM support: 9
+   Routes with Solana support: 9
+   Routes with both networks: 9
 
 ✅ All routes are properly configured for both networks!
 ```

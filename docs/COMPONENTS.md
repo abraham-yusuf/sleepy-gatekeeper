@@ -6,7 +6,6 @@ This document provides comprehensive documentation for all React components and 
 
 1. [Page Components](#page-components)
    - [Home Page](#home-page)
-   - [Protected Page](#protected-page)
    - [Articles Pages](#articles-pages)
    - [Podcasts Pages](#podcasts-pages)
    - [Videos Pages](#videos-pages)
@@ -96,55 +95,6 @@ export default function Home() {
 <Link href="/podcasts">Podcasts</Link>
 <Link href="/videos">Videos</Link>
 ```
-
----
-
-### Protected Page
-
-**File:** `app/protected/page.tsx`
-
-**Route:** `/protected`
-
-**Description:** A payment-protected page that demonstrates the x402 paywall functionality with premium music content.
-
-**Payment Required:**
-- **EVM/Base Network:** $0.001 USDC
-- **Solana Network:** $0.001 USDC
-
-**Features:**
-- Paywall integration via `paymentProxy` middleware
-- Embedded SoundCloud player
-- Responsive design
-- Back navigation
-
-**Content:**
-- Premium music track: "x402 Remix"
-- Embedded audio player
-- Content is only accessible after payment
-
-**Example (typical implementation):**
-```typescript
-export default function ProtectedPage() {
-  return (
-    <div className="min-h-screen bg-[#131022] text-white">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-6">Premium Music Content</h1>
-        <p className="text-gray-300 mb-8">
-          Thank you for supporting creators with x402 Protocol!
-        </p>
-        {/* Music player or content */}
-      </div>
-    </div>
-  );
-}
-```
-
-**Payment Flow:**
-1. User navigates to `/protected`
-2. Middleware intercepts request (via `proxy.ts`)
-3. If no payment, user sees paywall modal
-4. User selects network (EVM or Solana) and pays
-5. After payment verification, user sees protected content
 
 ---
 

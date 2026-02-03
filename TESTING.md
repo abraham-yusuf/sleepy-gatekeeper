@@ -109,19 +109,7 @@ npm run validate:all
 
 The application has multiple protected routes that can be used to test payments:
 
-#### 1. Protected Page (`/protected`)
-- **Price:** $0.001
-- **Content:** Premium music track
-- **Networks:** Base Sepolia + Solana Devnet
-
-**Test Steps:**
-1. Navigate to `http://localhost:3000/protected`
-2. You should see a paywall modal
-3. Select either EVM (Base) or Solana network
-4. Complete the payment
-5. Verify you can access the SoundCloud player
-
-#### 2. Premium Articles
+#### 1. Premium Articles
 
 **Web3 Future Article** (`/articles/web3-future`)
 - **Price:** $0.01
@@ -141,7 +129,7 @@ The application has multiple protected routes that can be used to test payments:
 3. Test payment with both networks
 4. Confirm article content is displayed after payment
 
-#### 3. Premium Podcast (`/podcasts/web3-insights`)
+#### 2. Premium Podcast (`/podcasts/web3-insights`)
 - **Price:** $0.02
 - **Content:** Web3 Insights Episode 1
 

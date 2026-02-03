@@ -88,9 +88,9 @@ For detailed manual testing procedures, troubleshooting, and network-specific te
 
 The app includes protected routes that require payment to access:
 
-### Protected Page Route
+### Article Routes
 
-The `/protected` route is protected using `paymentProxy`. Page routes are protected using this approach:
+Article routes like `/articles/web3-future` are protected using `paymentProxy`. Page routes are protected using this approach:
 
 ```typescript
 // proxy.ts
@@ -122,22 +122,22 @@ const paywall = createPaywall()
 
 export const proxy = paymentProxy(
   {
-    "/protected": {
+    "/articles/web3-future": {
       accepts: [
         {
           scheme: "exact",
-          price: "$0.001",
+          price: "$0.01",
           network: "eip155:84532",
           payTo: evmAddress,
         },
         {
           scheme: "exact",
-          price: "$0.001",
+          price: "$0.01",
           network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
           payTo: svmAddress,
         },
       ],
-      description: "Premium music: x402 Remix",
+      description: "Premium Article: The Future of Web3 Payments",
       mimeType: "text/html",
     },
   },
@@ -147,7 +147,7 @@ export const proxy = paymentProxy(
 );
 
 export const config = {
-  matcher: ["/protected/:path*"],
+  matcher: ["/articles/web3-future/:path*"],
 };
 ```
 
@@ -290,14 +290,14 @@ To add more protected routes, update the proxy configuration:
 ```typescript
 export const proxy = paymentProxy(
   {
-    "/protected": {
+    "/articles/creator-economy": {
       accepts: {
         scheme: "exact",
-        price: "$0.001",
+        price: "$0.02",
         network: "eip155:84532",
         payTo: evmAddress,
       },
-      description: "Access to protected content",
+      description: "Access to creator economy article",
     },
     "/premium": {
       accepts: {
@@ -315,7 +315,7 @@ export const proxy = paymentProxy(
 );
 
 export const config = {
-  matcher: ["/protected/:path*", "/premium/:path*"],
+  matcher: ["/articles/creator-economy/:path*", "/premium/:path*"],
 };
 ```
 
