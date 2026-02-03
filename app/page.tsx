@@ -265,7 +265,7 @@ export default function Home() {
                   <span className="font-bold text-primary">🎨 3. Creator Economy</span>
                 </div>
                 <p className="mb-2 text-xs leading-relaxed">
-                  Artists, writers, podcasters, AI Agents Skills, memers—all welcome. Upload your content, set your price (as low as $0.01), and let the Gatekeeper handle the rest.
+                  Artists, writers, podcasters, AI Agent Skills, memers—all welcome. Upload your content, set your price (as low as $0.01), and let the Gatekeeper handle the rest.
                 </p>
                 <p className="text-xs leading-relaxed">
                   No middlemen, no platform fees eating your lunch. Just pure creator-to-consumer value exchange powered by crypto.
