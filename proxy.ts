@@ -44,27 +44,6 @@ export const paywall = createPaywall()
 
 // Define route configurations for export and validation
 export const routeConfigurations = {
-  "/protected": {
-    accepts: [
-      {
-        scheme: "exact",
-        price: "$0.001",
-        network: "eip155:84532" as const, // base-sepolia
-        payTo: evmAddress,
-      },
-      {
-        scheme: "exact",
-        price: "$0.001",
-        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const, // solana devnet
-        payTo: svmAddress,
-      },
-    ],
-    description: "Premium music: x402 Remix",
-    mimeType: "text/html",
-    extensions: {
-      ...declareDiscoveryExtension({}),
-    },
-  },
   "/articles/web3-future": {
     accepts: [
       {
@@ -246,7 +225,6 @@ export const proxy = paymentProxy(
 // Configure which paths the proxy should run on
 export const config = {
   matcher: [
-    "/protected/:path*",
     "/articles/web3-future/:path*",
     "/articles/creator-economy/:path*",
     "/articles/decentralized-content/:path*",

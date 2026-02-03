@@ -31,7 +31,6 @@ To democratize content monetization and AI skill distribution by providing a per
   - Articles with markdown support
   - Podcasts with audio playback
   - Videos with streaming capabilities
-  - Premium music demos
 
 #### Creator Tools
 - **Creator Dashboard**
