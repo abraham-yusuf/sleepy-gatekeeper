@@ -50,7 +50,9 @@ export default function Home() {
     {
       icon: <span className="material-symbols-outlined text-[18px]">monitoring</span>,
       label: "Trade on Pump.fun",
-      href: "https://pump.fun/coin/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD" target="_blank" rel="noopener noreferrer",
+      href: "https://pump.fun/coin/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD",
+      target: "_blank",
+      rel: "noopener noreferrer",
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">bolt</span>,
@@ -212,57 +214,81 @@ export default function Home() {
       {/* The Lore Section */}
       <section className="py-20 px-4 bg-black/20">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold uppercase italic tracking-tighter text-primary mb-12">
-            The Lore
+          <h2 className="text-4xl md:text-5xl font-bold uppercase italic tracking-tighter text-primary mb-16 text-center">
+            📜 THE LORE
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Left: Placeholder Image */}
-            <div className="flex items-center justify-center">
-              <div className="win95-shadow bg-retro-gray p-1 rounded-sm">
-                <div className="bg-black aspect-video flex items-center justify-center relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="text-center p-8">
-                    <div className="text-8xl mb-4">💤</div>
-                    <div className="font-pixel text-sm text-purple-400">
-                      Sleepy Robot
-                    </div>
-                    <div className="font-pixel text-xs text-gray-500 mt-2">
-                      Coming Soon a Marketplace for Creators and AI Agent Skills
-                    </div>
-                  </div>
-                  <div className="absolute bottom-4 left-4 font-mono text-[10px] text-neon-green">
-                    SYSTEM_MASCOT_01.EXE
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Terminal Window */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* 1. The HTTP 402 Legend */}
             <Win95Window
-              title="System Terminal - [User@AIAgent]"
-              icon={<span className="material-symbols-outlined text-sm">terminal</span>}
+              title="HTTP_402_Legend.txt"
+              icon={<span className="material-symbols-outlined text-sm">description</span>}
             >
-              <Terminal
-                lines={[
-                  {
-                    prefix: ">",
-                    text: "Initializing legacy protocol x402...",
-                  },
-                  {
-                    prefix: ">",
-                    text: "Dormant since 1997. Woken up by Base. Running on Base and Solana for speed. The gatekeeper has seen the rise and fall of dial-up. Now it monitors the chain.",
-                  },
-                  {
-                    prefix: ">",
-                    text: "Marketplace for Creators and Agent AI Skills",
-                  },
-                  {
-                    prefix: ">",
-                    text: "Warning: Payment required to access deep liquidity creators.",
-                  },
-                ]}
-              />
+              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
+                <div className="mb-3">
+                  <span className="font-bold text-primary">📜 1. The HTTP 402 Legend</span>
+                </div>
+                <p className="mb-2 text-xs leading-relaxed">
+                  In the ancient times of the early web (1997-99), the HTTP gods created status code 402: &quot;Payment Required.&quot; Reserved for future use, it sat dormant for decades...
+                </p>
+                <p className="text-xs leading-relaxed">
+                  Until now. The Sleepy Gatekeeper has awakened to enforce what was always meant to be: a toll booth for digital content on the blockchain.
+                </p>
+              </div>
+            </Win95Window>
+
+            {/* 2. Why So Sleepy? */}
+            <Win95Window
+              title="Why_Sleepy.txt"
+              icon={<span className="material-symbols-outlined text-sm">bedtime</span>}
+            >
+              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
+                <div className="mb-3">
+                  <span className="font-bold text-primary">💤 2. Why So Sleepy?</span>
+                </div>
+                <p className="mb-2 text-xs leading-relaxed">
+                  The Gatekeeper is chill, laid-back, running on Base and Solana&apos;s blazing-fast rails. No stress, no drama—just smooth micropayments at lightning speed.
+                </p>
+                <p className="text-xs leading-relaxed">
+                  But don&apos;t let the yawns fool you. Try to sneak past without paying? You&apos;ll get the 402 response faster than you can say &quot;free content.&quot;
+                </p>
+              </div>
+            </Win95Window>
+
+            {/* 3. Creator Economy */}
+            <Win95Window
+              title="Creator_Economy.txt"
+              icon={<span className="material-symbols-outlined text-sm">palette</span>}
+            >
+              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
+                <div className="mb-3">
+                  <span className="font-bold text-primary">🎨 3. Creator Economy</span>
+                </div>
+                <p className="mb-2 text-xs leading-relaxed">
+                  Artists, writers, podcasters, AI Agent Skills, memers—all welcome. Upload your content, set your price (as low as $0.01), and let the Gatekeeper handle the rest.
+                </p>
+                <p className="text-xs leading-relaxed">
+                  No middlemen, no platform fees eating your lunch. Just pure creator-to-consumer value exchange powered by crypto.
+                </p>
+              </div>
+            </Win95Window>
+
+            {/* 4. Powered by x402 */}
+            <Win95Window
+              title="Powered_by_x402.txt"
+              icon={<span className="material-symbols-outlined text-sm">bolt</span>}
+            >
+              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
+                <div className="mb-3">
+                  <span className="font-bold text-primary">⚡ 4. Powered by x402</span>
+                </div>
+                <p className="mb-2 text-xs leading-relaxed">
+                  Built on the x402 protocol—bringing HTTP 402 to life on Base and Solana. Seamless micropayments, instant unlocks, no friction.
+                </p>
+                <p className="text-xs leading-relaxed">
+                  Integration with Coinbase wallets means even crypto newbies can pay to peek. The future of paywalls is here, and it&apos;s sleeping on the job.
+                </p>
+              </div>
             </Win95Window>
           </div>
         </div>
