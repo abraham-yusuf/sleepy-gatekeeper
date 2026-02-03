@@ -19,6 +19,30 @@ export default function Home() {
   // Start menu items
   const startMenuItems = [
     {
+      icon: <span className="material-symbols-outlined text-[18px]">article</span>,
+      label: "Articles",
+      href: "/articles",
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">podcasts</span>,
+      label: "Podcasts",
+      href: "/podcasts",
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">videocam</span>,
+      label: "Videos",
+      href: "/videos",
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">school</span>,
+      label: "Skills",
+      href: "/skills",
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">group</span>,
+      label: "separator",
+    },
+    {
       icon: <span className="material-symbols-outlined text-[18px]">description</span>,
       label: "Documentation",
       href: "#",
@@ -363,7 +387,7 @@ export default function Home() {
               <a className="hover:underline" href="#">
                 TELEGRAM
               </a>
-              <a className="hover:underline" href="#">
+              <a className="hover:underline" href="https://dexscreener.com/solana/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD" target="_blank" rel="noopener noreferrer">
                 DEXSCREENER
               </a>
             </div>
