@@ -2,6 +2,14 @@
 
 Next.js application demonstrating how to protect routes with a paywall using the `@x402/next` middleware.
 
+## 🚀 Project Roadmap
+
+See **[ROADMAP.md](./ROADMAP.md)** for our complete product roadmap including:
+- Solana and Base mainnet launch plans
+- Bot AI agent integration for creator activity monitoring
+- Skills marketplace for selling AI skills and tools
+- Future features and timeline
+
 ## 📚 Documentation
 
 Comprehensive documentation is available in the `/docs` directory:
