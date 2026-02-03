@@ -49,12 +49,12 @@ export default function Home() {
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">monitoring</span>,
-      label: "Trade on Dexscreener",
-      href: "#",
+      label: "Trade on Pump.fun",
+      href: "https://pump.fun/coin/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD" target="_blank" rel="noopener noreferrer",
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">bolt</span>,
-      label: "Buy on Jupiter",
+      label: "Buy on Clanker",
       href: "#",
     },
     {
@@ -198,8 +198,7 @@ export default function Home() {
             402: PAYMENT REQUIRED
           </h1>
           <p className="text-lg md:text-xl text-primary/60 max-w-xl mx-auto font-mono">
-            The internet&apos;s toll booth is finally open on Solana. Pay the
-            Gatekeeper to proceed.
+            The laziest toll booth on the blockchain. A meme token marketplace where creators monetize content and AI Agent Skills through crypto micropayments. Built on Base and Solana with x402 protocol.
           </p>
           <div className="pt-6">
             <button className="bg-[#c0c0c0] text-black px-10 py-4 font-bold uppercase tracking-tighter win95-shadow win95-button-active flex items-center gap-3 mx-auto hover:bg-white transition-colors">
@@ -229,7 +228,7 @@ export default function Home() {
                       Sleepy Robot
                     </div>
                     <div className="font-pixel text-xs text-gray-500 mt-2">
-                      Coming Soon
+                      Coming Soon a Marketplace for Creators and AI Agent Skills
                     </div>
                   </div>
                   <div className="absolute bottom-4 left-4 font-mono text-[10px] text-neon-green">
@@ -241,7 +240,7 @@ export default function Home() {
 
             {/* Right: Terminal Window */}
             <Win95Window
-              title="System Terminal - [User@Solana]"
+              title="System Terminal - [User@AIAgent]"
               icon={<span className="material-symbols-outlined text-sm">terminal</span>}
             >
               <Terminal
@@ -252,11 +251,15 @@ export default function Home() {
                   },
                   {
                     prefix: ">",
-                    text: "Dormant since 1997. Woken up by Base. Running on Solana for speed. The gatekeeper has seen the rise and fall of dial-up. Now it monitors the chain.",
+                    text: "Dormant since 1997. Woken up by Base. Running on Base and Solana for speed. The gatekeeper has seen the rise and fall of dial-up. Now it monitors the chain.",
                   },
                   {
                     prefix: ">",
-                    text: "Warning: Payment required to access deep liquidity nodes.",
+                    text: "Marketplace for Creators and Agent AI Skills",
+                  },
+                  {
+                    prefix: ">",
+                    text: "Warning: Payment required to access deep liquidity creators.",
                   },
                 ]}
               />
@@ -338,21 +341,21 @@ export default function Home() {
                     1
                   </td>
                   <td className="p-2 border-r border-black">TOTAL_SUPPLY</td>
-                  <td className="p-2 font-bold">402,000,000 $402</td>
+                  <td className="p-2 font-bold">402,000,000</td>
                 </tr>
                 <tr className="border-b border-black/10">
                   <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
                     2
                   </td>
                   <td className="p-2 border-r border-black">TICKER</td>
-                  <td className="p-2 font-bold">$402</td>
+                  <td className="p-2 font-bold">$S402</td>
                 </tr>
                 <tr className="border-b border-black/10">
                   <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
                     3
                   </td>
                   <td className="p-2 border-r border-black">NETWORK</td>
-                  <td className="p-2 font-bold text-primary">SOLANA</td>
+                  <td className="p-2 font-bold text-primary">BASE , SOLANA</td>
                 </tr>
                 <tr className="border-b border-black/10">
                   <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
@@ -367,7 +370,7 @@ export default function Home() {
                   </td>
                   <td className="p-2 border-r border-black">LP_STATUS</td>
                   <td className="p-2 font-bold text-neon-green">
-                    BURNED_FOREVER
+                    PENDING
                   </td>
                 </tr>
               </tbody>
@@ -381,10 +384,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4 text-primary font-mono text-sm">
-              <a className="hover:underline" href="#">
+              <a className="hover:underline" href="https://x.com/sleepyx402" target="_blank" rel="noopener noreferrer">
                 X.COM
               </a>
-              <a className="hover:underline" href="#">
+              <a className="hover:underline" href="#" target="_blank" rel="noopener noreferrer">
                 TELEGRAM
               </a>
               <a className="hover:underline" href="https://dexscreener.com/solana/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD" target="_blank" rel="noopener noreferrer">
