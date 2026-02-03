@@ -7,6 +7,7 @@ Welcome to the comprehensive documentation for xCreator402, a decentralized cont
 ### For Users
 
 - **[README.md](../README.md)** - Quick start guide and project overview
+- **[ROADMAP.md](../ROADMAP.md)** - Product roadmap and future features
 - **[TESTING.md](../TESTING.md)** - Manual and automated testing procedures
 
 ### For Developers
