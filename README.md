@@ -20,6 +20,7 @@ Comprehensive documentation is available in the `/docs` directory:
 - **[Component Documentation](./docs/COMPONENTS.md)** - React components and pages reference
 - **[Usage Guide](./docs/USAGE_GUIDE.md)** - Step-by-step integration and usage instructions
 - **[Testing Guide](./TESTING.md)** - Manual and automated testing procedures
+- **[TECHSTACK](./docs/techstack.md)** - Documents the complete technical stack, architecture, and styling system for the Sleepy Gatekeeper 402 platform.
 
 ## Prerequisites
 
