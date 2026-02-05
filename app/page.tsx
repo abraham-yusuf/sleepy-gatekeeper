@@ -57,7 +57,7 @@ export default function Home() {
     {
       icon: <span className="material-symbols-outlined text-[18px]">bolt</span>,
       label: "Buy on Clanker",
-      href: "#",
+      href: "https://www.clanker.world/clanker/0x9a60AcE96a5D7223B423D460aBcb5cA49Ee80b07",
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">group</span>,
@@ -418,6 +418,9 @@ export default function Home() {
               </a>
               <a className="hover:underline" href="https://dexscreener.com/solana/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD" target="_blank" rel="noopener noreferrer">
                 DEXSCREENER
+              </a>
+              <a className="hover:underline" href="https://www.clanker.world/clanker/0x9a60AcE96a5D7223B423D460aBcb5cA49Ee80b07" target="_blank" rel="noopener noreferrer">
+                Clanker
               </a>
             </div>
             <p className="text-[10px] text-primary/40 uppercase tracking-[0.2em]">
