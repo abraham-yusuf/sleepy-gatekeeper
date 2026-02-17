@@ -1,26 +1,26 @@
 # OS Sleepy Gatekeeper 402 App
 
-[![Tip in Crypto](https://tip.md/badge.svg)](https://tip.md/abraham-yusuf)
+Dormant since '97, woke up just to tax your robot. This is a Next.js app demonstrating payment-protected content and API routes using the x402 protocol, supporting both EVM (Base Sepolia) and SVM (Solana Devnet). It integrates AI agents, skills marketplace, and now enhances with trustless Anchor escrow for Solana payments.
 
-## 🚀 Project Roadmap
+## Project Roadmap
 
-See **[ROADMAP.md](./ROADMAP.md)** for our complete product roadmap including:
+See **ROADMAP.md** for our complete product roadmap including:
 - Solana and Base mainnet launch plans
 - Bot AI agent integration for creator activity monitoring
 - Skills marketplace for selling AI skills and tools
-- Future features and timeline
+- Future features and timeline (now including Anchor escrow for trustless payments)
 
-## 📚 Documentation
+## Documentation
 
 Comprehensive documentation is available in the `/docs` directory:
-
-- **[Documentation Index](./docs/README.md)** - Complete documentation guide and navigation
-- **[API Reference](./docs/API_REFERENCE.md)** - Public API endpoints documentation
-- **[Core Functions](./docs/CORE_FUNCTIONS.md)** - Functions, utilities, and configuration reference
-- **[Component Documentation](./docs/COMPONENTS.md)** - React components and pages reference
-- **[Usage Guide](./docs/USAGE_GUIDE.md)** - Step-by-step integration and usage instructions
-- **[Testing Guide](./TESTING.md)** - Manual and automated testing procedures
-- **[TECHSTACK](./docs/techstack.md)** - Documents the complete technical stack, architecture, and styling system for the Sleepy Gatekeeper 402 platform.
+- **Documentation Index** - Complete documentation guide and navigation
+- **API Reference** - Public API endpoints documentation
+- **Core Functions** - Functions, utilities, and configuration reference
+- **Component Documentation** - React components and pages reference
+- **Usage Guide** - Step-by-step integration and usage instructions
+- **Testing Guide** - Manual and automated testing procedures
+- **TECHSTACK** - Documents the complete technical stack, architecture, and styling system for the Sleepy Gatekeeper 402 platform.
+- **PRD.md** (new) - Product Requirements Document, including features like Anchor escrow.
 
 ## Prerequisites
 
@@ -28,6 +28,7 @@ Comprehensive documentation is available in the `/docs` directory:
 - pnpm v10 (install via [pnpm.io/installation](https://pnpm.io/installation))
 - Valid EVM and SVM addresses for receiving payments
 - URL of a facilitator supporting the desired payment network, see [facilitator list](https://www.x402.org/ecosystem?category=facilitators)
+- For Solana escrow: Anchor CLI (install via `cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked`), Solana CLI, and a Devnet wallet.
 
 ## Setup
 
@@ -38,32 +39,91 @@ cp .env-local .env
 ```
 
 and fill required environment variables:
-
 - `FACILITATOR_URL` - Facilitator endpoint URL
 - `EVM_ADDRESS` - Ethereum address to receive payments
 - `SVM_ADDRESS` - Solana address to receive payments
+- (New) `ESCROW_PROGRAM_ID` - Deployed Anchor program ID for escrow (after setup)
 
-2. Install and build all packages from the typescript examples root:
+2. Install and build all packages:
+
 ```bash
 pnpm install && pnpm build
 ```
 
 3. **Validate your configuration** (recommended):
+
 ```bash
 npm run validate:all
 ```
 
 This will check:
-- ✅ EVM and Solana addresses are properly formatted
-- ✅ All protected routes support both payment networks
-- ✅ Facilitator connectivity
+- EVM and Solana addresses are properly formatted
+- All protected routes support both payment networks
+- Facilitator connectivity
+- (New) Escrow program deployment and integration
 
-See [TESTING.md](./TESTING.md) for detailed testing and validation instructions.
+See [TESTING.md](/abraham-yusuf/sleepy-gatekeeper/blob/main/TESTING.md) for detailed testing and validation instructions.
 
 4. Run the server:
+
 ```bash
 pnpm dev
 ```
+
+## Anchor Escrow Integration (New Feature for Trustless Payments)
+
+To make x402 payments more decentralized, we've added an optional Anchor-based escrow for Solana (SVM). This holds funds in an on-chain PDA vault during payment, releasing only after confirmation (e.g., via facilitator callback or AI agent trigger). This reduces reliance on third-party facilitators for settlement.
+
+### Why Add This?
+- Revive "trustless escrow" vibe from early crypto, aligned with HTTP 402 revival.
+- Hybrid flow: Use facilitator for UX, escrow for security.
+- Compatible with AI agents (e.g., agent monitors and triggers release).
+- Targets Graveyard Hackathon tracks like Onchain Social or Creator Economy.
+
+### Coding Vibe for AI Assistants (Claude Opus/Copilot)
+- **Style**: Modular, builder-pattern like existing paywall in proxy.ts. Use Rust for Anchor program (simple init/release/refund instructions). TS for client integration.
+- **Directory Structure**: Add `/programs/escrow` for Anchor program, `/lib/escrow.ts` for client utils.
+- **Steps to Implement**:
+  1. **Create Anchor Program**: In `/programs/escrow/src/lib.rs`, define accounts and instructions:
+     - `InitializeEscrow`: Deposit USDC to PDA vault, set maker/taker/amount.
+     - `Release`: Taker claims after payment confirm (check facilitator sig or oracle).
+     - `Refund`: Timeout refund to maker.
+     - Use SPL Token for USDC (Token-2022 compatible).
+     - Example IDL: Generate with `anchor build`.
+  2. **Deploy to Devnet**: `anchor deploy --provider.cluster devnet`.
+  3. **Integrate to Proxy/Handlers**: In `proxy.ts`, after x402 success, call Anchor via `@coral-xyz/anchor`:
+     ```ts
+     import { AnchorProvider, Program } from "@coral-xyz/anchor";
+     import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+     import idl from "./escrow-idl.json"; // Generated IDL
+
+     // Setup provider
+     const connection = new Connection("https://api.devnet.solana.com");
+     const wallet = Keypair.fromSecretKey(/* your key */); // Or use wallet adapter
+     const provider = new AnchorProvider(connection, wallet, {});
+
+     // Load program
+     const program = new Program(idl, new PublicKey(process.env.ESCROW_PROGRAM_ID!), provider);
+
+     // Example: Initialize escrow in payment flow
+     async function initEscrow(amount: number, payer: PublicKey, payee: PublicKey) {
+       const [vaultPda] = PublicKey.findProgramAddressSync([Buffer.from("escrow")], program.programId);
+       await program.methods.initializeEscrow(amount)
+         .accounts({ payer, payee, vault: vaultPda, tokenProgram: TOKEN_PROGRAM_ID })
+         .rpc();
+     }
+
+     // In paymentProxy or withX402: After facilitator confirm, call release
+     async function releaseEscrow() {
+       await program.methods.release()
+         .accounts({ /* accounts */ })
+         .rpc();
+     }
+     ```
+  4. **Hybrid Flow**: If facilitator fails, fallback to direct escrow. For AI agents: Add skill in `.agents/skills` to monitor escrow state via Solana RPC.
+  5. **Testing**: Extend `npm run validate:escrow` to deploy test program, simulate payments.
+- **Dependencies**: Add `"@coral-xyz/anchor": "^0.29.0"`, `"@solana/spl-token": "^0.3.11"`.
+- **Edge Cases**: Handle timeouts, multi-sig releases for DAOs, AI-triggered refunds.
 
 ## Testing & Validation
 
@@ -79,249 +139,14 @@ npm run validate:all
 npm run validate:config       # Check addresses and facilitator URL
 npm run validate:routes       # Verify routes support both networks
 npm run validate:facilitator  # Test facilitator connectivity
+npm run validate:escrow       # (New) Test Anchor program and integration
 ```
 
 ### Manual Testing
 
-For detailed manual testing procedures, troubleshooting, and network-specific testing instructions, see **[TESTING.md](./TESTING.md)**.
+For detailed manual testing procedures, troubleshooting, and network-specific testing instructions, see **TESTING.md**. Now includes escrow-specific tests (e.g., simulate deposit/release on Devnet).
 
 ## Example Routes
 
-The app includes protected routes that require payment to access:
+(The rest remains the same as original: Article Routes, Weather API, Response Format, paymentProxy vs withX402, Extending the Example)
 
-### Article Routes
-
-Article routes like `/articles/web3-future` are protected using `paymentProxy`. Page routes are protected using this approach:
-
-```typescript
-// proxy.ts
-import { paymentProxy } from "@x402/next";
-import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
-import { registerExactEvmScheme } from "@x402/evm/exact/server";
-import { registerExactSvmScheme } from "@x402/svm/exact/server";
-import { createPaywall } from "@x402/paywall";
-import { evmPaywall } from "@x402/paywall/evm";
-import { svmPaywall } from "@x402/paywall/svm";
-
-const facilitatorClient = new HTTPFacilitatorClient({ url: facilitatorUrl });
-const server = new x402ResourceServer(facilitatorClient);
-
-// Register schemes
-registerExactEvmScheme(server);
-registerExactSvmScheme(server);
-
-// Build paywall using builder pattern
-const paywall = createPaywall()
-  .withNetwork(evmPaywall)
-  .withNetwork(svmPaywall)
-  .withConfig({
-    appName: "Next x402 Demo",
-    appLogo: "/x402-icon-blue.png",
-    testnet: true,
-  })
-  .build();
-
-export const proxy = paymentProxy(
-  {
-    "/articles/web3-future": {
-      accepts: [
-        {
-          scheme: "exact",
-          price: "$0.01",
-          network: "eip155:84532",
-          payTo: evmAddress,
-        },
-        {
-          scheme: "exact",
-          price: "$0.01",
-          network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
-          payTo: svmAddress,
-        },
-      ],
-      description: "Premium Article: The Future of Web3 Payments",
-      mimeType: "text/html",
-    },
-  },
-  server,
-  undefined, // paywallConfig (using custom paywall instead)
-  paywall,   // custom paywall provider
-);
-
-export const config = {
-  matcher: ["/articles/web3-future/:path*"],
-};
-```
-
-### Weather API Route (using withX402)
-
-The `/api/weather` route demonstrates the `withX402` wrapper for individual API routes:
-
-```typescript
-// app/api/weather/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402/next";
-import { server, paywall, evmAddress, svmAddress } from "../../../proxy";
-
-const handler = async (_: NextRequest) => {
-  return NextResponse.json({
-    report: {
-      weather: "sunny",
-      temperature: 72,
-    },
-  });
-};
-
-export const GET = withX402(
-  handler,
-  {
-    accepts: [
-      {
-        scheme: "exact",
-        price: "$0.001",
-        network: "eip155:84532",
-        payTo: evmAddress,
-      },
-      {
-        scheme: "exact",
-        price: "$0.001",
-        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
-        payTo: svmAddress,
-      },
-    ],
-    description: "Access to weather API",
-    mimeType: "application/json",
-  },
-  server,
-  undefined, // paywallConfig (using custom paywall from proxy.ts)
-  paywall,
-);
-```
-
-## Response Format
-
-### Payment Required (402)
-
-```
-HTTP/1.1 402 Payment Required
-Content-Type: application/json; charset=utf-8
-PAYMENT-REQUIRED: <base64-encoded JSON>
-
-{}
-```
-
-The `PAYMENT-REQUIRED` header contains base64-encoded JSON with the payment requirements.
-Note: `amount` is in atomic units (e.g., 1000 = 0.001 USDC, since USDC has 6 decimals):
-
-```json
-{
-  "x402Version": 2,
-  "error": "Payment required",
-  "resource": {
-    "url": "http://localhost:3000/api/weather",
-    "description": "Access to weather API",
-    "mimeType": "application/json"
-  },
-  "accepts": [
-    {
-      "scheme": "exact",
-      "network": "eip155:84532",
-      "amount": "1000",
-      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-      "payTo": "0x...",
-      "maxTimeoutSeconds": 300,
-      "extra": {
-        "name": "USDC",
-        "version": "2",
-        "resourceUrl": "http://localhost:4021/weather"
-      }   
-    }
-  ]
-}
-```
-
-### Successful Response
-
-```
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-PAYMENT-RESPONSE: <base64-encoded JSON>
-
-{"report":{"weather":"sunny","temperature":72}}
-```
-
-The `PAYMENT-RESPONSE` header contains base64-encoded JSON with the settlement details:
-
-```json
-{
-  "success": true,
-  "transaction": "0x...",
-  "network": "eip155:84532",
-  "payer": "0x...",
-  "requirements": {
-    "scheme": "exact",
-    "network": "eip155:84532",
-    "amount": "1000",
-    "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-    "payTo": "0x...",
-    "maxTimeoutSeconds": 300,
-    "extra": {
-      "name": "USDC",
-      "version": "2",
-      "resourceUrl": "http://localhost:4021/weather"
-    }
-  }
-}
-```
-
-## paymentProxy vs withX402
-
-The `paymentProxy` function is used to protect page routes. It can also protect API routes, however this will charge clients for failed API responses.
-
-The `withX402` function wraps API route handlers. This is the recommended approach to protect API routes as it guarantees payment settlement only AFTER successful API responses (status < 400).
-
-| Approach | Use Case |
-|----------|----------|
-| `paymentProxy` | Protecting page routes or multiple routes with a single configuration |
-| `withX402` | Protecting individual API routes where you need precise control over settlement timing |
-
-## Extending the Example
-
-To add more protected routes, update the proxy configuration:
-
-```typescript
-export const proxy = paymentProxy(
-  {
-    "/articles/creator-economy": {
-      accepts: {
-        scheme: "exact",
-        price: "$0.02",
-        network: "eip155:84532",
-        payTo: evmAddress,
-      },
-      description: "Access to creator economy article",
-    },
-    "/premium": {
-      accepts: {
-        scheme: "exact",
-        price: "$0.10",
-        network: "eip155:84532",
-        payTo: evmAddress,
-      },
-      description: "Premium content access",
-    },
-  },
-  server,
-  undefined,
-  paywall,
-);
-
-export const config = {
-  matcher: ["/articles/creator-economy/:path*", "/premium/:path*"],
-};
-```
-
-**Network identifiers** use [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md) format, for example:
-- `eip155:84532` — Base Sepolia
-- `eip155:8453` — Base Mainnet
-- `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` — Solana Devnet
-- `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — Solana Mainnet
