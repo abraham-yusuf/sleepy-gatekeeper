@@ -1,152 +1,122 @@
-# OS Sleepy Gatekeeper 402 App
+# Sleepy Gatekeeper OS – Decentralized Web OS
 
-Dormant since '97, woke up just to tax your robot. This is a Next.js app demonstrating payment-protected content and API routes using the x402 protocol, supporting both EVM (Base Sepolia) and SVM (Solana Devnet). It integrates AI agents, skills marketplace, and now enhances with trustless Anchor escrow for Solana payments.
+Dormant since '97, woke up just to tax your robot... and now to run your entire decentralized desktop.
 
-## Project Roadmap
+Sleepy Gatekeeper OS adalah **operating system berbasis browser yang sepenuhnya decentralized**, di mana users login via EVM/SVM wallet untuk mendapatkan username otomatis (misalnya `evm@0x1234...` atau `svm@1111...`). Ini bukan lagi sekadar payment gateway — ini adalah portal Web4: desktop virtual di browser dengan apps, autonomous AI agents, trustless paywalls (x402 + Anchor escrow), dan real-world write access.
 
-See **ROADMAP.md** for our complete product roadmap including:
-- Solana and Base mainnet launch plans
-- Bot AI agent integration for creator activity monitoring
-- Skills marketplace for selling AI skills and tools
-- Future features and timeline (now including Anchor escrow for trustless payments)
+Core tetap HTTP 402 revival: lindungi konten, APIs, AI skills, dan sekarang **seluruh OS apps** dengan micropayments on-chain. Agents menjadi "citizens" dengan identity via ERC-8004, orchestration via ElizaOS, dan autonomy via web4.ai / Conway Terminal.
 
-## Documentation
+Live demo: https://www.0x402.tech/
 
-Comprehensive documentation is available in the `/docs` directory:
-- **Documentation Index** - Complete documentation guide and navigation
-- **API Reference** - Public API endpoints documentation
-- **Core Functions** - Functions, utilities, and configuration reference
-- **Component Documentation** - React components and pages reference
-- **Usage Guide** - Step-by-step integration and usage instructions
-- **Testing Guide** - Manual and automated testing procedures
-- **TECHSTACK** - Documents the complete technical stack, architecture, and styling system for the Sleepy Gatekeeper 402 platform.
-- **PRD.md** (new) - Product Requirements Document, including features like Anchor escrow.
+## Visi & Misi
+
+**Visi**  
+Membangun OS decentralized di browser di mana setiap user punya desktop on-chain yang user-owned sepenuhnya. Gatekeeper "tidur" sampai wallet connect, lalu bangun untuk mengelola payments, agents, dan interaksi real-world — semua trustless, tanpa server sentral.
+
+**Misi**  
+- Memberdayakan creators & developers untuk monetize content/skills/apps via x402 micropayments.  
+- Memungkinkan autonomous AI agents earn, replicate, dan interact di ekosistem Web4.  
+- Menghidupkan kembali HTTP 402 sebagai standar pembayaran machine-to-machine di era agentic OS.  
+- Hybrid EVM/SVM support untuk accessibility luas (Base + Solana).
+
+## Fitur Utama
+
+- **Wallet Login & Identity**  
+  Mandatory connect EVM (MetaMask/Coinbase) atau SVM (Phantom). Username auto-generated: `evm@0x...` atau `svm@...`. Semua sessions via wallet signatures — no central auth.
+
+- **Browser-Based Decentralized Desktop**  
+  Desktop UI dengan icons (Agents Hub, Marketplace, File Explorer untuk on-chain assets), taskbar (username, balance, quick agent spawn), tema "sleepy" dengan animasi gatekeeper.
+
+- **x402 Paywalls + Trustless Anchor Escrow**  
+  Protect apps, content, APIs, dan agent skills. Escrow on Solana via Anchor PDA vault (init/release/refund). Hybrid: facilitator untuk UX cepat, escrow untuk security maksimal. Agents bisa auto-pay via machine-to-machine.
+
+- **ElizaOS Integration**  
+  Agents Hub app: create/deploy autonomous agents (investment, monitoring, automation) tied to OS username. Orchestrate on-chain tasks dengan ElizaOS SDK.
+
+- **ERC-8004 Trustless Agent Registry**  
+  Agent Explorer: discover agents via on-chain registries (Identity ERC-721, Reputation, Validation). Register agents Anda, earn reps via feedback, validate interactions sebelum execute. Bridgeable ke SVM.
+
+- **web4.ai / Conway Terminal Compatibility**  
+  Automaton mode: spawn self-replicating agents dengan own wallets (web4.ai). Conway Terminal app untuk real-world write access (deploy VMs, manage domains, external APIs). Agents earn revenue, heartbeat untuk survival.
+
+- **Skills Marketplace**  
+  Jual/beli AI skills & tools dengan escrow-backed payments. Agents bisa auto-beli skills untuk self-improve.
+
+- **Decentralized Storage**  
+  User data & apps disimpan di IPFS/Arweave, tied ke wallet address.
+
+## Tech Stack
+
+- Frontend: Next.js, React, Tailwind (untuk desktop UI)  
+- Wallet: Wagmi/Viem (EVM), @solana/wallet-adapter (SVM)  
+- Payments: x402 protocol, Anchor (Rust) untuk Solana escrow  
+- Agents: ElizaOS SDK, ERC-8004 contracts (ethers.js)  
+- Storage: ipfs-http-client / @bundlr-network/client (Arweave)  
+- Terminal: Conway Terminal integration (JS worker atau embed)  
+- Lainnya: @coral-xyz/anchor, @solana/web3.js, Wormhole (cross-chain jika perlu)
+
+Lihat **TECHSTACK** di `/docs` untuk detail lengkap.
 
 ## Prerequisites
 
-- Node.js v20+ (install via [nvm](https://github.com/nvm-sh/nvm))
-- pnpm v10 (install via [pnpm.io/installation](https://pnpm.io/installation))
-- Valid EVM and SVM addresses for receiving payments
-- URL of a facilitator supporting the desired payment network, see [facilitator list](https://www.x402.org/ecosystem?category=facilitators)
-- For Solana escrow: Anchor CLI (install via `cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked`), Solana CLI, and a Devnet wallet.
+- Node.js v20+  
+- pnpm v10  
+- Wallet EVM/SVM untuk testing  
+- Anchor CLI & Solana CLI (untuk escrow)  
+- Facilitator URL (x402 ecosystem)  
+- Opsional: IPFS node atau Arweave wallet
 
-## Setup
+## Setup Cepat
 
-1. Copy `.env-local` to `.env`:
+1. Clone repo:
+   ```bash
+   git clone https://github.com/abraham-yusuf/sleepy-gatekeeper.git
+   cd sleepy-gatekeeper
+   ```
 
-```bash
-cp .env-local .env
-```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-and fill required environment variables:
-- `FACILITATOR_URL` - Facilitator endpoint URL
-- `EVM_ADDRESS` - Ethereum address to receive payments
-- `SVM_ADDRESS` - Solana address to receive payments
-- (New) `ESCROW_PROGRAM_ID` - Deployed Anchor program ID for escrow (after setup)
+3. Copy & isi `.env`:
+   ```bash
+   cp .env-local .env
+   ```
+   Isi: `FACILITATOR_URL`, `EVM_ADDRESS`, `SVM_ADDRESS`, `ESCROW_PROGRAM_ID` (setelah deploy Anchor), dll.
 
-2. Install and build all packages:
+4. Build & run:
+   ```bash
+   pnpm build
+   pnpm dev
+   ```
 
-```bash
-pnpm install && pnpm build
-```
+5. Validate config (termasuk escrow & agent integrations):
+   ```bash
+   npm run validate:all
+   ```
 
-3. **Validate your configuration** (recommended):
+Buka http://localhost:3000 → connect wallet → welcome to your decentralized OS!
 
-```bash
-npm run validate:all
-```
+## Roadmap
 
-This will check:
-- EVM and Solana addresses are properly formatted
-- All protected routes support both payment networks
-- Facilitator connectivity
-- (New) Escrow program deployment and integration
+Lihat **ROADMAP.md** untuk timeline detail:
+- Q1 2026: Core OS desktop UI + wallet login + username system  
+- Q2 2026: Full ElizaOS & ERC-8004 integration + Agent Hub  
+- Q3 2026: web4.ai automaton + Conway Terminal embed  
+- Q4 2026: Mainnet launch (Base + Solana), tokenomics $S402, agent economy
 
-See [TESTING.md](/abraham-yusuf/sleepy-gatekeeper/blob/main/TESTING.md) for detailed testing and validation instructions.
+## Dokumentasi Lengkap
 
-4. Run the server:
+- **PRD.md** – Product Requirements Document (visi OS, fitur detail)  
+- **ROADMAP.md** – Timeline & milestones  
+- **TODO.md** – Task list harian  
+- **docs/** – API ref, components, usage guide, testing, TECHSTACK  
+- **programs/escrow/** – Anchor program untuk trustless payments
 
-```bash
-pnpm dev
-```
+## Kontribusi
 
-## Anchor Escrow Integration (New Feature for Trustless Payments)
+Pull requests welcome! Fokus pada modular code, error handling graceful, dan vibe "sleepy but powerful". Gunakan PR template untuk agent integrations atau UI enhancements.
 
-To make x402 payments more decentralized, we've added an optional Anchor-based escrow for Solana (SVM). This holds funds in an on-chain PDA vault during payment, releasing only after confirmation (e.g., via facilitator callback or AI agent trigger). This reduces reliance on third-party facilitators for settlement.
-
-### Why Add This?
-- Revive "trustless escrow" vibe from early crypto, aligned with HTTP 402 revival.
-- Hybrid flow: Use facilitator for UX, escrow for security.
-- Compatible with AI agents (e.g., agent monitors and triggers release).
-- Targets Graveyard Hackathon tracks like Onchain Social or Creator Economy.
-
-### Coding Vibe for AI Assistants (Claude Opus/Copilot)
-- **Style**: Modular, builder-pattern like existing paywall in proxy.ts. Use Rust for Anchor program (simple init/release/refund instructions). TS for client integration.
-- **Directory Structure**: Add `/programs/escrow` for Anchor program, `/lib/escrow.ts` for client utils.
-- **Steps to Implement**:
-  1. **Create Anchor Program**: In `/programs/escrow/src/lib.rs`, define accounts and instructions:
-     - `InitializeEscrow`: Deposit USDC to PDA vault, set maker/taker/amount.
-     - `Release`: Taker claims after payment confirm (check facilitator sig or oracle).
-     - `Refund`: Timeout refund to maker.
-     - Use SPL Token for USDC (Token-2022 compatible).
-     - Example IDL: Generate with `anchor build`.
-  2. **Deploy to Devnet**: `anchor deploy --provider.cluster devnet`.
-  3. **Integrate to Proxy/Handlers**: In `proxy.ts`, after x402 success, call Anchor via `@coral-xyz/anchor`:
-     ```ts
-     import { AnchorProvider, Program } from "@coral-xyz/anchor";
-     import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-     import idl from "./escrow-idl.json"; // Generated IDL
-
-     // Setup provider
-     const connection = new Connection("https://api.devnet.solana.com");
-     const wallet = Keypair.fromSecretKey(/* your key */); // Or use wallet adapter
-     const provider = new AnchorProvider(connection, wallet, {});
-
-     // Load program
-     const program = new Program(idl, new PublicKey(process.env.ESCROW_PROGRAM_ID!), provider);
-
-     // Example: Initialize escrow in payment flow
-     async function initEscrow(amount: number, payer: PublicKey, payee: PublicKey) {
-       const [vaultPda] = PublicKey.findProgramAddressSync([Buffer.from("escrow")], program.programId);
-       await program.methods.initializeEscrow(amount)
-         .accounts({ payer, payee, vault: vaultPda, tokenProgram: TOKEN_PROGRAM_ID })
-         .rpc();
-     }
-
-     // In paymentProxy or withX402: After facilitator confirm, call release
-     async function releaseEscrow() {
-       await program.methods.release()
-         .accounts({ /* accounts */ })
-         .rpc();
-     }
-     ```
-  4. **Hybrid Flow**: If facilitator fails, fallback to direct escrow. For AI agents: Add skill in `.agents/skills` to monitor escrow state via Solana RPC.
-  5. **Testing**: Extend `npm run validate:escrow` to deploy test program, simulate payments.
-- **Dependencies**: Add `"@coral-xyz/anchor": "^0.29.0"`, `"@solana/spl-token": "^0.3.11"`.
-- **Edge Cases**: Handle timeouts, multi-sig releases for DAOs, AI-triggered refunds.
-
-## Testing & Validation
-
-The project includes comprehensive testing and validation tools for payment processes:
-
-### Quick Validation
-
-```bash
-# Validate all payment configurations
-npm run validate:all
-
-# Or run individual checks:
-npm run validate:config       # Check addresses and facilitator URL
-npm run validate:routes       # Verify routes support both networks
-npm run validate:facilitator  # Test facilitator connectivity
-npm run validate:escrow       # (New) Test Anchor program and integration
-```
-
-### Manual Testing
-
-For detailed manual testing procedures, troubleshooting, and network-specific testing instructions, see **TESTING.md**. Now includes escrow-specific tests (e.g., simulate deposit/release on Devnet).
-
-## Example Routes
-
-(The rest remains the same as original: Article Routes, Weather API, Response Format, paymentProxy vs withX402, Extending the Example)
+Dibuat dengan ❤️ di Jakarta untuk Web4 future.
 
