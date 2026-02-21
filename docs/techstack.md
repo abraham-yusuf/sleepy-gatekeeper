@@ -1,139 +1,136 @@
-# Sleepy Gatekeeper 402 - Technology Stack Documentation
+# Comprehensive Tech Stack Documentation for Sleepy Gatekeeper OS
 
-> **Last Updated:** February 4, 2026  
-> **Version:** 0.1.0  
-> **Platform:** Next.js 16 + React 19 + Multi-Chain (Base + Solana)
+## Overview
 
----
+Sleepy Gatekeeper OS adalah decentralized web-based operating system yang dibangun dengan full-stack TypeScript ecosystem modern. Ini memanfaatkan Solana dan EVM (seperti Base) untuk on-chain payments via x402 protocol, dengan frontend Next.js yang modular dan component-based. Sekarang diekspansi menjadi OS browser dengan desktop interface, autonomous AI agents via ElizaOS dan ERC-8004, kompatibilitas web4.ai/Conway Terminal, serta decentralized storage via IPFS/Arweave. Semua interaksi tied ke wallet login (EVM/SVM) dengan username otomatis.
 
-## 📋 Table of Contents
+## Core Technologies
 
-1. [Project Overview](#project-overview)
-2. [Core Technologies](#core-technologies)
-3. [Frontend Stack](#frontend-stack)
-4. [Blockchain & Payment Technologies](#blockchain--payment-technologies)
-5. [UI/UX Design System](#uiux-design-system)
-6. [Component Architecture](#component-architecture)
-7. [Features & Functionality](#features--functionality)
-8. [Development Tools](#development-tools)
-9. [Project Structure](#project-structure)
-10. [Skills & AI Agents](#skills--ai-agents)
-11. [API Architecture](#api-architecture)
-12. [Deployment & Infrastructure](#deployment--infrastructure)
+### Frontend
+- **Next.js** - React framework dengan App Router, Server Components, dan built-in optimizations. [Dokumentasi Resmi](https://nextjs.org/docs)
+- **TypeScript** - Type safety across the entire stack. [Dokumentasi Resmi](https://www.typescriptlang.org/docs/)
+- **Tailwind CSS** - Utility-first styling untuk rapid UI development. [Dokumentasi Resmi](https://tailwindcss.com/docs)
+- **React Hook Form** - Form management and validation. [Dokumentasi Resmi](https://react-hook-form.com/docs)
+- **Zod** - Schema validation untuk forms dan API payloads. [Dokumentasi Resmi](https://zod.dev/)
+- **Framer Motion** - Animations dan micro-interactions. [Dokumentasi Resmi](https://www.framer.com/motion/)
+- **Lucide React** - Icon library. [Dokumentasi Resmi](https://lucide.dev/docs)
+- **React Desktop** - Components untuk browser-based desktop UI (taskbar, windows, icons). [Dokumentasi Resmi](https://reactdesktop.js.org/docs/) (atau alternatif seperti react-window-manager jika diadopsi)
 
----
+### Blockchain & Payments
+- **Solana (Devnet/Mainnet)** - Primary blockchain untuk SVM payments dan escrow. [Dokumentasi Resmi](https://docs.solana.com/)
+- **Base Network (EVM)** - Untuk EVM compatibility dan hybrid operations. [Dokumentasi Resmi](https://docs.base.org/)
+- **x402 Protocol** - Decentralized payment facilitation layer untuk micropayments. [Dokumentasi Resmi](https://www.x402.org/docs)
+- **Anchor (Rust)** - Solana program development framework untuk trustless escrow. [Dokumentasi Resmi](https://www.anchor-lang.com/docs/)
+- **@solana/web3.js** - Solana blockchain interactions. [Dokumentasi Resmi](https://docs.solana.com/developing/clients/javascript-api)
+- **ethers.js** - EVM blockchain interactions (untuk Base/Mainnet). [Dokumentasi Resmi](https://docs.ethers.org/v6/)
+- **Wagmi** - Wallet connector untuk EVM. [Dokumentasi Resmi](https://wagmi.sh/docs)
+- **@solana/wallet-adapter** - Wallet connector untuk SVM (Phantom, dll.). [Dokumentasi Resmi](https://github.com/anza-xyz/wallet-adapter)
+- **@x402/paywall** - Payment integration library. [Dokumentasi Resmi](https://www.x402.org/docs/paywall)
+- **Wormhole** - Cross-chain bridge untuk EVM-SVM interoperability (jika diperlukan untuk agents). [Dokumentasi Resmi](https://docs.wormhole.com/)
 
-## 🎯 Project Overview
+### Agents & AI Integrations
+- **ElizaOS SDK** - Framework untuk autonomous AI agents orchestration. [Dokumentasi Resmi](https://github.com/elizaOS/eliza/docs) (atau situs resmi jika ada: https://elizaos.com/docs)
+- **ERC-8004** - Standar Ethereum untuk trustless agent registries (Identity, Reputation, Validation). [Dokumentasi Resmi](https://eips.ethereum.org/EIPS/eip-8004) (EIP proposal; implementasi via ethers.js contracts)
+- **web4.ai SDK** - Untuk automaton agents yang self-replicating dan earn revenue. [Dokumentasi Resmi](https://web4.ai/docs)
+- **Conway Terminal** - Terminal untuk real-world write access dan self-replicating AI. [Dokumentasi Resmi](https://conway.tech/docs)
 
-**Sleepy Gatekeeper 402** is a decentralized content monetization and AI skills marketplace platform built on the x402 payment protocol. The platform enables creators to monetize content and skills through blockchain-based micropayments on Solana and Base networks with a unique Windows 95-inspired retro aesthetic.
+### Storage & Decentralized Data
+- **IPFS (via ipfs-http-client)** - Decentralized file storage untuk user data dan apps. [Dokumentasi Resmi](https://docs.ipfs.tech/)
+- **Arweave (via @bundlr-network/client)** - Permanent storage untuk on-chain assets. [Dokumentasi Resmi](https://arweave.org/docs)
 
-### Key Characteristics
+### Backend & API
+- **Next.js API Routes** - Serverless functions untuk payment validation dan agent interactions. [Dokumentasi Resmi](https://nextjs.org/docs/api-routes/introduction)
+- **Proxy Pattern** - Central payment routing dan validation (diperluas untuk OS apps). 
+- **Environment-based Configuration** - Network switching (devnet/mainnet, EVM/SVM).
 
-- **Multi-Chain Payment System:** Supports both Base (EVM) and Solana (SVM) networks
-- **Micropayment Protocol:** Implements HTTP 402 Payment Required via x402 protocol
-- **Creator-First Platform:** Zero platform fees, instant settlements to creator wallets
-- **Retro UI Theme:** Windows 95-inspired glassmorphism with modern web3 aesthetics
-- **Content Variety:** Articles, podcasts, videos, and AI agent skills
+### Build & DevOps
+- **pnpm** - Package manager dengan workspace support. [Dokumentasi Resmi](https://pnpm.io/)
+- **TurboRepo** - Monorepo management dan task orchestration. [Dokumentasi Resmi](https://turbo.build/repo/docs)
+- **ESLint + Prettier** - Code formatting and quality. [ESLint Docs](https://eslint.org/docs), [Prettier Docs](https://prettier.io/docs)
+- **GitHub Actions** - CI/CD pipelines. [Dokumentasi Resmi](https://docs.github.com/en/actions)
 
----
+## Architecture
 
-## 🔧 Core Technologies
+### OS & Login Flow
+1. User buka browser → Prompt wallet connect (EVM/SVM).
+2. Generate username otomatis → Load desktop UI.
+3. Interaksi dengan apps/agents via on-chain calls.
 
-### Runtime & Framework
+### Payment Flow (Enhanced)
+1. User requests protected app/content/agent.
+2. Frontend checks payment status via x402.
+3. Jika unpaid, initiates payment melalui facilitator atau escrow.
+4. On confirmation, unlocks via wallet signature.
+5. Agents bisa auto-pay machine-to-machine.
+6. Semua transactions recorded on Solana/Base.
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Node.js** | v20+ | JavaScript runtime environment |
-| **Next.js** | 16.0.10 | React framework with App Router |
-| **React** | 19.2.3 | UI library with React Server Components |
-| **TypeScript** | 5.x | Type-safe JavaScript development |
-| **pnpm** | 10.x | Fast, efficient package manager |
+### Agent Flow
+1. Spawn agent via ElizaOS di Agents Hub.
+2. Register ke ERC-8004 registries.
+3. Execute tasks dengan validation proofs.
+4. Integrasi Conway Terminal untuk write access.
 
-### Build Tools
-
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Turbo** | Latest | Monorepo build system |
-| **tsx** | 4.21.0 | TypeScript execution for scripts |
-| **ESLint** | 9.24.0 | Code linting and quality |
-| **Prettier** | 3.5.2 | Code formatting |
-
----
-
-## 🎨 Frontend Stack
-
-### UI & Styling
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **TailwindCSS** | 4.0.0 | Utility-first CSS framework |
-| **PostCSS** | 4.0.0 | CSS processing with @tailwindcss/postcss |
-| **CSS Modules** | Built-in | Component-scoped styling |
-
-### State Management & Data Fetching
-
-| Library | Version | Purpose |
-|---------|---------|---------|
-| **@tanstack/react-query** | 5.90.19 | Server state management and caching |
-| **React Hooks** | 19.x | Built-in state management (useState, useEffect, etc.) |
-
-### Icons & Assets
-
-| Resource | Purpose |
-|----------|---------|
-| **@heroicons/react** | v2.2.0 - Modern icon library |
-| **Material Symbols** | Google Material Design icons |
-| **Custom SVG Icons** | Project-specific branding |
-
----
-
-## ⛓️ Blockchain & Payment Technologies
-
-### x402 Protocol Stack
-
-The core payment infrastructure built on the x402 protocol:
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| **@x402/core** | Latest | Core x402 protocol implementation |
-| **@x402/next** | Latest | Next.js integration (paymentProxy, withX402) |
-| **@x402/paywall** | Latest | Paywall UI and payment flows |
-| **@x402/extensions** | Latest | Protocol extensions (bazaar discovery) |
-
-### EVM (Ethereum Virtual Machine) - Base Network
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| **@x402/evm** | Latest | EVM-compatible chain support |
-| **wagmi** | 3.4.1 | React hooks for Ethereum |
-| **Base Network** | Mainnet/Testnet | Layer 2 Ethereum (Sepolia: 84532, Mainnet: 8453) |
-
-### SVM (Solana Virtual Machine)
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| **@x402/svm** | Latest | Solana network integration |
-| **@solana/client** | 1.7.0 | Solana Web3 client library |
-| **@solana/react-hooks** | 1.4.1 | React hooks for Solana integration |
-| **Solana Network** | Devnet/Mainnet | Solana blockchain (Devnet: EtWTRABZaYq6iMfeYKouRu166VU2xqa1) |
-
-### Payment Configuration
-
-```typescript
-// Supported Networks (CAIP-2 Format)
-- Base Sepolia (Testnet): "eip155:84532"
-- Base Mainnet: "eip155:8453"
-- Solana Devnet: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
-- Solana Mainnet: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
-
-// Payment Schemes
-- Exact Payment: Fixed price per resource
-- Price Range: $0.001 - $0.10+ (micropayments)
-- Settlement: Instant to creator wallets
-- Asset: USDC (EVM), SPL Token (Solana)
+### Component Structure
+```
+/components
+  /layout      // Taskbar, desktop background
+  /ui          // Buttons, modals
+  /os          // OS-specific: AgentsHub.tsx, AgentExplorer.tsx
+  /pages       // HomeOS.tsx, ProtectedApp.tsx, CreatorDashboard.tsx
 ```
 
----
+### API Design
+- RESTful endpoints dengan x402 authentication dan wallet signatures.
+- Rate limiting dan validation middleware.
+- Error handling dengan standardized responses.
+- Tambahan endpoints untuk agent registries query.
+
+## Development Setup
+
+### Prerequisites
+- Node.js 20+
+- pnpm 10+
+- Rust and Cargo (untuk Anchor programs)
+- Solana CLI
+- EVM tools (Hardhat atau Foundry jika deploy ERC-8004)
+- IPFS node atau Arweave wallet (opsional untuk testing)
+
+### Installation
+```bash
+pnpm install
+pnpm dev
+```
+
+## Network Configuration
+- **Development**: Solana Devnet + Base Sepolia
+- **Production**: Solana Mainnet + Base Mainnet
+- Environment variables control network switching dan wallet providers.
+
+## Security Considerations
+- Input validation at API boundaries
+- Rate limiting on payment endpoints
+- Secure storage of facilitator keys
+- Content protection through server-side checks
+- Wallet signatures untuk semua OS sessions
+- Agent validation via ERC-8004 proofs
+
+## Testing
+- Unit tests untuk payment validation dan agent spawns
+- Integration tests untuk API routes dan cross-chain bridges
+- End-to-end tests untuk OS flow (wallet connect → agent execution)
+- Automated validation scripts untuk escrow dan registries
+
+## Performance Optimizations
+- Server-Side Rendering untuk initial OS load
+- Image optimization with Next.js
+- Code splitting dan lazy loading untuk apps
+- Caching strategies untuk payment status dan agent queries
+
+## Future Enhancements
+- Full multi-chain support (tambah SVM bridges)
+- Creator royalty distribution via agents
+- Analytics dashboard untuk OS usage
+- Mobile-responsive OS (PWA support)
 
 ## 🎨 UI/UX Design System
 
@@ -670,20 +667,6 @@ npm run validate:all
 }
 ```
 
-### Environment Variables
-
-```bash
-# Required
-FACILITATOR_URL=<facilitator-endpoint>
-EVM_ADDRESS=<ethereum-address>
-SVM_ADDRESS=<solana-address>
-
-# Optional
-APP_NAME="Next x402 Demo"
-APP_LOGO="/x402-icon-blue.png"
-```
-
----
 
 ## 🏗️ Project Structure
 
@@ -1027,91 +1010,15 @@ export default nextConfig;
 | `TESTING.md` | Testing procedures |
 | `IMPLEMENTATION_SUMMARY.md` | Implementation summary |
 
-### External Resources
-
-| Resource | URL |
-|----------|-----|
-| x402 Protocol | https://www.x402.org |
-| Base Network | https://docs.base.org |
-| Solana | https://docs.solana.com |
-| Next.js | https://nextjs.org/docs |
-| TailwindCSS | https://tailwindcss.com |
-
----
-
-## 🎯 Key Features Summary
-
-### Content Platform
-✅ Multi-format content (articles, podcasts, videos, skills)  
-✅ Creator dashboard with publishing tools  
-✅ Protected routes with payment requirements  
-✅ Content discovery system  
-
-### Payment System
-✅ Multi-chain support (Base + Solana)  
-✅ Micropayments ($0.001 - $0.10+)  
-✅ Instant creator settlements  
-✅ Zero platform fees  
-✅ x402 protocol integration  
-
-### UI/UX
-✅ Windows 95 retro theme  
-✅ Glassmorphism effects  
-✅ CRT screen simulation  
-✅ Responsive design  
-✅ Interactive demos  
-✅ Wallet integration  
-
-### Developer Tools
-✅ Validation scripts  
-✅ Comprehensive documentation  
-✅ TypeScript support  
-✅ ESLint + Prettier  
-✅ Testing utilities  
-
-### Future Features (Roadmap)
-🔜 Mainnet launch (Q1 2026)  
-🔜 Bot AI agent integration (Q2 2026)  
-🔜 Skills marketplace (Q3 2026)  
-🔜 Advanced analytics (Q4 2026)  
-🔜 Mobile apps (2027)  
+## References
+- [x402 Protocol Documentation](https://www.x402.org/docs)
+- [Solana Documentation](https://docs.solana.com)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [ElizaOS GitHub](https://github.com/elizaOS/eliza)
+- [ERC-8004 EIP](https://eips.ethereum.org/EIPS/eip-8004)
+- [web4.ai](https://web4.ai/)
+- [Conway Tech](https://conway.tech/)
+- [IPFS Docs](https://docs.ipfs.tech/)
+- [Arweave Docs](https://arweave.org/docs)
 
 ---
-
-## 🔄 Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 0.1.0 | 2026-02-04 | Initial release with multi-chain payments |
-
----
-
-## 📞 Support & Community
-
-**GitHub Repository:**  
-https://github.com/abraham-yusuf/sleepy-gatekeeper
-
-**Issues & Bug Reports:**  
-https://github.com/abraham-yusuf/sleepy-gatekeeper/issues
-
-**Community:**  
-- Discord: [Coming Soon]
-- Twitter/X: [@sleepyx402](https://x.com/sleepyx402)
-- Telegram: [Coming Soon]
-
----
-
-## 📄 License
-
-Private project - all rights reserved.
-
----
-
-**Last Updated:** February 4, 2026  
-**Maintained By:** Abraham Yusuf  
-**Platform Version:** 0.1.0  
-**Documentation Version:** 1.0.0
-
----
-
-**Built with ❤️ using Next.js, React, TailwindCSS, and the x402 protocol**
