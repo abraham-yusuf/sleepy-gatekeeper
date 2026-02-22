@@ -1,6 +1,6 @@
 # Documentation Index
 
-Welcome to the comprehensive documentation for xCreator402, a decentralized content monetization platform powered by the x402 payment protocol.
+Welcome to the comprehensive documentation for Sleepy Gatekeeper 
 
 ## 📚 Documentation Structure
 
