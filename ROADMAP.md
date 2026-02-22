@@ -24,8 +24,6 @@ Fokus: Modular development, test-driven, community-driven. Timeline dimulai dari
 - Machine-to-machine payments: Agents auto-pay via x402 escrow (heartbeat mechanism).
 - Expand protected content: AI skills, premium agents, on-chain media (music/art/NFT/videos/podcasts).
 - Solana & Base mainnet launch untuk OS core.
-- ElizaOS Integration — ...
-- ERC-8004 Trustless Agent Registry — ...
 - **OpenClaw ACP Integration (Milestone Baru)**:
   - Setup proxy layer di Next.js untuk jalankan ACP CLI commands (browse, job create, wallet balance).
   - Tambah ACP Marketplace app di desktop OS: search agents, create bounties/jobs.
@@ -41,8 +39,6 @@ Fokus: Modular development, test-driven, community-driven. Timeline dimulai dari
 - **Conway Terminal Integration** — Embed terminal app untuk real-world write access: deploy VMs, manage domains, external API calls.
 - On-chain social features: Gated feeds, creator dashboards, agent-driven content discovery.
 - Agent reputation system: Feedback loop via ERC-8004, leaderboard di OS.
-- Skills Marketplace — ...
-- web4.ai Automaton Compatibility — ...
 - **OpenClaw ACP Advanced (Seller & Full Commerce)**:
   - Implement seller runtime proxy: agents OS serve offerings (handlers.ts customization).
   - Launch agent tokens via ACP → tie revenue ke OS username/wallet.
