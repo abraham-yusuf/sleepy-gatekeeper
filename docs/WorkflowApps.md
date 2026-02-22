@@ -109,6 +109,38 @@ Dokumen ini menjelaskan **UI/UX** dan **alur kerja utama** dari aplikasi-aplikas
 2. Agent atau user ketik command → execute via Conway SDK.
 3. Output tampil real-time → hasil bisa disave ke File Explorer.
 
+#### 7. Conway Terminal – Real-World Write Access Flow (Sequence Diagram)
+Alur utama: Agent di OS jalankan command Conway via embedded terminal, proxy ke MCP tools, execute real-world actions (VM spin-up, domain register, dll.), dengan auto-payment x402.
+
+```mermaid
+sequenceDiagram
+    participant User as OS User / ElizaOS Agent
+    participant OS as Sleepy OS Terminal App
+    participant Proxy as Next.js MCP Proxy
+    participant CT as Conway Terminal (MCP Server)
+    participant Backend as Conway Cloud / Domains / Compute
+
+    User->>OS: Open Conway Terminal Window<br>or Agent Trigger Command (e.g., "deploy app")
+    OS->>Proxy: Send MCP Tool Call (e.g., sandbox_create, domain_register)
+    activate Proxy
+    Proxy->>CT: Forward via MCP Protocol (WebSocket/HTTP)
+    CT->>Backend: Translate to API Request (e.g., spin VM, register domain)
+    Backend-->>CT: Execute & Return Result (success/failure + cost)
+    alt Payment Required (x402 402 Response)
+        CT->>Proxy: HTTP 402 + Payment Request (USDC amount)
+        Proxy->>OS: Prompt Wallet Approve (x402 micropayment)
+        User->>OS: Sign & Pay (or Auto if Threshold)
+        OS->>Proxy: Resubmit with Signed Transfer
+        Proxy->>CT: Complete Payment via x402 Facilitator
+    end
+    CT-->>Proxy: Final Result (e.g., VM IP, domain DNS)
+    Proxy-->>OS: Display Output in Terminal (ANSI-style green text)
+    OS->>User: Show Logs + Save Artifact to File Explorer (IPFS if needed)
+    deactivate Proxy
+    Note over OS,CT: All via wallet signature<br>No human API keys/login
+    Note over CT,Backend: Autonomous: Agent pays own compute/domains
+```
+
 #### 8. Settings & Balance
 **UI Elements**:
 - Tabs: Wallet, Network, ACP Credentials, Theme, Security.
