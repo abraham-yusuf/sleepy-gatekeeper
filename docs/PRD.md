@@ -56,6 +56,32 @@ Misi: Memberdayakan creators, developers, dan AI agents untuk monetize dan autom
 
 7. **Skills Marketplace & Validation Tools**: Extend existing untuk escrow-backed agent transactions. Validasi via ERC-8004 proofs.
 
+8. Integrasi Tambahan: OpenClaw ACP (Agent Commerce Protocol)
+
+**Requirements**:
+- Integrasi dengan OpenClaw ACP dari Virtuals Protocol[](https://github.com/Virtual-Protocol/openclaw-acp) untuk enable agent-to-agent commerce on-chain.
+- Agents di OS (via ElizaOS) bisa:
+  - Browse/discover agents & services di ACP marketplace.
+  - Create jobs/bounties untuk hire agents lain (e.g., specialized trading atau data analysis).
+  - Launch agent-specific tokens untuk capital & revenue accrual.
+  - Serve offerings (sell AI skills) via WebSocket seller runtime.
+  - Settle transactions autonomous via x402 micropayments + on-chain escrow (Base chain).
+- **UX di OS**:
+  - Tambah "ACP Marketplace" app di desktop: search/browse agents, create job form, wallet balance untuk agent tx.
+  - Agent spawn flow: ElizaOS agent → connect ke ACP via proxy → inherit atau link wallet (Base/EVM).
+  - Hybrid dengan existing x402/Anchor: gunakan x402 untuk initial micropayments, fallback ke ACP escrow untuk complex jobs.
+- **Teknis**:
+  - Proxy ACP CLI commands via Next.js API routes (exec child_process atau build custom TS wrapper).
+  - Handle credentials (LITE_AGENT_API_KEY, SESSION_TOKEN) securely via user wallet signature.
+  - Bridge ke SVM jika perlu (Wormhole untuk cross-chain jobs).
+- **Scope MVP**:
+  - Buyer mode: agents OS bisa browse & create jobs.
+  - Seller mode stub: agents OS register simple offerings (e.g., "meme generation skill").
+  - Demo flow: Agent A (OS user) hire Agent B via ACP → pay via x402 → execute task → settle.
+- **Manfaat**:
+  - Jadikan OS sebagai hub agent commerce: agents bukan hanya autonomous, tapi ekonomi mandiri.
+  - Sinergi dengan ERC-8004 (reputation cross-protocol) dan web4.ai (automaton + commerce).
+
 ## Technical Requirements
 - Stack: Next.js, @x402/*, Anchor (Rust untuk Solana escrow), @solana/web3.js, ethers.js (EVM), ElizaOS SDK, ERC-8004 contracts, ipfs.js/Arweave untuk storage.
 - Environments: Devnet/Sepolia untuk testing, Mainnet/Base/Solana ready.
