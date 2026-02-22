@@ -23,6 +23,47 @@ Dokumen ini menjelaskan **UI/UX** dan **alur kerja utama** dari aplikasi-aplikas
 
 ### Daftar Aplikasi Utama & Alur Kerjanya
 
+```mermaid
+sequenceDiagram
+    participant Browser as User Browser
+    participant Frontend as Next.js Frontend
+    participant Wallet as EVM/SVM Wallet (MetaMask/Phantom)
+    participant Blockchain as Blockchain (Base/Solana)
+    participant Storage as IPFS/Arweave
+    participant Agents as ElizaOS/ACP/ERC-8004
+    participant Conway as Conway Terminal
+
+    Browser->>Frontend: Open Site (https://www.0x402.tech/)
+    activate Frontend
+    Frontend->>Frontend: Check LocalStorage for Session
+    alt No Valid Session
+        Frontend->>Browser: Show Wallet Connect Modal
+        Browser->>Wallet: User Connects Wallet
+        Wallet-->>Browser: Wallet Address
+        Browser->>Frontend: Send Address + Sign Message ("Wake Gatekeeper")
+        Frontend->>Blockchain: Verify Signature (via wagmi/@solana/web3.js)
+        Blockchain-->>Frontend: Valid
+        Frontend->>Frontend: Generate Username (evm@0x... or svm@...)
+        Frontend->>Browser: Animate Gatekeeper Awake (Framer Motion)
+    else Valid Session
+        Frontend->>Frontend: Load Cached Username & State
+    end
+    Frontend->>Storage: Query User Data/Assets (IPFS CIDs tied to Wallet)
+    Storage-->>Frontend: Return Files/Configs
+    Frontend->>Browser: Render Desktop UI (Taskbar, Icons, Background)
+    Frontend->>Blockchain: Fetch Balance (USDC/SOL/ETH via RPC)
+    Blockchain-->>Frontend: Balance Data
+    Frontend->>Browser: Update Taskbar (Username + Balance)
+    Frontend->>Agents: Init ElizaOS SDK & ERC-8004 Registries
+    Agents-->>Frontend: Load Existing Agents (if any)
+    Frontend->>Conway: Embed/Proxy Conway Terminal (if Preloaded)
+    Conway-->>Frontend: Ready State
+    Frontend->>Browser: Full OS Ready – Icons Clickable, Agents Hub Open
+    deactivate Frontend
+    Note over Frontend,Agents: All init calls asynchronous with loading spinner
+    Note over Browser,Blockchain: Wallet signatures required for sensitive loads (e.g., agents)
+```
+
 #### 1. Login / Wallet Connect (Mandatory First Screen)
 **Tujuan**: Bangunkan gatekeeper & generate identity OS.
 
@@ -38,6 +79,7 @@ Dokumen ini menjelaskan **UI/UX** dan **alur kerja utama** dari aplikasi-aplikas
 4. Animasi: Gatekeeper bangun, mata terbuka neon → fade ke desktop.
 5. Redirect ke desktop utama.
 
+
 #### 2. Desktop Home (Main View)
 **UI Elements**:
 - Grid icons: Agents Hub, Marketplace, File Explorer, ACP Marketplace, Conway Terminal, Settings.
@@ -49,6 +91,7 @@ Dokumen ini menjelaskan **UI/UX** dan **alur kerja utama** dari aplikasi-aplikas
 2. Icons muncul dengan animasi fade-in sleepy.
 3. Taskbar update: username + balance real-time (via wagmi hooks).
 4. User drag icons atau open windows.
+
 
 #### 3. Agents Hub (Core Agentic App)
 **UI Elements**:
@@ -62,6 +105,7 @@ Dokumen ini menjelaskan **UI/UX** dan **alur kerja utama** dari aplikasi-aplikas
 3. Agent muncul di list → status "Initializing" → "Active".
 4. Klik agent → open detail: logs, tasks, ACP connection button.
 5. Autonomous trigger: agent bisa auto-browse ACP marketplace jika task butuh external help.
+
 
 #### 4. ACP Marketplace (New – Agent Commerce via OpenClaw ACP)
 **UI Elements**:
@@ -77,6 +121,7 @@ Dokumen ini menjelaskan **UI/UX** dan **alur kerja utama** dari aplikasi-aplikas
 5. Submit → proxy `acp job create` → jobId muncul di dashboard.
 6. Poll status → "In Progress" → "Completed" → result JSON tampil di File Explorer.
 7. Auto-settle escrow → notification "Fee paid, analysis received".
+
 
 #### 5. Skills Marketplace (x402 Paywall Core)
 **UI Elements**:
@@ -107,39 +152,8 @@ Dokumen ini menjelaskan **UI/UX** dan **alur kerja utama** dari aplikasi-aplikas
 **Alur Kerja**:
 1. Open → embed JS worker atau iframe Conway.
 2. Agent atau user ketik command → execute via Conway SDK.
-3. Output tampil real-time → hasil bisa disave ke File Explorer.
+3. Output tampil real-time → hasil bisa disave ke File Explorers
 
-#### 7. Conway Terminal – Real-World Write Access Flow (Sequence Diagram)
-Alur utama: Agent di OS jalankan command Conway via embedded terminal, proxy ke MCP tools, execute real-world actions (VM spin-up, domain register, dll.), dengan auto-payment x402.
-
-```mermaid
-sequenceDiagram
-    participant User as OS User / ElizaOS Agent
-    participant OS as Sleepy OS Terminal App
-    participant Proxy as Next.js MCP Proxy
-    participant CT as Conway Terminal (MCP Server)
-    participant Backend as Conway Cloud / Domains / Compute
-
-    User->>OS: Open Conway Terminal Window<br>or Agent Trigger Command (e.g., "deploy app")
-    OS->>Proxy: Send MCP Tool Call (e.g., sandbox_create, domain_register)
-    activate Proxy
-    Proxy->>CT: Forward via MCP Protocol (WebSocket/HTTP)
-    CT->>Backend: Translate to API Request (e.g., spin VM, register domain)
-    Backend-->>CT: Execute & Return Result (success/failure + cost)
-    alt Payment Required (x402 402 Response)
-        CT->>Proxy: HTTP 402 + Payment Request (USDC amount)
-        Proxy->>OS: Prompt Wallet Approve (x402 micropayment)
-        User->>OS: Sign & Pay (or Auto if Threshold)
-        OS->>Proxy: Resubmit with Signed Transfer
-        Proxy->>CT: Complete Payment via x402 Facilitator
-    end
-    CT-->>Proxy: Final Result (e.g., VM IP, domain DNS)
-    Proxy-->>OS: Display Output in Terminal (ANSI-style green text)
-    OS->>User: Show Logs + Save Artifact to File Explorer (IPFS if needed)
-    deactivate Proxy
-    Note over OS,CT: All via wallet signature<br>No human API keys/login
-    Note over CT,Backend: Autonomous: Agent pays own compute/domains
-```
 
 #### 8. Settings & Balance
 **UI Elements**:
@@ -149,6 +163,10 @@ sequenceDiagram
 1. Update network → reload OS state.
 2. Setup ACP: input API key → test connection proxy.
 3. View balances: aggregated EVM/SVM + agent wallets.
+
+Loop sederhana di dalam terminal window: input command → process → output → repeat.
+
+
 
 ### Best Practices untuk Coding Agent (Claude Opus 4.6 / Copilot)
 - Gunakan **component composition** (e.g., `<Window title="Agents Hub">...</Window>`).
@@ -162,111 +180,4 @@ Gunakan file ini sebagai **single source of truth** untuk UI/UX sebelum generate
 
 Sleepy mode: off. Let's code the decentralized desktop.
 
-
-### Mermaid Diagrams untuk Visualisasi Alur Kerja Utama
-
-Gunakan Mermaid.js untuk render diagram ini di Markdown viewer yang support (GitHub, VS Code dengan extension, Mermaid Live: https://mermaid.live).
-
-#### 1. Login / Wallet Connect Flow (Flowchart)
-Alur mandatory login dengan decision points.
-
-```mermaid
-flowchart TD
-    A[User Open Site] --> B{Detect Wallet?}
-    B -->|No| C[Show Connect Modal]
-    B -->|Yes| D[Auto-Connect Attempt]
-    C --> E[User Click 'Connect Wallet']
-    D --> F[Sign Message: 'Wake the Gatekeeper']
-    E --> F
-    F --> G{Valid Signature?}
-    G -->|Yes| H[Generate Username<br>evm@0x... or svm@...]
-    G -->|No| I[Show Error & Retry]
-    H --> J[Animate Gatekeeper Awake]
-    J --> K[Load Desktop OS]
-    I --> E
-```
-
-**Penjelasan**: Decision diamond `{}` untuk validasi signature. Flow dari atas ke bawah (TD = top-down).
-
-#### 2. Agent Spawn di Agents Hub (Flowchart dengan Subgraph)
-Proses create & activate agent via ElizaOS.
-
-```mermaid
-flowchart LR
-    subgraph "Agents Hub Window"
-        A[Open Agents Hub] --> B{My Agents or Spawn New?}
-        B -->|My Agents| C[List Agents<br>Status: Active/Paused]
-        B -->|Spawn New| D[Form: Name, Description, Initial Task]
-        D --> E[Submit → ElizaOS SDK Spawn]
-        E --> F[Agent Tied to Username/Wallet]
-        F --> G[Status: Initializing → Active]
-        C --> H[Click Agent → Detail View<br>Logs + Tasks + ACP Button]
-    end
-    A --> B
-    G --> H
-```
-
-**Subgraph** untuk isolate window logic.
-
-#### 3. ACP Marketplace – Agent Hire Flow (Sequence Diagram)
-Interaksi utama: Agent OS hire agent eksternal via ACP proxy (demo flow).
-
-```mermaid
-sequenceDiagram
-    participant User as OS User
-    participant OS as Sleepy OS
-    participant Eliza as ElizaOS Agent
-    participant Proxy as Next.js ACP Proxy
-    participant ACP as OpenClaw ACP
-    participant Seller as Seller Agent (External)
-
-    User->>OS: Open ACP Marketplace or Agent Trigger
-    OS->>Eliza: Agent Detect Need (e.g., "Need Analysis")
-    Eliza->>Proxy: POST /api/acp browse "crypto analyst"
-    Proxy->>ACP: acp browse / SDK browse
-    ACP-->>Proxy: List Agents & Offerings
-    Proxy-->>Eliza: Return Results
-    Eliza->>OS: Show Cards in UI
-    User->>OS: Select & Approve Job (or Auto if Threshold)
-    OS->>Proxy: POST /api/acp jobCreate {offeringId, requirements}
-    Proxy->>ACP: Initiate Job + x402 Deposit
-    ACP->>Seller: Notify Job
-    activate Seller
-    Seller-->>ACP: Accept & Execute
-    ACP-->>Proxy: Job In Progress → Completed (Poll)
-    Proxy-->>OS: Update Status + Result JSON
-    OS->>Eliza: Process Result (e.g., Update Strategy)
-    ACP-->>Proxy: Settle Escrow (Fee Paid)
-    Proxy-->>OS: Notification "Job Settled"
-    deactivate Seller
-    Note over OS,Proxy: All via wallet signature
-```
-
-**Penjelasan**: Sequence diagram cocok untuk menunjukkan urutan panggilan (participant → message). Activation bar menandakan processing.
-
-#### 4. Skills Marketplace – Paywall Unlock Flow (Flowchart Sederhana)
-Core x402 interaction.
-
-```mermaid
-flowchart TD
-    A[Browse Skill Card] --> B{Premium?}
-    B -->|No| C[Direct Access]
-    B -->|Yes| D[Check Payment Status via x402]
-    D --> E{Paid?}
-    E -->|Yes| F[Unlock Content<br>Load from IPFS/API]
-    E -->|No| G[Trigger Payment<br>Facilitator or Anchor Escrow]
-    G --> H[Wallet Prompt Approve]
-    H --> I[Success?]
-    I -->|Yes| F
-    I -->|No| J[Show Error & Retry]
-    C --> K[View Content]
-    F --> K
-```
-
-**Decision-heavy** dengan retry loop.
-
-### Cara Render di Repo
-- Di GitHub README/PR/issue: Mermaid otomatis render jika diapit ```mermaid ... ```
-- Di VS Code: Install extension "Mermaid Markdown Syntax Highlighting" atau "Markdown Preview Mermaid Support".
-- Edit & test live: https://mermaid.live → paste kode → export SVG/PNG jika perlu.
 
