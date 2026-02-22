@@ -45,6 +45,9 @@ Membangun OS decentralized di browser di mana setiap user punya desktop on-chain
 - **Decentralized Storage**  
   User data & apps disimpan di IPFS/Arweave, tied ke wallet address.
 
+## UI/UX & Workflow Documentation
+- [WorkflowApps.md](/docs/WorkflowApps.md) – Full UI/UX flows, app structures, and Mermaid diagrams for all major apps (Agents Hub, ACP Marketplace, Conway Terminal, etc.).
+
 ## Tech Stack
 
 - Frontend: Next.js, React, Tailwind (untuk desktop UI)  
