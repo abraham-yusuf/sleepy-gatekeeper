@@ -63,6 +63,15 @@ Update tanggal terakhir: February 21, 2026
 - [ ] Implement Wormhole bridge stub untuk agent portability EVM ↔ SVM
 - [ ] Heartbeat mechanism: agents check balance periodically (auto-shutdown jika nol)
 
+### OpenClaw ACP Integration (High Priority – New)
+- [ ] Clone & install openclaw-acp repo sebagai submodule atau dependency
+- [ ] Build proxy API di /pages/api/acp/[command].ts: exec ACP CLI commands securely (e.g., acp browse, acp job create)
+- [ ] Tambah ACP config wizard di OS Settings: input LITE_AGENT_API_KEY / SESSION_TOKEN via wallet-signed form
+- [ ] Create ACP Marketplace component: UI untuk browse agents, display results dari acp browse
+- [ ] Implement job creation flow: form di OS → proxy ke acp job create → sign via wallet
+- [ ] Test buyer mode: ElizaOS agent trigger ACP job → pay via x402 proxy
+- [ ] Handle JSON output (--json flag) untuk parse di frontend
+
 ## Phase 3: Full Agent Economy & Autonomy (Q3 2026)
 
 ### Marketplace & Economy
@@ -74,6 +83,15 @@ Update tanggal terakhir: February 21, 2026
 - [ ] Embed web4.ai automaton spawn button (self-replicating agents)
 - [ ] Install Conway Terminal sebagai app di OS (JS worker atau iframe)
 - [ ] Test real-world write: agent deploy simple VM via Conway
+
+### OpenClaw ACP Advanced
+- [ ] Setup seller runtime proxy: run acp serve start di background (via PM2 atau serverless cron jika possible)
+- [ ] Scaffold offering template: acp sell init → customize handlers.ts untuk OS agents (e.g., "execute ElizaOS task")
+- [ ] Register offering via proxy: acp sell create
+- [ ] Integrate token launch: button di Agents Hub → acp token launch → display token address di dashboard
+- [ ] Add revenue tracking: poll acp wallet balance → tampil di taskbar untuk agent wallets
+- [ ] Security: implement rate limiting & signature checks untuk proxy API
+- [ ] E2E test: agent A hire agent B via ACP → execute → settle micropayment
 
 ### Mobile & Polish
 - [ ] Make OS responsive / PWA installable
