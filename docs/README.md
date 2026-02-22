@@ -283,7 +283,7 @@ Step-by-step guide for integrating x402 payments including quick start, route pr
 ### External Resources
 
 - **X402 Protocol Documentation:** https://www.x402.org
-- **GitHub Repository:** https://github.com/abraham-yusuf/xCreator402
+- **GitHub Repository:** https://github.com/abraham-yusuf/sleepy-gatekeeper
 - **Base Network Docs:** https://docs.base.org
 - **Solana Documentation:** https://docs.solana.com
 
@@ -300,9 +300,9 @@ Step-by-step guide for integrating x402 payments including quick start, route pr
 
 All documentation is maintained in the repository and versioned with the codebase.
 
-**Last Updated:** 2024-01-15  
+**Last Updated:** 2026-02-22  
 **Version:** 1.0.0  
-**Compatibility:** xCreator402 v0.1.0
+**Compatibility:** Sleepy Gatekeeper v0.1.0
 
 ---
 
