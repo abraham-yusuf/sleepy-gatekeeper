@@ -5,19 +5,52 @@ import {
   DesktopIcon,
   Taskbar,
   StartMenu,
-  PopupDialog,
-  Win95Window,
-  Terminal,
+  TerminalScreen,
+  Settings,
+  HelpDocs,
+  WalletConnectModal,
+  NetworkSwitcher,
+  DraggableWindow,
+  ThemeToggle,
+  LiveClock,
   ConnectWallet,
 } from "./components";
+import { useWalletContext } from "./context/WalletContext";
+
+// Desktop icon definitions
+const DESKTOP_ICONS = [
+  { id: "agents-hub", icon: "smart_toy", label: "Agents Hub", color: "text-neon-green" },
+  { id: "marketplace", icon: "storefront", label: "Marketplace", color: "text-primary" },
+  { id: "file-explorer", icon: "folder_open", label: "File Explorer", color: "text-[#ffcc00]" },
+  { id: "terminal", icon: "terminal", label: "Terminal", color: "text-neon-green" },
+  { id: "settings", icon: "settings", label: "Settings", color: "text-retro-gray" },
+  { id: "articles", icon: "article", label: "Articles", color: "text-[#1084d0]" },
+  { id: "podcasts", icon: "podcasts", label: "Podcasts", color: "text-[#ff6b6b]" },
+  { id: "videos", icon: "videocam", label: "Videos", color: "text-[#ff9f43]" },
+  { id: "skills", icon: "school", label: "Skills", color: "text-primary" },
+  { id: "help", icon: "help_center", label: "Help Docs", color: "text-[#1084d0]" },
+] as const;
 
 export default function Home() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const { wallet, desktop } = useWalletContext();
   const [showStartMenu, setShowStartMenu] = useState(false);
-  const [show402Popup, setShow402Popup] = useState(true);
 
   // Start menu items
   const startMenuItems = [
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">smart_toy</span>,
+      label: "Agents Hub",
+      onClick: () => { desktop.openWindow("agents-hub"); setShowStartMenu(false); },
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">storefront</span>,
+      label: "Marketplace",
+      onClick: () => { desktop.openWindow("marketplace"); setShowStartMenu(false); },
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">group</span>,
+      label: "separator",
+    },
     {
       icon: <span className="material-symbols-outlined text-[18px]">article</span>,
       label: "Articles",
@@ -43,435 +76,325 @@ export default function Home() {
       label: "separator",
     },
     {
-      icon: <span className="material-symbols-outlined text-[18px]">description</span>,
-      label: "Documentation",
-      href: "#",
+      icon: <span className="material-symbols-outlined text-[18px]">terminal</span>,
+      label: "Terminal",
+      onClick: () => { desktop.openWindow("terminal"); setShowStartMenu(false); },
     },
     {
-      icon: <span className="material-symbols-outlined text-[18px]">monitoring</span>,
-      label: "Trade on Pump.fun",
-      href: "https://pump.fun/coin/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD",
-      target: "_blank",
-      rel: "noopener noreferrer",
+      icon: <span className="material-symbols-outlined text-[18px]">settings</span>,
+      label: "Settings",
+      onClick: () => { desktop.openWindow("settings"); setShowStartMenu(false); },
     },
     {
-      icon: <span className="material-symbols-outlined text-[18px]">bolt</span>,
-      label: "Buy on Clanker",
-      href: "https://www.clanker.world/clanker/0x9a60AcE96a5D7223B423D460aBcb5cA49Ee80b07",
+      icon: <span className="material-symbols-outlined text-[18px]">help_center</span>,
+      label: "Help Docs",
+      onClick: () => { desktop.openWindow("help"); setShowStartMenu(false); },
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">group</span>,
       label: "separator",
     },
     {
-      icon: <span className="material-symbols-outlined text-[18px]">group</span>,
-      label: "Socials",
-      hasSubmenu: true,
+      icon: <span className="material-symbols-outlined text-[18px]">monitoring</span>,
+      label: "Trade on Pump.fun",
+      href: "https://pump.fun/coin/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD",
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">bolt</span>,
+      label: "Buy on Clanker",
+      href: "https://www.clanker.world/clanker/0x9a60AcE96a5D7223B423D460aBcb5cA49Ee80b07",
     },
   ];
 
-  // Taskbar buttons
-  const taskbarButtons = [
-    {
-      icon: <span className="material-symbols-outlined text-[16px] text-black">terminal</span>,
-      label: "Terminal",
-      active: false,
-    },
-    {
-      icon: <span className="material-symbols-outlined text-[16px] text-black">toll</span>,
-      label: "Toll_Booth",
+  // Taskbar buttons - reflect open windows
+  const taskbarButtons = desktop.openWindows.map((winId) => {
+    const iconDef = DESKTOP_ICONS.find((i) => i.id === winId);
+    return {
+      icon: (
+        <span className="material-symbols-outlined text-[16px] text-black">
+          {iconDef?.icon ?? "window"}
+        </span>
+      ),
+      label: iconDef?.label ?? winId,
       active: true,
-    },
-    {
-      icon: <span className="material-symbols-outlined text-[16px] text-black">wallet</span>,
-      label: "Wallet_Connect",
-      active: false,
-    },
-  ];
+      onClick: () => desktop.closeWindow(winId),
+    };
+  });
+
+  // Handle desktop icon click
+  const handleIconClick = (id: string) => {
+    // Navigation icons go to routes
+    const routeMap: Record<string, string> = {
+      articles: "/articles",
+      podcasts: "/podcasts",
+      videos: "/videos",
+      skills: "/skills",
+    };
+    if (routeMap[id]) {
+      window.location.href = routeMap[id];
+      return;
+    }
+    desktop.openWindow(id);
+  };
+
+  // Theme classes
+  const themeClass =
+    desktop.theme === "light"
+      ? "bg-[#008080]"
+      : desktop.theme === "sleepy"
+        ? "sleepy-desktop"
+        : "grid-bg";
 
   return (
-    <div className="relative flex flex-col min-h-screen w-full grid-bg text-white pb-12">
+    <div className={`relative min-h-screen w-full text-white pb-10 ${themeClass}`}>
       {/* CRT Overlay */}
       <div className="crt-overlay"></div>
 
-      {/* Desktop Icons */}
-      {/* <div className="fixed top-20 left-6 z-40 flex flex-col gap-8"> */}
-      {/* <DesktopIcon
-          icon={<span className="material-symbols-outlined text-4xl text-retro-gray group-hover:text-white transition-colors">computer</span>}
-          label="My Node"
-        />
-        <DesktopIcon
-          icon={<span className="material-symbols-outlined text-4xl text-[#1084d0]">delete</span>}
-          label="Burn Address"
-          selected={true}
-        />
-        <DesktopIcon
-          icon={<span className="material-symbols-outlined text-4xl text-neon-green group-hover:scale-110 transition-transform">table_chart</span>}
-          label="Tokenomics.xls"
-        />
-        <DesktopIcon
-          icon={<span className="material-symbols-outlined text-4xl text-primary group-hover:text-white transition-colors">help_center</span>}
-          label="Whitepaper.hlp"
-        />
-      </div> */}
+      {/* Sleepy-themed gradient background animation */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {desktop.theme === "sleepy" && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a0520] via-[#0f0a2a] to-[#050215] opacity-90" />
+            <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-primary/5 rounded-full blur-[150px] animate-pulse" />
+            <div className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-blue-600/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "2s", animationDuration: "4s" }} />
+          </>
+        )}
+        {desktop.theme === "dark" && (
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[200px]" />
+        )}
+      </div>
 
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b border-primary/20 glass-panel px-6 py-2">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary p-1 rounded-sm win95-shadow">
-              <svg
-                className="size-6 text-white"
-                fill="none"
-                viewBox="0 0 48 48"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z"
-                  fill="currentColor"
-                ></path>
-              </svg>
-            </div>
-            <span className="text-xl font-bold tracking-tighter uppercase font-mono italic">
-              Gatekeeper v4.02
-            </span>
-          </div>
-          <nav className="hidden md:flex gap-8 text-sm font-medium uppercase tracking-widest text-primary/80">
-            <a className="hover:text-primary transition-colors" href="#">
-              Files
-            </a>
-            <a className="hover:text-primary transition-colors" href="#">
-              Terminal
-            </a>
-            <a className="hover:text-primary transition-colors" href="#">
-              Vault
-            </a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <ConnectWallet />
-            <div
-              className="size-8 rounded-full border border-primary/40 bg-cover bg-center"
-              style={{
-                backgroundImage:
-                  "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjAaYGqI1a_g9Znfe8fiLE6ajN7-VD_XjFMcuuM8aAuIOL_0slkqvWspmzCdMaGO6wuILG6C8LjXEAN1pno6NsuzaWgh9TgO93ah8BulGos2HRGlI1GYlyuGHrgK0iwHQ7gxHWjRQMpKDJQ_1fnN8blxtBReVdzlIMKnBI1fm8AwyfsuHDEM0KKdwQ0M9yO0cTw6UBXgqLIqoC8-h1QFMOohm1S_NlMVZO83VdQidN-USyxPo4U0EBPzPapmad_xRyc6oAFqO-84M')",
-              }}
-            ></div>
-          </div>
+      {/* Desktop Icons Grid */}
+      <div className="relative z-10 p-6 pt-8">
+        <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-10 gap-2 max-w-5xl">
+          {DESKTOP_ICONS.map((icon) => (
+            <DesktopIcon
+              key={icon.id}
+              icon={
+                <span className={`material-symbols-outlined text-4xl ${icon.color} group-hover:scale-110 transition-transform`}>
+                  {icon.icon}
+                </span>
+              }
+              label={icon.label}
+              onClick={() => handleIconClick(icon.id)}
+              selected={desktop.isWindowOpen(icon.id)}
+            />
+          ))}
         </div>
-      </header>
+      </div>
 
-      {/* 402 Error Popup */}
-      <PopupDialog
-        show={show402Popup}
-        title="Error 402"
-        icon={<span className="material-symbols-outlined">warning</span>}
-        onClose={() => setShow402Popup(false)}
-        onRetry={() => {
-          setShow402Popup(false);
-          setIsUnlocked(true);
-        }}
-        onAbort={() => setShow402Popup(false)}
-      >
-        <div className="flex items-start gap-4">
-          <div className="bg-[#ffff00] border-2 border-black rounded-sm p-1 flex items-center justify-center win95-shadow shrink-0">
-            <span className="material-symbols-outlined text-black text-3xl font-bold">
-              priority_high
-            </span>
-          </div>
-          <div className="text-left space-y-1">
-            <h4 className="font-bold text-black text-sm">
-              System Error: Liquidity Overflow
-            </h4>
-            <p className="text-primary/70 text-xs font-mono">
-              Error Code: 402 - Payment Required
-            </p>
-          </div>
-        </div>
-      </PopupDialog>
+      {/* Window Manager Area */}
+      <div className="relative z-20" style={{ minHeight: "calc(100vh - 200px)" }}>
+        {/* Agents Hub Window */}
+        {desktop.isWindowOpen("agents-hub") && (
+          <DraggableWindow
+            id="agents-hub"
+            title="Agents Hub"
+            icon={<span className="material-symbols-outlined text-sm">smart_toy</span>}
+            onClose={() => desktop.closeWindow("agents-hub")}
+            defaultSize={{ width: 600, height: 450 }}
+          >
+            <div className="bg-retro-gray p-4">
+              <div className="bg-white win95-recessed p-4 min-h-[300px]">
+                <h3 className="text-lg font-bold text-black mb-4">🤖 Agents Hub</h3>
+                <p className="text-sm text-black/70 mb-4">Deploy and manage autonomous AI agents tied to your OS identity.</p>
 
-      {/* Hero Section */}
-      <section className="flex-1 flex items-center justify-center py-20 px-4 relative">
-        <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full"></div>
-        <div className="relative space-y-8 max-w-3xl text-center">
-          <div className="inline-block border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-primary mb-4">
-            Status: Dormant _ Protocol: Active
-          </div>
-          <h1 className="text-6xl md:text-8xl font-black leading-none glitch-text tracking-tighter">
-            402: PAYMENT REQUIRED
-          </h1>
-          <p className="text-lg md:text-xl text-primary/60 max-w-xl mx-auto font-mono">
-            The laziest toll booth on the blockchain. A meme token marketplace where creators monetize content and AI Agent Skills through crypto micropayments. Built on Base and Solana with x402 protocol.
-          </p>
-          <div className="pt-6">
-            <button className="bg-[#c0c0c0] text-black px-10 py-4 font-bold uppercase tracking-tighter win95-shadow win95-button-active flex items-center gap-3 mx-auto hover:bg-white transition-colors">
-              <span className="material-symbols-outlined">power_settings_new</span>
-              Wake Up the Gatekeeper
-            </button>
-          </div>
-        </div>
-      </section>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 border border-gray-300 bg-gray-50">
+                    <span className="material-symbols-outlined text-2xl text-primary">add_circle</span>
+                    <div>
+                      <div className="text-sm font-bold text-black">Spawn New Agent</div>
+                      <div className="text-xs text-black/60">Create an autonomous agent via wallet transaction</div>
+                    </div>
+                  </div>
 
-      {/* The Lore Section */}
-      <section className="py-20 px-4 bg-black/20">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold uppercase italic tracking-tighter text-primary mb-16 text-center">
-            📜 THE LORE
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* 1. The HTTP 402 Legend */}
-            <Win95Window
-              title="HTTP_402_Legend.txt"
-              icon={<span className="material-symbols-outlined text-sm">description</span>}
-            >
-              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
-                <div className="mb-3">
-                  <span className="font-bold text-primary">📜 1. The HTTP 402 Legend</span>
+                  <div className="text-xs text-black/40 text-center py-6 font-mono">
+                    No agents deployed yet. Connect wallet &amp; spawn your first agent.
+                  </div>
                 </div>
-                <p className="mb-2 text-xs leading-relaxed">
-                  In the ancient times of the early web (1997-99), the HTTP gods created status code 402: &quot;Payment Required.&quot; Reserved for future use, it sat dormant for decades...
-                </p>
-                <p className="text-xs leading-relaxed">
-                  Until now. The Sleepy Gatekeeper has awakened to enforce what was always meant to be: a toll booth for digital content on the blockchain.
-                </p>
-              </div>
-            </Win95Window>
-
-            {/* 2. Why So Sleepy? */}
-            <Win95Window
-              title="Why_Sleepy.txt"
-              icon={<span className="material-symbols-outlined text-sm">bedtime</span>}
-            >
-              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
-                <div className="mb-3">
-                  <span className="font-bold text-primary">💤 2. Why So Sleepy?</span>
-                </div>
-                <p className="mb-2 text-xs leading-relaxed">
-                  The Gatekeeper is chill, laid-back, running on Base and Solana&apos;s blazing-fast rails. No stress, no drama—just smooth micropayments at lightning speed.
-                </p>
-                <p className="text-xs leading-relaxed">
-                  But don&apos;t let the yawns fool you. Try to sneak past without paying? You&apos;ll get the 402 response faster than you can say &quot;free content.&quot;
-                </p>
-              </div>
-            </Win95Window>
-
-            {/* 3. Creator Economy */}
-            <Win95Window
-              title="Creator_Economy.txt"
-              icon={<span className="material-symbols-outlined text-sm">palette</span>}
-            >
-              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
-                <div className="mb-3">
-                  <span className="font-bold text-primary">🎨 3. Creator Economy</span>
-                </div>
-                <p className="mb-2 text-xs leading-relaxed">
-                  Artists, writers, podcasters, AI Agent Skills, memers—all welcome. Upload your content, set your price (as low as $0.01), and let the Gatekeeper handle the rest.
-                </p>
-                <p className="text-xs leading-relaxed">
-                  No middlemen, no platform fees eating your lunch. Just pure creator-to-consumer value exchange powered by crypto.
-                </p>
-              </div>
-            </Win95Window>
-
-            {/* 4. Powered by x402 */}
-            <Win95Window
-              title="Powered_by_x402.txt"
-              icon={<span className="material-symbols-outlined text-sm">bolt</span>}
-            >
-              <div className="bg-white text-black p-4 font-mono text-sm min-h-[200px]">
-                <div className="mb-3">
-                  <span className="font-bold text-primary">⚡ 4. Powered by x402</span>
-                </div>
-                <p className="mb-2 text-xs leading-relaxed">
-                  Built on the x402 protocol—bringing HTTP 402 to life on Base and Solana. Seamless micropayments, instant unlocks, no friction.
-                </p>
-                <p className="text-xs leading-relaxed">
-                  Integration with Coinbase wallets means even crypto newbies can pay to peek. The future of paywalls is here, and it&apos;s sleeping on the job.
-                </p>
-              </div>
-            </Win95Window>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive x402 Demo (The Toll Booth) */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-pixel text-3xl md:text-4xl mb-12 text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            THE TOLL BOOTH
-          </h2>
-          
-          <div className="relative border-2 border-gray-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] rounded-lg overflow-hidden bg-gradient-to-br from-blue-600/5 to-purple-600/5">
-            {/* Locked/Blurred Content */}
-            <div className={`p-8 transition-all duration-500 ${isUnlocked ? 'blur-none' : 'blur-md select-none'}`}>
-              <h3 className="text-2xl font-bold mb-4">🎉 Premium Content Unlocked!</h3>
-              <p className="text-gray-300 mb-4">
-                Welcome to the exclusive content zone! You&apos;ve successfully paid the toll and unlocked this premium section.
-              </p>
-              <p className="text-gray-300 mb-4">
-                This is a simulation of the x402 protocol in action. In a real implementation, this content would be protected by the x402 payment protocol, bridging Base and Solana technologies.
-              </p>
-              <div className="bg-black/50 p-4 rounded font-mono text-xs text-green-400 terminal-glow">
-                <p>&gt; Transaction verified ✓</p>
-                <p>&gt; Payment received: 0.0001 USDC</p>
-                <p>&gt; Access granted to premium content</p>
               </div>
             </div>
-            
-            {/* Overlay when locked */}
-            {!isUnlocked && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
-                <div className="text-center p-8">
-                  <div className="text-6xl mb-4">🔒</div>
-                  <h3 className="font-pixel text-xl mb-4 text-yellow-400">
-                    402: Payment Required
-                  </h3>
-                  <p className="text-gray-300 mb-6 max-w-md">
-                    This premium content is protected by the x402 protocol
-                  </p>
-                  <button
-                    onClick={() => setIsUnlocked(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded border-2 border-gray-700 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[6px_6px_0px_0px_rgba(153,69,255,0.5)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-                  >
-                    Pay 0.0001 USDC to Unlock
-                  </button>
+          </DraggableWindow>
+        )}
+
+        {/* Marketplace Window */}
+        {desktop.isWindowOpen("marketplace") && (
+          <DraggableWindow
+            id="marketplace"
+            title="Skills Marketplace"
+            icon={<span className="material-symbols-outlined text-sm">storefront</span>}
+            onClose={() => desktop.closeWindow("marketplace")}
+            defaultSize={{ width: 650, height: 500 }}
+          >
+            <div className="bg-retro-gray p-4">
+              <div className="bg-white win95-recessed p-4 min-h-[350px]">
+                <h3 className="text-lg font-bold text-black mb-4">🛒 Skills Marketplace</h3>
+                <p className="text-sm text-black/70 mb-4">Browse, buy and sell AI skills with escrow-backed payments.</p>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { name: "AI Prompt Mastery", price: "$0.05", icon: "psychology" },
+                    { name: "Web3 Dev Kit", price: "$0.10", icon: "code" },
+                    { name: "Blockchain Security", price: "$0.08", icon: "security" },
+                  ].map((skill) => (
+                    <div key={skill.name} className="p-3 border border-gray-300 bg-gray-50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-primary">{skill.icon}</span>
+                        <span className="text-sm font-bold text-black">{skill.name}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-black/60 font-mono">{skill.price} USDC</span>
+                        <button className="px-2 py-1 text-[10px] font-bold bg-primary text-white win95-shadow hover:bg-primary/80">
+                          BUY
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Tokenomics Section */}
-      <section className="py-20 px-4 bg-black/20">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold uppercase italic tracking-tighter text-primary mb-12">
-            Tokenomics.XLS
-          </h2>
-
-          {/* Retro Spreadsheet Style */}
-          <div className="win95-shadow bg-retro-gray p-1 rounded-sm overflow-x-auto">
-            <table className="w-full border-collapse bg-white text-black font-mono text-sm">
-              <thead>
-                <tr className="bg-retro-gray border-b border-black">
-                  <th className="p-2 border-r border-black w-10"></th>
-                  <th className="p-2 border-r border-black text-left">
-                    PARAMETER
-                  </th>
-                  <th className="p-2 text-left">VALUE</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-black/10">
-                  <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
-                    1
-                  </td>
-                  <td className="p-2 border-r border-black">TOTAL_SUPPLY</td>
-                  <td className="p-2 font-bold">402,000,000</td>
-                </tr>
-                <tr className="border-b border-black/10">
-                  <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
-                    2
-                  </td>
-                  <td className="p-2 border-r border-black">TICKER</td>
-                  <td className="p-2 font-bold">$S402</td>
-                </tr>
-                <tr className="border-b border-black/10">
-                  <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
-                    3
-                  </td>
-                  <td className="p-2 border-r border-black">NETWORK</td>
-                  <td className="p-2 font-bold text-primary">BASE , SOLANA</td>
-                </tr>
-                <tr className="border-b border-black/10">
-                  <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
-                    4
-                  </td>
-                  <td className="p-2 border-r border-black">TAX_MODEL</td>
-                  <td className="p-2 font-bold">0% / 0%</td>
-                </tr>
-                <tr className="border-b border-black/10">
-                  <td className="p-2 border-r border-black bg-retro-gray text-center font-bold">
-                    5
-                  </td>
-                  <td className="p-2 border-r border-black">LP_STATUS</td>
-                  <td className="p-2 font-bold text-neon-green">
-                    PENDING
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="mt-20 border-t border-primary/20 py-12 px-6 glass-panel mb-12">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4 text-primary font-mono text-sm">
-              <a className="hover:underline" href="https://x.com/sleepyx402" target="_blank" rel="noopener noreferrer">
-                X.COM
-              </a>
-              <a className="hover:underline" href="#" target="_blank" rel="noopener noreferrer">
-                TELEGRAM
-              </a>
-              <a className="hover:underline" href="https://dexscreener.com/solana/AbhQN2jaGj3n5aoATZvmfSXv9w1N7wMSQxESNu5D3ySD" target="_blank" rel="noopener noreferrer">
-                DEXSCREENER
-              </a>
-              <a className="hover:underline" href="https://www.clanker.world/clanker/0x9a60AcE96a5D7223B423D460aBcb5cA49Ee80b07" target="_blank" rel="noopener noreferrer">
-                Clanker
-              </a>
             </div>
-            <p className="text-[10px] text-primary/40 uppercase tracking-[0.2em]">
-              Powered by x402 Protocol. No refunds. v1.0.97
-            </p>
-          </div>
-          <div className="bg-black/40 border border-primary/20 px-4 py-2 rounded font-mono text-[10px] text-primary/60">
-            <div className="flex gap-4">
-              <span>CPU: 402%</span>
-              <span>MEM: 64MB</span>
-              <span>LATENCY: 0.00ms</span>
+          </DraggableWindow>
+        )}
+
+        {/* File Explorer Window */}
+        {desktop.isWindowOpen("file-explorer") && (
+          <DraggableWindow
+            id="file-explorer"
+            title="File Explorer - On-Chain Assets"
+            icon={<span className="material-symbols-outlined text-sm">folder_open</span>}
+            onClose={() => desktop.closeWindow("file-explorer")}
+            defaultSize={{ width: 550, height: 400 }}
+          >
+            <div className="bg-retro-gray p-1">
+              {/* Menu bar */}
+              <div className="flex gap-4 px-2 py-1 bg-retro-gray border-b border-gray-400 text-xs text-black">
+                <span className="hover:bg-primary hover:text-white px-1 cursor-pointer">File</span>
+                <span className="hover:bg-primary hover:text-white px-1 cursor-pointer">Edit</span>
+                <span className="hover:bg-primary hover:text-white px-1 cursor-pointer">View</span>
+              </div>
+              {/* Address bar */}
+              <div className="flex items-center gap-2 px-2 py-1 bg-retro-gray border-b border-gray-400">
+                <span className="text-xs text-black font-bold">Address:</span>
+                <div className="flex-1 win95-recessed bg-white px-2 py-0.5 text-xs text-black font-mono">
+                  {wallet.isConnected ? `/${wallet.walletNetwork}/${wallet.address?.slice(0, 12)}...` : "/guest"}
+                </div>
+              </div>
+              {/* File list */}
+              <div className="bg-white win95-recessed p-2 min-h-[280px]">
+                {wallet.isConnected ? (
+                  <div className="space-y-1">
+                    {[
+                      { icon: "folder", name: "My Assets", type: "Folder" },
+                      { icon: "folder", name: "Agent Configs", type: "Folder" },
+                      { icon: "description", name: "wallet_backup.json", type: "JSON" },
+                      { icon: "image", name: "avatar.png", type: "Image" },
+                    ].map((file) => (
+                      <div key={file.name} className="flex items-center gap-2 px-2 py-1 hover:bg-primary hover:text-white text-black cursor-pointer text-xs">
+                        <span className="material-symbols-outlined text-[16px]">{file.icon}</span>
+                        <span className="flex-1 font-mono">{file.name}</span>
+                        <span className="text-black/40">{file.type}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-xs text-black/40 font-mono">
+                    Connect wallet to browse on-chain assets
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      </footer>
+          </DraggableWindow>
+        )}
+
+        {/* Terminal Window */}
+        {desktop.isWindowOpen("terminal") && (
+          <DraggableWindow
+            id="terminal"
+            title="Terminal - Sleepy Gatekeeper"
+            icon={<span className="material-symbols-outlined text-sm">terminal</span>}
+            onClose={() => desktop.closeWindow("terminal")}
+            defaultSize={{ width: 650, height: 420 }}
+          >
+            <TerminalScreen />
+          </DraggableWindow>
+        )}
+
+        {/* Settings Window */}
+        {desktop.isWindowOpen("settings") && (
+          <DraggableWindow
+            id="settings"
+            title="Settings"
+            icon={<span className="material-symbols-outlined text-sm">settings</span>}
+            onClose={() => desktop.closeWindow("settings")}
+            defaultSize={{ width: 700, height: 500 }}
+          >
+            <Settings />
+          </DraggableWindow>
+        )}
+
+        {/* Help Docs Window */}
+        {desktop.isWindowOpen("help") && (
+          <DraggableWindow
+            id="help"
+            title="Help Docs"
+            icon={<span className="material-symbols-outlined text-sm">help_center</span>}
+            onClose={() => desktop.closeWindow("help")}
+            defaultSize={{ width: 600, height: 450 }}
+          >
+            <HelpDocs />
+          </DraggableWindow>
+        )}
+      </div>
+
+      {/* Mandatory Wallet Connect Modal */}
+      <WalletConnectModal />
 
       {/* Start Menu */}
       <StartMenu items={startMenuItems} show={showStartMenu} />
 
-      {/* Taskbar */}
+      {/* Enhanced Taskbar */}
       <Taskbar
         buttons={taskbarButtons}
         showStartMenu={showStartMenu}
         onStartClick={() => setShowStartMenu(!showStartMenu)}
       >
-        <div className="h-full px-2 win95-recessed flex items-center gap-3 bg-retro-gray/30">
-          <div className="flex items-center gap-2">
-            <a className="flex items-center justify-center" href="#">
-              <svg
-                className="size-4 text-[#000000]"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-              </svg>
-            </a>
-            <a className="flex items-center justify-center" href="#">
-              <svg
-                className="size-4 text-[#000000]"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"></path>
-              </svg>
-            </a>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="size-1.5 bg-neon-green rounded-full shadow-[0_0_4px_#39ff14]"></div>
-            <span className="text-[10px] text-black font-bold font-mono">
-              11:59 PM
-            </span>
+        <div className="h-full flex items-center gap-1 py-0.5">
+          {/* Username Display */}
+          {wallet.isConnected && wallet.username && (
+            <div className="h-full px-2 win95-recessed flex items-center gap-1.5 bg-retro-gray/30">
+              <span className="material-symbols-outlined text-[12px] text-black">person</span>
+              <span className="text-[10px] text-black font-bold font-mono truncate max-w-[120px]">
+                {wallet.username}
+              </span>
+            </div>
+          )}
+
+          {/* Network Switcher */}
+          <NetworkSwitcher />
+
+          {/* Quick Agent Spawn Button */}
+          {wallet.isConnected && (
+            <button
+              onClick={() => desktop.openWindow("agents-hub")}
+              className="h-full px-2 flex items-center gap-1 bg-retro-gray win95-shadow hover:bg-white transition-colors"
+              title="Spawn Agent"
+            >
+              <span className="material-symbols-outlined text-[14px] text-neon-green">smart_toy</span>
+            </button>
+          )}
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
+          {/* Connect Wallet (in taskbar) */}
+          <ConnectWallet />
+
+          {/* System Tray */}
+          <div className="h-full px-2 win95-recessed flex items-center gap-2 bg-retro-gray/30">
+            <div className="flex items-center gap-1.5">
+              <div className={`size-1.5 rounded-full ${wallet.isConnected ? "bg-neon-green shadow-[0_0_4px_#39ff14]" : "bg-red-500"}`} />
+              <LiveClock />
+            </div>
           </div>
         </div>
       </Taskbar>

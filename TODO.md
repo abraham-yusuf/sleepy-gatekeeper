@@ -15,19 +15,19 @@ Update tanggal terakhir: February 21, 2026
 ## Phase 1: Core OS Foundation (Q1 2026 – Target selesai Maret 2026)
 
 ### Wallet & Identity (High Priority)
-- [ ] Implement mandatory wallet connect modal on first load (EVM + SVM support)
-- [ ] Auto-generate username dari wallet address: `evm@0x...` atau `svm@...` (truncate + ellipsis)
-- [ ] Simpan session state di localStorage (tied to wallet signature, no central auth)
-- [ ] Add network switcher di taskbar (Devnet/Sepolia → Mainnet/Base/Solana)
-- [ ] Handle disconnect/reconnect gracefully (reload desktop tanpa lost state)
-- [ ] Tutorial onboarding: "Connect wallet to wake the gatekeeper" dengan animasi sleepy → awake
+- [x] Implement mandatory wallet connect modal on first load (EVM + SVM support)
+- [x] Auto-generate username dari wallet address: `evm@0x...` atau `svm@...` (truncate + ellipsis)
+- [x] Simpan session state di localStorage (tied to wallet signature, no central auth)
+- [x] Add network switcher di taskbar (Devnet/Sepolia → Mainnet/Base/Solana)
+- [x] Handle disconnect/reconnect gracefully (reload desktop tanpa lost state)
+- [x] Tutorial onboarding: "Connect wallet to wake the gatekeeper" dengan animasi sleepy → awake
 
 ### Desktop UI Basics (High Priority)
-- [ ] Create main layout: background (sleepy-themed gradient + subtle animation)
-- [ ] Implement taskbar: username display, wallet balance (USDC/SOL/ETH), clock, quick agent spawn button
-- [ ] Add desktop icons grid: Agents Hub, Marketplace, File Explorer, Terminal, Settings
-- [ ] Drag-and-drop window manager sederhana (gunakan react-draggable atau react-rnd)
-- [ ] Theme toggle: dark/light + "sleepy mode" (dimmed + slow animations)
+- [x] Create main layout: background (sleepy-themed gradient + subtle animation)
+- [x] Implement taskbar: username display, wallet balance (USDC/SOL/ETH), clock, quick agent spawn button
+- [x] Add desktop icons grid: Agents Hub, Marketplace, File Explorer, Terminal, Settings
+- [x] Drag-and-drop window manager sederhana (gunakan react-draggable atau react-rnd)
+- [x] Theme toggle: dark/light + "sleepy mode" (dimmed + slow animations)
 
 ### x402 + Escrow Integration (Medium-High)
 - [ ] Extend existing x402 proxy untuk protect OS-level apps (bukan hanya content)
