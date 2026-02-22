@@ -21,10 +21,7 @@ export function WalletConnectModal() {
   // Don't show if already connected
   if (wallet.isConnected) return null;
 
-  const solanaWallets = solanaWallet.connectors.filter((c) => {
-    const name = c.name.toLowerCase();
-    return name.includes("phantom") || name.includes("solflare") || name;
-  });
+  const solanaWallets = solanaWallet.connectors;
 
   const evmWallets = connectors.filter((c) => {
     const name = c.name.toLowerCase();

@@ -6,7 +6,7 @@ import { useWalletContext } from "../context/WalletContext";
 
 const NETWORKS = [
   { id: "devnet", label: "Devnet", chain: "solana", icon: "science" },
-  { id: "sepolia", label: "Sepolia", chain: "evm", chainId: 84532, icon: "science" },
+  { id: "sepolia", label: "Base Sepolia", chain: "evm", chainId: 84532, icon: "science" },
   { id: "mainnet-sol", label: "Solana Mainnet", chain: "solana", icon: "public" },
   { id: "base", label: "Base", chain: "evm", chainId: 8453, icon: "public" },
 ];

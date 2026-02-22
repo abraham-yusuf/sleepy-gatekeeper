@@ -17,7 +17,7 @@ export function LiveClock() {
       );
     };
     update();
-    const interval = setInterval(update, 1000);
+    const interval = setInterval(update, 30000);
     return () => clearInterval(interval);
   }, []);
 

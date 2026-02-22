@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   DesktopIcon,
   Taskbar,
@@ -34,6 +35,7 @@ const DESKTOP_ICONS = [
 export default function Home() {
   const { wallet, desktop } = useWalletContext();
   const [showStartMenu, setShowStartMenu] = useState(false);
+  const router = useRouter();
 
   // Start menu items
   const startMenuItems = [
@@ -131,7 +133,7 @@ export default function Home() {
       skills: "/skills",
     };
     if (routeMap[id]) {
-      window.location.href = routeMap[id];
+      router.push(routeMap[id]);
       return;
     }
     desktop.openWindow(id);

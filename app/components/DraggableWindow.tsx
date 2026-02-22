@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { Rnd } from "react-rnd";
 
 interface DraggableWindowProps {
@@ -72,10 +72,15 @@ export function DraggableWindow({
 
   // Calculate default position (centered with offset based on id hash)
   const hash = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  const defPos = defaultPosition ?? {
-    x: Math.max(20, (hash * 37) % (typeof window !== "undefined" ? window.innerWidth - defaultSize.width - 40 : 400)),
-    y: Math.max(20, (hash * 53) % (typeof window !== "undefined" ? window.innerHeight - defaultSize.height - 80 : 300)),
-  };
+  const defPos = useMemo(() => {
+    if (defaultPosition) return defaultPosition;
+    const w = typeof window !== "undefined" ? window.innerWidth : 1024;
+    const h = typeof window !== "undefined" ? window.innerHeight : 768;
+    return {
+      x: Math.max(20, (hash * 37) % Math.max(1, w - defaultSize.width - 40)),
+      y: Math.max(20, (hash * 53) % Math.max(1, h - defaultSize.height - 80)),
+    };
+  }, [id, defaultPosition, defaultSize.width, defaultSize.height, hash]);
 
   return (
     <Rnd
