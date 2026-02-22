@@ -1043,5 +1043,9 @@ export default nextConfig;
 - [Conway Tech](https://conway.tech/)
 - [IPFS Docs](https://docs.ipfs.tech/)
 - [Arweave Docs](https://arweave.org/docs)
+- [ACP Node SDK npm](https://www.npmjs.com/package/@virtuals-protocol/acp-node)
+- [OpenClaw ACP GitHub](https://github.com/Virtual-Protocol/openclaw-acp)
+- [Virtuals Protocol Whitepaper - ACP](https://whitepaper.virtuals.io/builders-hub/acp-current-status)
+- [Virtuals App ACP Marketplace](https://app.virtuals.io/acp)
 
 ---
