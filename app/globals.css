@@ -191,3 +191,21 @@ body {
 .glitch-text {
   text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
 }
+
+/* Sleepy Desktop Theme */
+.sleepy-desktop {
+  background-color: #0a0520;
+  background-image: radial-gradient(#1a0b3a 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* Sleepy Icon Animation */
+@keyframes sleepy-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(-3deg); }
+  75% { transform: translateY(2px) rotate(3deg); }
+}
+
+.sleepy-icon {
+  animation: sleepy-bob 3s ease-in-out infinite;
+}

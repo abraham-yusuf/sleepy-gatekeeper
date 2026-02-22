@@ -12,6 +12,7 @@ import {
   coinbaseWallet,
   metaMask,
 } from "wagmi/connectors";
+import { WalletProvider } from "./context/WalletContext";
 
 // Solana client configuration
 const solanaEndpoint =
@@ -35,11 +36,11 @@ export const wagmiConfig = createConfig({
   connectors: [
     metaMask({
       dappMetadata: {
-        name: "xCreator402",
+        name: "Sleepy Gatekeeper OS",
       },
     }),
     coinbaseWallet({
-      appName: "xCreator402",
+      appName: "Sleepy Gatekeeper OS",
     }),
     injected({ target: "rainbow" }),
     walletConnect({
@@ -56,7 +57,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <SolanaProvider client={solanaClient}>{children}</SolanaProvider>
+        <SolanaProvider client={solanaClient}>
+          <WalletProvider>{children}</WalletProvider>
+        </SolanaProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

@@ -12,3 +12,8 @@ export { TerminalScreen } from "./TerminalScreen";
 export { HelpDocs } from "./HelpDocs";
 export { Settings } from "./Settings";
 export { ConnectWallet } from "./ConnectWallet";
+export { WalletConnectModal } from "./WalletConnectModal";
+export { NetworkSwitcher } from "./NetworkSwitcher";
+export { DraggableWindow } from "./DraggableWindow";
+export { ThemeToggle } from "./ThemeToggle";
+export { LiveClock } from "./LiveClock";
