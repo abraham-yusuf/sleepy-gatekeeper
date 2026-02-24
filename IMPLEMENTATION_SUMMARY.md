@@ -11,7 +11,7 @@ A comprehensive product roadmap has been added to document the future vision and
 - **Advanced Features (Q4 2026):** Enhanced creator tools, social features, and mobile apps
 - **Ecosystem Expansion (2027+):** Multi-chain expansion and enterprise features
 
-See **[ROADMAP.md](../ROADMAP.md)** for complete details.
+See **[ROADMAP.md](./ROADMAP.md)** for complete details.
 
 ---
 
