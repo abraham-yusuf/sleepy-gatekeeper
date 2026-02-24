@@ -101,6 +101,93 @@ Lihat **TECHSTACK** di `/docs` untuk detail lengkap.
 
 Buka http://localhost:3000 → connect wallet → welcome to your decentralized OS!
 
+## Escrow Program — Manual Deploy to Devnet
+
+The Anchor escrow program lives in `programs/escrow/`. Because CI cannot deploy
+to Solana devnet (no keypair / SOL), follow these steps locally:
+
+### Prerequisites
+
+```bash
+# Install Rust + Cargo (skip if already installed)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install Solana CLI (v1.18+)
+sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+
+# Install Anchor CLI (v0.30.x)
+cargo install --git https://github.com/coral-xyz/anchor anchor-cli --tag v0.30.1
+
+# Generate a keypair (if you don't have one)
+solana-keygen new -o ~/.config/solana/id.json
+
+# Switch to devnet and airdrop SOL for deployment fees
+solana config set --url devnet
+solana airdrop 2
+```
+
+### Build the Escrow Program
+
+```bash
+cd sleepy-gatekeeper
+anchor build
+```
+
+This generates:
+- `target/deploy/escrow-keypair.json` — program keypair
+- `target/deploy/escrow.so` — compiled BPF program
+- `target/idl/escrow.json` — Anchor IDL
+- `target/types/escrow.ts` — TypeScript types
+
+### Deploy to Devnet
+
+```bash
+anchor deploy --provider.cluster devnet
+```
+
+Or use the npm script:
+
+```bash
+pnpm anchor:deploy:devnet
+```
+
+After deployment, note the **Program ID** printed in the terminal. Update the
+following files with the new program ID:
+
+1. `programs/escrow/src/lib.rs` — `declare_id!("NEW_PROGRAM_ID");`
+2. `Anchor.toml` — `escrow = "NEW_PROGRAM_ID"` under `[programs.devnet]`
+3. `.env` / `.env-local` — `ESCROW_PROGRAM_ID=NEW_PROGRAM_ID` and
+   `NEXT_PUBLIC_ESCROW_PROGRAM_ID=NEW_PROGRAM_ID`
+
+### Verify Deployment
+
+```bash
+solana program show <PROGRAM_ID>
+```
+
+### Enable Escrow in the App
+
+Set `USE_ESCROW=true` in your `.env` file to enable the hybrid x402 + escrow
+payment flow. The frontend will then offer both facilitator (fast) and escrow
+(trustless) payment options.
+
+### Escrow Architecture
+
+```
+┌─────────────┐     x402 facilitator     ┌──────────────┐
+│  Frontend    │ ──────────────────────▶  │  Content API  │
+│  (Next.js)   │                          └──────────────┘
+│              │     Anchor escrow
+│  lib/escrow  │ ──────────────────────▶  ┌──────────────┐
+│  .ts client  │  initialize / release    │  Solana PDA   │
+│              │  / refund                │  Vault        │
+└─────────────┘                          └──────────────┘
+```
+
+- **x402 path**: One-click payment via facilitator (proxy.ts middleware).
+- **Escrow path**: Trustless PDA vault — maker deposits USDC, taker receives on
+  release, maker refunds after timeout. Uses `lib/escrow.ts` client.
+
 ## Roadmap
 
 Lihat **ROADMAP.md** untuk timeline detail:

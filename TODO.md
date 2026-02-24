@@ -10,7 +10,7 @@ Gunakan format:
 - [>] = In progress
 Prioritas: High → Medium → Low
 
-Update tanggal terakhir: February 21, 2026
+Update tanggal terakhir: February 24, 2026
 
 ## Phase 1: Core OS Foundation (Q1 2026 – Target selesai Maret 2026)
 
@@ -29,24 +29,26 @@ Update tanggal terakhir: February 21, 2026
 - [x] Drag-and-drop window manager sederhana (gunakan react-draggable atau react-rnd)
 - [x] Theme toggle: dark/light + "sleepy mode" (dimmed + slow animations)
 
-### x402 + Escrow Integration (Critical – Escrow Program Masih Placeholder)
-- [ ] x402 paywall UI di Skills / Articles / Podcasts / Videos (BUY button + payment prompt)  
-- [ ] **Perbaiki escrow program di programs/escrow/src/lib.rs** (prioritas tertinggi sekarang)  
+### x402 + Escrow Integration (Critical – Escrow Program Implemented ✅)
+- [x] x402 paywall UI di Skills / Articles / Podcasts / Videos (BUY button + payment prompt)  
+- [x] **Perbaiki escrow program di programs/escrow/src/lib.rs** (prioritas tertinggi sekarang)  
   - Tambah EscrowState struct (maker, taker, amount, timeout, is_released, bump)  
-  - Implement PDA vault dengan seeds aman (["escrow", maker, taker, amount] atau simpler)  
+  - Implement PDA vault dengan seeds aman (["escrow", maker, taker] + ["vault", escrow_state])  
   - Full logic initialize_escrow: transfer CPI ke vault, simpan state, emit event  
   - Full release: transfer vault → taker (with signer seeds), set is_released = true  
   - Full refund: check timeout via Clock, transfer kembali ke maker  
-  - Tambah custom errors (ZeroAmount, AlreadyReleased, TimeoutNotReached)  
+  - Tambah custom errors (ZeroAmount, AlreadyReleased, TimeoutNotReached, TimeoutInPast, Unauthorized, InvalidTokenOwner, InvalidMint)  
   - Tambah Anchor events (EscrowInitialized, EscrowReleased, EscrowRefunded)  
   - Constraints lengkap: #[account(seeds=..., bump), mut token accounts, has_one]  
   - Tambah checks-effects-interactions pattern (prevent reentrancy)  
-- [ ] Deploy escrow ke devnet (anchor deploy --provider.cluster devnet)  
+- [x] Deploy instructions di README.md (manual deploy ke devnet karena CI tidak punya keypair)  
+- [x] Client utilities di lib/escrow.ts (PDA derivation, EscrowClient class, IDL)
+- [x] Integrasi hybrid x402 + escrow di proxy.ts (USE_ESCROW flag, documented flow)
+- [ ] Deploy escrow ke devnet (anchor deploy --provider.cluster devnet) — requires local keypair + SOL
 - [ ] Test end-to-end escrow dari frontend: BUY skill → call initialize_escrow → release/refund
 - [ ] Integrasi escrow callback di OS: success → unlock content / agent task  
 - [ ] Stub machine-to-machine payment (agent release via program-owned signer)
 - [ ] Extend existing x402 proxy untuk protect OS-level apps (bukan hanya content)
-- [ ] Deploy/update Anchor escrow program ke Devnet (jika belum, jika tidak bisa biar saya kerjakan manual / deploy manual)
 - [ ] Implement escrow flow di frontend: init → deposit → release/refund callbacks
 - [ ] Machine-to-machine payment stub: agents bisa trigger payment via wallet prompt
 - [ ] Test end-to-end: paywall → escrow → unlock protected app di desktop
