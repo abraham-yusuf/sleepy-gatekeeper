@@ -11,6 +11,17 @@ const facilitatorUrl = process.env.FACILITATOR_URL;
 export const evmAddress = process.env.EVM_ADDRESS as `0x${string}`;
 export const svmAddress = process.env.SVM_ADDRESS;
 
+/**
+ * Escrow integration flag.
+ * When USE_ESCROW=true, the OS exposes escrow-backed payment routes alongside
+ * the x402 facilitator routes.  This is the "hybrid" model described in the
+ * PRD: x402 for fast UX, Anchor escrow for maximum trustlessness.
+ */
+export const useEscrow = process.env.USE_ESCROW === "true";
+export const escrowProgramId =
+  process.env.ESCROW_PROGRAM_ID ??
+  "6a3tn1sZrWVRn2r3F8AkERmtQsVmBNDwTwJMmArDgMk4";
+
 if (!facilitatorUrl) {
   console.error("❌ FACILITATOR_URL environment variable is required");
   process.exit(1);
@@ -235,3 +246,22 @@ export const config = {
     "/skills/blockchain-security/:path*",
   ],
 };
+
+// ---------------------------------------------------------------------------
+// Escrow + x402 Hybrid Notes
+// ---------------------------------------------------------------------------
+// When USE_ESCROW=true the frontend can offer two payment paths per route:
+//   1. x402 facilitator (fast, custodial UX) — handled by the proxy above.
+//   2. Anchor escrow (trustless PDA vault)  — handled client-side via
+//      lib/escrow.ts calling the on-chain program directly.
+//
+// The BUY button in the Skills / Articles / Podcasts / Videos pages should:
+//   - Default to x402 facilitator for one-click payments.
+//   - Offer an "Escrow (Trustless)" option that calls EscrowClient from
+//     lib/escrow.ts when the user prefers on-chain settlement.
+//   - On escrow success callback, unlock the protected content the same way
+//     a successful x402 payment does.
+//
+// See lib/escrow.ts for the client API and programs/escrow/src/lib.rs for
+// the on-chain program.
+// ---------------------------------------------------------------------------
