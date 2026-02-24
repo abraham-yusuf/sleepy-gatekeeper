@@ -37,9 +37,12 @@ Update tanggal terakhir: February 21, 2026
 - [ ] Test end-to-end: paywall → escrow → unlock protected app di desktop
 
 ### Storage & Data (Medium)
-- [ ] Integrate IPFS untuk user files/apps (upload/download via wallet-linked CID)
-- [ ] Arweave permanent storage option untuk critical assets (misalnya agent configs)
-- [ ] File Explorer app: list on-chain/IPFS assets tied to username
+- [ ] Integrate IPFS via Pinata atau web3.storage untuk user files/apps (upload/download via wallet-linked CID)  
+  - Prioritas: web3.storage (gratis unlimited dev tier, Filecoin-backed) atau Pinata free tier (1GB)
+- [ ] File Explorer app: list real IPFS assets tied to username (bukan placeholder folders)  
+  - Upload button → pin ke IPFS → simpan CID di localStorage atau on-chain metadata  
+- [ ] Optional: Encrypt files client-side sebelum pin (untuk privacy)
+
 
 ### Testing & Validation
 - [ ] E2E test suite: wallet connect → desktop load → payment → logout
