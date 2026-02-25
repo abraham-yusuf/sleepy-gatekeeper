@@ -7,8 +7,7 @@ declare_id!("6a3tn1sZrWVRn2r3F8AkERmtQsVmBNDwTwJMmArDgMk4");
 pub mod escrow {
     use super::*;
 
-    /// Initialize an escrow: maker deposits USDC into a PDA vault.
-    /// Taker (payee), amount, and timeout are recorded on-chain.
+    /// Maker (buyer) deposits amount into PDA vault, records taker (payee) and timeout.
     pub fn initialize_escrow(
         ctx: Context<InitializeEscrow>,
         amount: u64,
@@ -17,125 +16,97 @@ pub mod escrow {
         require!(amount > 0, EscrowError::ZeroAmount);
 
         let clock = Clock::get()?;
-        require!(
-            timeout > clock.unix_timestamp,
-            EscrowError::TimeoutInPast
-        );
+        let escrow = &mut ctx.accounts.escrow;
+        escrow.maker = *ctx.accounts.maker.key();
+        escrow.taker = *ctx.accounts.taker.key();
+        escrow.amount = amount;
+        escrow.timeout = clock.unix_timestamp + timeout;
+        escrow.is_released = false;
+        escrow.bump = *ctx.bumps.get("escrow").unwrap();
 
-        // Save escrow state
-        let escrow_state = &mut ctx.accounts.escrow_state;
-        escrow_state.maker = ctx.accounts.maker.key();
-        escrow_state.taker = ctx.accounts.taker.key();
-        escrow_state.amount = amount;
-        escrow_state.timeout = timeout;
-        escrow_state.is_released = false;
-        escrow_state.bump = ctx.bumps.escrow_state;
-
-        // Transfer tokens from maker's token account to vault
+        // Transfer from maker ATA to vault PDA
         let cpi_accounts = Transfer {
-            from: ctx.accounts.maker_token_account.to_account_info(),
+            from: ctx.accounts.maker_token.to_account_info(),
             to: ctx.accounts.vault.to_account_info(),
             authority: ctx.accounts.maker.to_account_info(),
         };
         let cpi_program = ctx.accounts.token_program.to_account_info();
-        token::transfer(CpiContext::new(cpi_program, cpi_accounts), amount)?;
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+        token::transfer(cpi_ctx, amount)?;
 
         emit!(EscrowInitialized {
-            maker: ctx.accounts.maker.key(),
-            taker: ctx.accounts.taker.key(),
+            escrow: escrow.key(),
+            maker: escrow.maker,
+            taker: escrow.taker,
             amount,
-            timeout,
+            timeout: escrow.timeout,
         });
 
         Ok(())
     }
 
-    /// Release escrowed funds to the taker after payment confirmation.
-    /// Only the maker (payer) can authorize release.
+    /// Taker (payee) claims funds after confirmation (e.g., service delivered).
     pub fn release(ctx: Context<Release>) -> Result<()> {
-        let escrow_state = &ctx.accounts.escrow_state;
-        require!(!escrow_state.is_released, EscrowError::AlreadyReleased);
+        let escrow = &mut ctx.accounts.escrow;
+        require!(!escrow.is_released, EscrowError::AlreadyReleased);
 
-        let amount = escrow_state.amount;
-        let maker_key = escrow_state.maker;
-        let taker_key = escrow_state.taker;
-        let bump = escrow_state.bump;
-
-        // PDA signer seeds for vault authority
-        let seeds: &[&[u8]] = &[
+        // Use PDA seeds to sign CPI transfer from vault to taker
+        let seeds = &[
             b"escrow",
-            maker_key.as_ref(),
-            taker_key.as_ref(),
-            &[bump],
+            escrow.maker.as_ref(),
+            escrow.taker.as_ref(),
+            &[escrow.bump],
         ];
-        let signer = &[seeds];
+        let signer_seeds = &[&seeds[..]];
 
-        // Transfer tokens from vault to taker's token account
         let cpi_accounts = Transfer {
             from: ctx.accounts.vault.to_account_info(),
-            to: ctx.accounts.taker_token_account.to_account_info(),
-            authority: ctx.accounts.escrow_state.to_account_info(),
+            to: ctx.accounts.taker_token.to_account_info(),
+            authority: ctx.accounts.escrow.to_account_info(),
         };
         let cpi_program = ctx.accounts.token_program.to_account_info();
-        token::transfer(
-            CpiContext::new_with_signer(cpi_program, cpi_accounts, signer),
-            amount,
-        )?;
+        let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
+        token::transfer(cpi_ctx, escrow.amount)?;
 
-        // Mark as released
-        let escrow_state = &mut ctx.accounts.escrow_state;
-        escrow_state.is_released = true;
+        escrow.is_released = true;
 
         emit!(EscrowReleased {
-            maker: maker_key,
-            taker: taker_key,
-            amount,
+            escrow: escrow.key(),
+            amount: escrow.amount,
         });
 
         Ok(())
     }
 
-    /// Refund escrowed funds to the maker if timeout has elapsed.
+    /// Maker refunds if timeout has elapsed.
     pub fn refund(ctx: Context<Refund>) -> Result<()> {
-        let escrow_state = &ctx.accounts.escrow_state;
-        require!(!escrow_state.is_released, EscrowError::AlreadyReleased);
+        let escrow = &ctx.accounts.escrow;
+        require!(!escrow.is_released, EscrowError::AlreadyReleased);
 
         let clock = Clock::get()?;
-        require!(
-            clock.unix_timestamp >= escrow_state.timeout,
-            EscrowError::TimeoutNotReached
-        );
+        require!(clock.unix_timestamp >= escrow.timeout, EscrowError::TimeoutNotReached);
 
-        let amount = escrow_state.amount;
-        let maker_key = escrow_state.maker;
-        let taker_key = escrow_state.taker;
-        let bump = escrow_state.bump;
-
-        // PDA signer seeds for vault authority
-        let seeds: &[&[u8]] = &[
+        // Use PDA seeds to sign CPI transfer back to maker
+        let seeds = &[
             b"escrow",
-            maker_key.as_ref(),
-            taker_key.as_ref(),
-            &[bump],
+            escrow.maker.as_ref(),
+            escrow.taker.as_ref(),
+            &[escrow.bump],
         ];
-        let signer = &[seeds];
+        let signer_seeds = &[&seeds[..]];
 
-        // Transfer tokens from vault back to maker's token account
         let cpi_accounts = Transfer {
             from: ctx.accounts.vault.to_account_info(),
-            to: ctx.accounts.maker_token_account.to_account_info(),
-            authority: ctx.accounts.escrow_state.to_account_info(),
+            to: ctx.accounts.maker_token.to_account_info(),
+            authority: ctx.accounts.escrow.to_account_info(),
         };
         let cpi_program = ctx.accounts.token_program.to_account_info();
-        token::transfer(
-            CpiContext::new_with_signer(cpi_program, cpi_accounts, signer),
-            amount,
-        )?;
+        let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
+        token::transfer(cpi_ctx, escrow.amount)?;
 
         emit!(EscrowRefunded {
-            maker: maker_key,
-            taker: taker_key,
-            amount,
+            escrow: escrow.key(),
+            amount: escrow.amount,
         });
 
         Ok(())
@@ -143,149 +114,17 @@ pub mod escrow {
 }
 
 // ---------------------------------------------------------------------------
-// State
+// State Account
 // ---------------------------------------------------------------------------
 
 #[account]
-#[derive(InitSpace)]
-pub struct EscrowState {
-    pub maker: Pubkey,
-    pub taker: Pubkey,
+pub struct Escrow {
+    pub maker: Pubkey,          // buyer / payer
+    pub taker: Pubkey,          // payee / receiver
     pub amount: u64,
-    pub timeout: i64,
+    pub timeout: i64,           // unix timestamp
     pub is_released: bool,
     pub bump: u8,
-}
-
-// ---------------------------------------------------------------------------
-// Account validation structs
-// ---------------------------------------------------------------------------
-
-#[derive(Accounts)]
-pub struct InitializeEscrow<'info> {
-    #[account(mut)]
-    pub maker: Signer<'info>,
-
-    /// CHECK: The taker (payee) — validated only as a pubkey; no signature needed at init time.
-    pub taker: UncheckedAccount<'info>,
-
-    pub mint: Account<'info, Mint>,
-
-    #[account(
-        init,
-        payer = maker,
-        space = 8 + EscrowState::INIT_SPACE,
-        seeds = [b"escrow", maker.key().as_ref(), taker.key().as_ref()],
-        bump,
-    )]
-    pub escrow_state: Account<'info, EscrowState>,
-
-    #[account(
-        init,
-        payer = maker,
-        token::mint = mint,
-        token::authority = escrow_state,
-        seeds = [b"vault", escrow_state.key().as_ref()],
-        bump,
-    )]
-    pub vault: Account<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        constraint = maker_token_account.owner == maker.key() @ EscrowError::InvalidTokenOwner,
-        constraint = maker_token_account.mint == mint.key() @ EscrowError::InvalidMint,
-    )]
-    pub maker_token_account: Account<'info, TokenAccount>,
-
-    pub token_program: Program<'info, Token>,
-    pub system_program: Program<'info, System>,
-    pub rent: Sysvar<'info, Rent>,
-}
-
-#[derive(Accounts)]
-pub struct Release<'info> {
-    #[account(
-        mut,
-        constraint = maker.key() == escrow_state.maker @ EscrowError::Unauthorized,
-    )]
-    pub maker: Signer<'info>,
-
-    #[account(
-        mut,
-        seeds = [b"escrow", escrow_state.maker.as_ref(), escrow_state.taker.as_ref()],
-        bump = escrow_state.bump,
-    )]
-    pub escrow_state: Account<'info, EscrowState>,
-
-    #[account(
-        mut,
-        seeds = [b"vault", escrow_state.key().as_ref()],
-        bump,
-    )]
-    pub vault: Account<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        constraint = taker_token_account.owner == escrow_state.taker @ EscrowError::InvalidTokenOwner,
-        constraint = taker_token_account.mint == vault.mint @ EscrowError::InvalidMint,
-    )]
-    pub taker_token_account: Account<'info, TokenAccount>,
-
-    pub token_program: Program<'info, Token>,
-}
-
-#[derive(Accounts)]
-pub struct Refund<'info> {
-    #[account(
-        mut,
-        constraint = maker.key() == escrow_state.maker @ EscrowError::Unauthorized,
-    )]
-    pub maker: Signer<'info>,
-
-    #[account(
-        mut,
-        seeds = [b"escrow", escrow_state.maker.as_ref(), escrow_state.taker.as_ref()],
-        bump = escrow_state.bump,
-    )]
-    pub escrow_state: Account<'info, EscrowState>,
-
-    #[account(
-        mut,
-        seeds = [b"vault", escrow_state.key().as_ref()],
-        bump,
-    )]
-    pub vault: Account<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        constraint = maker_token_account.owner == escrow_state.maker @ EscrowError::InvalidTokenOwner,
-        constraint = maker_token_account.mint == vault.mint @ EscrowError::InvalidMint,
-    )]
-    pub maker_token_account: Account<'info, TokenAccount>,
-
-    pub token_program: Program<'info, Token>,
-}
-
-// ---------------------------------------------------------------------------
-// Custom errors
-// ---------------------------------------------------------------------------
-
-#[error_code]
-pub enum EscrowError {
-    #[msg("Amount must be greater than zero")]
-    ZeroAmount,
-    #[msg("Escrow has already been released")]
-    AlreadyReleased,
-    #[msg("Timeout has not been reached yet")]
-    TimeoutNotReached,
-    #[msg("Timeout must be in the future")]
-    TimeoutInPast,
-    #[msg("Unauthorized: signer does not match expected authority")]
-    Unauthorized,
-    #[msg("Token account owner mismatch")]
-    InvalidTokenOwner,
-    #[msg("Token mint mismatch")]
-    InvalidMint,
 }
 
 // ---------------------------------------------------------------------------
@@ -294,6 +133,7 @@ pub enum EscrowError {
 
 #[event]
 pub struct EscrowInitialized {
+    pub escrow: Pubkey,
     pub maker: Pubkey,
     pub taker: Pubkey,
     pub amount: u64,
@@ -302,14 +142,114 @@ pub struct EscrowInitialized {
 
 #[event]
 pub struct EscrowReleased {
-    pub maker: Pubkey,
-    pub taker: Pubkey,
+    pub escrow: Pubkey,
     pub amount: u64,
 }
 
 #[event]
 pub struct EscrowRefunded {
-    pub maker: Pubkey,
-    pub taker: Pubkey,
+    pub escrow: Pubkey,
     pub amount: u64,
+}
+
+// ---------------------------------------------------------------------------
+// Account Structs
+// ---------------------------------------------------------------------------
+
+#[derive(Accounts)]
+#[instruction(amount: u64)]
+pub struct InitializeEscrow<'info> {
+    #[account(
+        init,
+        payer = maker,
+        space = 8 + Escrow::INIT_SPACE,
+        seeds = [
+            b"escrow",
+            maker.key().as_ref(),
+            taker.key().as_ref(),
+            amount.to_le_bytes().as_ref()
+        ],
+        bump
+    )]
+    pub escrow: Account<'info, Escrow>,
+
+    #[account(mut)]
+    pub maker: Signer<'info>,
+
+    /// CHECK: taker is any account (payee), no constraint needed
+    pub taker: AccountInfo<'info>,
+
+    #[account(
+        mut,
+        constraint = maker_token.mint == mint.key(),
+        constraint = maker_token.owner == maker.key()
+    )]
+    pub maker_token: Account<'info, TokenAccount>,
+
+    #[account(
+        init_if_needed,
+        payer = maker,
+        associated_token::mint = mint,
+        associated_token::authority = escrow
+    )]
+    pub vault: Account<'info, TokenAccount>,
+
+    pub mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, anchor_spl::associated_token::AssociatedToken>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Release<'info> {
+    #[account(mut)]
+    pub escrow: Account<'info, Escrow>,
+
+    #[account(mut)]
+    pub taker: Signer<'info>,
+
+    #[account(
+        mut,
+        constraint = taker_token.mint == mint.key(),
+        constraint = taker_token.owner == taker.key()
+    )]
+    pub taker_token: Account<'info, TokenAccount>,
+
+    #[account(mut)]
+    pub vault: Account<'info, TokenAccount>,
+
+    pub mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct Refund<'info> {
+    #[account(mut)]
+    pub escrow: Account<'info, Escrow>,
+
+    #[account(mut)]
+    pub maker: Signer<'info>,
+
+    #[account(
+        mut,
+        constraint = maker_token.mint == mint.key(),
+        constraint = maker_token.owner == maker.key()
+    )]
+    pub maker_token: Account<'info, TokenAccount>,
+
+    #[account(mut)]
+    pub vault: Account<'info, TokenAccount>,
+
+    pub mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[error_code]
+pub enum EscrowError {
+    #[msg("Amount must be greater than zero")]
+    ZeroAmount,
+    #[msg("Timeout not reached yet")]
+    TimeoutNotReached,
+    #[msg("Escrow already released")]
+    AlreadyReleased,
 }
