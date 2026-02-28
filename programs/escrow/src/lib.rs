@@ -57,7 +57,7 @@ pub mod escrow {
 
         // Use PDA seeds to sign CPI transfer from vault to taker
         let seeds = &[
-            b"escrow" as &[u8],
+            b"escrow",
             maker_key.as_ref(),
             taker_key.as_ref(),
             &[bump],
@@ -99,7 +99,7 @@ pub mod escrow {
 
         // Use PDA seeds to sign CPI transfer back to maker
         let seeds = &[
-            b"escrow" as &[u8],
+            b"escrow",
             maker_key.as_ref(),
             taker_key.as_ref(),
             &[bump],
