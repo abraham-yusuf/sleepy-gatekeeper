@@ -33,7 +33,7 @@ Update tanggal terakhir: February 24, 2026
 - [x] x402 paywall UI di Skills / Articles / Podcasts / Videos (BUY button + payment prompt)  
 - [x] **Perbaiki escrow program di programs/escrow/src/lib.rs** (prioritas tertinggi sekarang)  
   - Tambah EscrowState struct (maker, taker, amount, timeout, is_released, bump)  
-  - Implement PDA vault dengan seeds aman (["escrow", maker, taker] + ["vault", escrow_state])  
+  - Implement PDA vault dengan seeds aman (["escrow", maker, taker] + ATA vault owned by escrow PDA)  
   - Full logic initialize_escrow: transfer CPI ke vault, simpan state, emit event  
   - Full release: transfer vault → taker (with signer seeds), set is_released = true  
   - Full refund: check timeout via Clock, transfer kembali ke maker  
