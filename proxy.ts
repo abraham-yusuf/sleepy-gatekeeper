@@ -139,6 +139,48 @@ export const routeConfigurations = {
       ...declareDiscoveryExtension({}),
     },
   },
+  "/podcasts/crypto-conversations": {
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.015",
+        network: "eip155:84532" as const,
+        payTo: evmAddress,
+      },
+      {
+        scheme: "exact",
+        price: "$0.015",
+        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+        payTo: svmAddress,
+      },
+    ],
+    description: "Premium Podcast: Crypto Conversations - NFTs and Beyond",
+    mimeType: "text/html",
+    extensions: {
+      ...declareDiscoveryExtension({}),
+    },
+  },
+  "/podcasts/creator-spotlight": {
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.025",
+        network: "eip155:84532" as const,
+        payTo: evmAddress,
+      },
+      {
+        scheme: "exact",
+        price: "$0.025",
+        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+        payTo: svmAddress,
+      },
+    ],
+    description: "Premium Podcast: Creator Spotlight - Building Your Brand",
+    mimeType: "text/html",
+    extensions: {
+      ...declareDiscoveryExtension({}),
+    },
+  },
   "/videos/blockchain-basics": {
     accepts: [
       {
@@ -155,6 +197,48 @@ export const routeConfigurations = {
       },
     ],
     description: "Premium Video: Blockchain Basics - A Complete Guide",
+    mimeType: "text/html",
+    extensions: {
+      ...declareDiscoveryExtension({}),
+    },
+  },
+  "/videos/smart-contracts-tutorial": {
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.08",
+        network: "eip155:84532" as const,
+        payTo: evmAddress,
+      },
+      {
+        scheme: "exact",
+        price: "$0.08",
+        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+        payTo: svmAddress,
+      },
+    ],
+    description: "Premium Video: Smart Contracts Tutorial for Beginners",
+    mimeType: "text/html",
+    extensions: {
+      ...declareDiscoveryExtension({}),
+    },
+  },
+  "/videos/defi-explained": {
+    accepts: [
+      {
+        scheme: "exact",
+        price: "$0.06",
+        network: "eip155:84532" as const,
+        payTo: evmAddress,
+      },
+      {
+        scheme: "exact",
+        price: "$0.06",
+        network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+        payTo: svmAddress,
+      },
+    ],
+    description: "Premium Video: DeFi Explained - The Future of Finance",
     mimeType: "text/html",
     extensions: {
       ...declareDiscoveryExtension({}),
@@ -240,7 +324,11 @@ export const config = {
     "/articles/creator-economy/:path*",
     "/articles/decentralized-content/:path*",
     "/podcasts/web3-insights/:path*",
+    "/podcasts/crypto-conversations/:path*",
+    "/podcasts/creator-spotlight/:path*",
     "/videos/blockchain-basics/:path*",
+    "/videos/smart-contracts-tutorial/:path*",
+    "/videos/defi-explained/:path*",
     "/skills/ai-prompt-mastery/:path*",
     "/skills/web3-development/:path*",
     "/skills/blockchain-security/:path*",

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SolanaEscrowInfo from "@/app/components/SolanaEscrowInfo";
 
 export default function DecentralizedContentArticle() {
   return (
@@ -120,6 +121,9 @@ export default function DecentralizedContentArticle() {
                   sustainable, independent businesses.
                 </p>
               </div>
+
+              {/* Solana Escrow Integration */}
+              <SolanaEscrowInfo contentType="Article" price="$0.015" />
             </div>
 
             <div className="mt-12 pt-8 border-t-2 border-gray-300">
@@ -130,8 +134,8 @@ export default function DecentralizedContentArticle() {
                 >
                   ← Back to Articles
                 </Link>
-                <div className="text-sm text-gray-600 font-mono">
-                  🎉 Thank you for your payment!
+                <div className="text-sm text-gray-500 font-mono">
+                  Powered by X402 Protocol + Solana Escrow
                 </div>
               </div>
             </div>

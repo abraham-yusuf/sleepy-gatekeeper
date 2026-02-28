@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SolanaEscrowInfo from "@/app/components/SolanaEscrowInfo";
 
 export default function CreatorEconomyArticle() {
   return (
@@ -113,6 +114,9 @@ export default function CreatorEconomyArticle() {
                   subscriptions and other monetization models.
                 </p>
               </div>
+
+              {/* Solana Escrow Integration */}
+              <SolanaEscrowInfo contentType="Article" price="$0.02" />
             </div>
 
             <div className="mt-12 pt-8 border-t-2 border-gray-300">
@@ -123,8 +127,8 @@ export default function CreatorEconomyArticle() {
                 >
                   ← Back to Articles
                 </Link>
-                <div className="text-sm text-gray-600 font-mono">
-                  🎉 Thank you for your payment!
+                <div className="text-sm text-gray-500 font-mono">
+                  Powered by X402 Protocol + Solana Escrow
                 </div>
               </div>
             </div>

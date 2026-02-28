@@ -10,7 +10,7 @@ Gunakan format:
 - [>] = In progress
 Prioritas: High → Medium → Low
 
-Update tanggal terakhir: February 24, 2026
+Update tanggal terakhir: February 28, 2026
 
 ## Phase 1: Core OS Foundation (Q1 2026 – Target selesai Maret 2026)
 
@@ -45,11 +45,14 @@ Update tanggal terakhir: February 24, 2026
 - [x] Client utilities di lib/escrow.ts (PDA derivation, EscrowClient class, IDL)
 - [x] Integrasi hybrid x402 + escrow di proxy.ts (USE_ESCROW flag, documented flow)
 - [x] Deploy escrow ke devnet (anchor deploy --provider.cluster devnet) — requires local keypair + SOL. already deployed program : `62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU`
-- [ ] Test end-to-end escrow dari frontend: BUY skill → call initialize_escrow → release/refund
+- [x] Solana escrow integration examples on all content pages (SolanaEscrowInfo component with exact SVM scheme)
+- [x] Create missing content detail pages: videos/smart-contracts-tutorial, videos/defi-explained, podcasts/crypto-conversations, podcasts/creator-spotlight
+- [x] Add x402 exact SVM route configs in proxy.ts for all new content pages
+- [x] Implement escrow flow di frontend: init → deposit → release/refund callbacks (SolanaEscrowInfo component with code examples on each page)
+- [ ] Test end-to-end escrow dari frontend: BUY skill → call initialize_escrow → release/refund (requires live devnet wallet)
 - [ ] Integrasi escrow callback di OS: success → unlock content / agent task  
 - [ ] Stub machine-to-machine payment (agent release via program-owned signer)
 - [ ] Extend existing x402 proxy untuk protect OS-level apps (bukan hanya content)
-- [ ] Implement escrow flow di frontend: init → deposit → release/refund callbacks
 - [ ] Machine-to-machine payment stub: agents bisa trigger payment via wallet prompt
 - [ ] Test end-to-end: paywall → escrow → unlock protected app di desktop
 
