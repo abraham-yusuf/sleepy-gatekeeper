@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SolanaEscrowInfo from "@/app/components/SolanaEscrowInfo";
 
 export default function Web3FutureArticle() {
   return (
@@ -108,6 +109,9 @@ export default function Web3FutureArticle() {
                   with a seamless payment experience across multiple blockchain networks.
                 </p>
               </div>
+
+              {/* Solana Escrow Integration */}
+              <SolanaEscrowInfo contentType="Article" price="$0.01" />
             </div>
 
             <div className="mt-12 pt-8 border-t-2 border-gray-300">
@@ -118,8 +122,8 @@ export default function Web3FutureArticle() {
                 >
                   ← Back to Articles
                 </Link>
-                <div className="text-sm text-gray-600 font-mono">
-                  🎉 Thank you for your payment!
+                <div className="text-sm text-gray-500 font-mono">
+                  Powered by X402 Protocol + Solana Escrow
                 </div>
               </div>
             </div>
