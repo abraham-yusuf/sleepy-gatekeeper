@@ -20,7 +20,7 @@
     "anchor:test": "anchor test"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.30.1",
+    "@coral-xyz/anchor": "^0.32.1",
     "@heroicons/react": "^2.2.0",
     "@solana/client": "^1.7.0",
     "@solana/react-hooks": "^1.4.1",

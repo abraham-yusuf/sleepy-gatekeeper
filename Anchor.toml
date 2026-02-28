@@ -1,11 +1,12 @@
 [toolchain]
+anchor_version = "0.32.1"
 
 [features]
 resolution = true
 skip-lint = false
 
 [programs.devnet]
-escrow = "6a3tn1sZrWVRn2r3F8AkERmtQsVmBNDwTwJMmArDgMk4"
+escrow = "Ab3eX87jUzUHdfwP5rsv9nM9TPj9aSHExkX257Ytzkqv"
 
 [registry]
 url = "https://api.apr.dev"
