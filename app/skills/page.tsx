@@ -103,6 +103,29 @@ export default function SkillsPage() {
           ))}
         </div>
 
+        {/* Escrow Info Box */}
+        <div className="mt-12 win95-shadow bg-retro-gray rounded-sm max-w-2xl mx-auto">
+          <div className="bg-gradient-to-r from-[#000080] to-[#6a0dad] px-4 py-2">
+            <h2 className="text-lg font-bold text-white font-mono flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm">token</span>
+              Solana Escrow Integration
+            </h2>
+          </div>
+          <div className="p-6 bg-white">
+            <p className="text-black mb-3 font-mono text-sm">
+              🔐 All skills are protected by the on-chain Anchor escrow program on Solana Devnet.
+            </p>
+            <div className="win95-recessed bg-black p-3 mb-3">
+              <p className="text-neon-green font-mono text-xs terminal-glow">
+                Program: 62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU
+              </p>
+            </div>
+            <p className="text-black font-mono text-sm">
+              ⚡ Payments use the exact SVM scheme: deposit into PDA vault → release on content delivery → refund on timeout.
+            </p>
+          </div>
+        </div>
+
         {/* Info Box */}
         <div className="mt-12 win95-shadow bg-retro-gray rounded-sm max-w-2xl mx-auto">
           <div className="bg-gradient-to-r from-blue-900 to-blue-600 px-4 py-2">
