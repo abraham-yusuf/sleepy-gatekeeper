@@ -44,7 +44,7 @@ Update tanggal terakhir: February 24, 2026
 - [x] Deploy instructions di README.md (manual deploy ke devnet karena CI tidak punya keypair)  
 - [x] Client utilities di lib/escrow.ts (PDA derivation, EscrowClient class, IDL)
 - [x] Integrasi hybrid x402 + escrow di proxy.ts (USE_ESCROW flag, documented flow)
-- [ ] Deploy escrow ke devnet (anchor deploy --provider.cluster devnet) — requires local keypair + SOL
+- [x] Deploy escrow ke devnet (anchor deploy --provider.cluster devnet) — requires local keypair + SOL. already deployed program : `62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU`
 - [ ] Test end-to-end escrow dari frontend: BUY skill → call initialize_escrow → release/refund
 - [ ] Integrasi escrow callback di OS: success → unlock content / agent task  
 - [ ] Stub machine-to-machine payment (agent release via program-owned signer)
