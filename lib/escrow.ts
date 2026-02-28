@@ -26,7 +26,7 @@ import * as anchor from "@coral-xyz/anchor";
 export const ESCROW_PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_ESCROW_PROGRAM_ID ??
     process.env.ESCROW_PROGRAM_ID ??
-    "Ab3eX87jUzUHdfwP5rsv9nM9TPj9aSHExkX257Ytzkqv",
+    "62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU",
 );
 
 /** USDC mint on Solana devnet. */
