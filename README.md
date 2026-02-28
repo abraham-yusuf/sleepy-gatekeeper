@@ -115,8 +115,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Install Solana CLI (v1.18+)
 sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
 
-# Install Anchor CLI (v0.30.x)
-cargo install --git https://github.com/coral-xyz/anchor anchor-cli --tag v0.30.1
+# Install Anchor CLI (v0.32.x)
+cargo install --git https://github.com/coral-xyz/anchor anchor-cli --tag v0.32.1
 
 # Generate a keypair (if you don't have one)
 solana-keygen new -o ~/.config/solana/id.json

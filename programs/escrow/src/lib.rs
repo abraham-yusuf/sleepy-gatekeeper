@@ -17,12 +17,12 @@ pub mod escrow {
 
         let clock = Clock::get()?;
         let escrow = &mut ctx.accounts.escrow;
-        escrow.maker = *ctx.accounts.maker.key();
-        escrow.taker = *ctx.accounts.taker.key();
+        escrow.maker = ctx.accounts.maker.key();
+        escrow.taker = ctx.accounts.taker.key();
         escrow.amount = amount;
         escrow.timeout = clock.unix_timestamp + timeout;
         escrow.is_released = false;
-        escrow.bump = *ctx.bumps.get("escrow").unwrap();
+        escrow.bump = ctx.bumps.escrow;
 
         // Transfer from maker ATA to vault PDA
         let cpi_accounts = Transfer {
@@ -47,15 +47,20 @@ pub mod escrow {
 
     /// Taker (payee) claims funds after confirmation (e.g., service delivered).
     pub fn release(ctx: Context<Release>) -> Result<()> {
-        let escrow = &mut ctx.accounts.escrow;
+        let escrow = &ctx.accounts.escrow;
         require!(!escrow.is_released, EscrowError::AlreadyReleased);
+
+        let amount = escrow.amount;
+        let maker_key = escrow.maker;
+        let taker_key = escrow.taker;
+        let bump = escrow.bump;
 
         // Use PDA seeds to sign CPI transfer from vault to taker
         let seeds = &[
             b"escrow",
-            escrow.maker.as_ref(),
-            escrow.taker.as_ref(),
-            &[escrow.bump],
+            maker_key.as_ref(),
+            taker_key.as_ref(),
+            &[bump],
         ];
         let signer_seeds = &[&seeds[..]];
 
@@ -66,13 +71,14 @@ pub mod escrow {
         };
         let cpi_program = ctx.accounts.token_program.to_account_info();
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
-        token::transfer(cpi_ctx, escrow.amount)?;
+        token::transfer(cpi_ctx, amount)?;
 
+        let escrow = &mut ctx.accounts.escrow;
         escrow.is_released = true;
 
         emit!(EscrowReleased {
             escrow: escrow.key(),
-            amount: escrow.amount,
+            amount,
         });
 
         Ok(())
@@ -86,12 +92,17 @@ pub mod escrow {
         let clock = Clock::get()?;
         require!(clock.unix_timestamp >= escrow.timeout, EscrowError::TimeoutNotReached);
 
+        let amount = escrow.amount;
+        let maker_key = escrow.maker;
+        let taker_key = escrow.taker;
+        let bump = escrow.bump;
+
         // Use PDA seeds to sign CPI transfer back to maker
         let seeds = &[
             b"escrow",
-            escrow.maker.as_ref(),
-            escrow.taker.as_ref(),
-            &[escrow.bump],
+            maker_key.as_ref(),
+            taker_key.as_ref(),
+            &[bump],
         ];
         let signer_seeds = &[&seeds[..]];
 
@@ -102,11 +113,11 @@ pub mod escrow {
         };
         let cpi_program = ctx.accounts.token_program.to_account_info();
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
-        token::transfer(cpi_ctx, escrow.amount)?;
+        token::transfer(cpi_ctx, amount)?;
 
         emit!(EscrowRefunded {
             escrow: escrow.key(),
-            amount: escrow.amount,
+            amount,
         });
 
         Ok(())
@@ -118,6 +129,7 @@ pub mod escrow {
 // ---------------------------------------------------------------------------
 
 #[account]
+#[derive(InitSpace)]
 pub struct Escrow {
     pub maker: Pubkey,          // buyer / payer
     pub taker: Pubkey,          // payee / receiver
@@ -167,7 +179,6 @@ pub struct InitializeEscrow<'info> {
             b"escrow",
             maker.key().as_ref(),
             taker.key().as_ref(),
-            amount.to_le_bytes().as_ref()
         ],
         bump
     )]
@@ -177,7 +188,7 @@ pub struct InitializeEscrow<'info> {
     pub maker: Signer<'info>,
 
     /// CHECK: taker is any account (payee), no constraint needed
-    pub taker: AccountInfo<'info>,
+    pub taker: UncheckedAccount<'info>,
 
     #[account(
         mut,
@@ -202,7 +213,16 @@ pub struct InitializeEscrow<'info> {
 
 #[derive(Accounts)]
 pub struct Release<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        seeds = [
+            b"escrow",
+            escrow.maker.as_ref(),
+            escrow.taker.as_ref(),
+        ],
+        bump = escrow.bump,
+        has_one = taker,
+    )]
     pub escrow: Account<'info, Escrow>,
 
     #[account(mut)]
@@ -215,7 +235,11 @@ pub struct Release<'info> {
     )]
     pub taker_token: Account<'info, TokenAccount>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        associated_token::mint = mint,
+        associated_token::authority = escrow
+    )]
     pub vault: Account<'info, TokenAccount>,
 
     pub mint: Account<'info, Mint>,
@@ -224,7 +248,16 @@ pub struct Release<'info> {
 
 #[derive(Accounts)]
 pub struct Refund<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        seeds = [
+            b"escrow",
+            escrow.maker.as_ref(),
+            escrow.taker.as_ref(),
+        ],
+        bump = escrow.bump,
+        has_one = maker,
+    )]
     pub escrow: Account<'info, Escrow>,
 
     #[account(mut)]
@@ -237,7 +270,11 @@ pub struct Refund<'info> {
     )]
     pub maker_token: Account<'info, TokenAccount>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        associated_token::mint = mint,
+        associated_token::authority = escrow
+    )]
     pub vault: Account<'info, TokenAccount>,
 
     pub mint: Account<'info, Mint>,

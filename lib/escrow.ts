@@ -10,10 +10,10 @@ import {
   PublicKey,
   Connection,
   SystemProgram,
-  SYSVAR_RENT_PUBKEY,
 } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
 } from "@solana/spl-token";
 import * as anchor from "@coral-xyz/anchor";
@@ -26,7 +26,7 @@ import * as anchor from "@coral-xyz/anchor";
 export const ESCROW_PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_ESCROW_PROGRAM_ID ??
     process.env.ESCROW_PROGRAM_ID ??
-    "6a3tn1sZrWVRn2r3F8AkERmtQsVmBNDwTwJMmArDgMk4",
+    "Ab3eX87jUzUHdfwP5rsv9nM9TPj9aSHExkX257Ytzkqv",
 );
 
 /** USDC mint on Solana devnet. */
@@ -40,6 +40,7 @@ export const USDC_DEVNET_MINT = new PublicKey(
 
 /**
  * Derive the escrow state PDA for a given maker/taker pair.
+ * Seeds: ["escrow", maker, taker]
  */
 export function deriveEscrowStatePDA(
   maker: PublicKey,
@@ -53,16 +54,14 @@ export function deriveEscrowStatePDA(
 }
 
 /**
- * Derive the vault token-account PDA for a given escrow state.
+ * Derive the vault associated token account for a given escrow PDA and mint.
+ * The vault is an Associated Token Account owned by the escrow PDA.
  */
-export function deriveVaultPDA(
+export async function deriveVaultATA(
   escrowState: PublicKey,
-  programId: PublicKey = ESCROW_PROGRAM_ID,
-): [PublicKey, number] {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("vault"), escrowState.toBuffer()],
-    programId,
-  );
+  mint: PublicKey,
+): Promise<PublicKey> {
+  return getAssociatedTokenAddress(mint, escrowState, true);
 }
 
 // ---------------------------------------------------------------------------
@@ -77,15 +76,15 @@ export const ESCROW_IDL = {
     {
       name: "initializeEscrow",
       accounts: [
+        { name: "escrow", isMut: true, isSigner: false },
         { name: "maker", isMut: true, isSigner: true },
         { name: "taker", isMut: false, isSigner: false },
-        { name: "mint", isMut: false, isSigner: false },
-        { name: "escrowState", isMut: true, isSigner: false },
+        { name: "makerToken", isMut: true, isSigner: false },
         { name: "vault", isMut: true, isSigner: false },
-        { name: "makerTokenAccount", isMut: true, isSigner: false },
+        { name: "mint", isMut: false, isSigner: false },
         { name: "tokenProgram", isMut: false, isSigner: false },
+        { name: "associatedTokenProgram", isMut: false, isSigner: false },
         { name: "systemProgram", isMut: false, isSigner: false },
-        { name: "rent", isMut: false, isSigner: false },
       ],
       args: [
         { name: "amount", type: "u64" },
@@ -95,10 +94,11 @@ export const ESCROW_IDL = {
     {
       name: "release",
       accounts: [
-        { name: "maker", isMut: true, isSigner: true },
-        { name: "escrowState", isMut: true, isSigner: false },
+        { name: "escrow", isMut: true, isSigner: false },
+        { name: "taker", isMut: true, isSigner: true },
+        { name: "takerToken", isMut: true, isSigner: false },
         { name: "vault", isMut: true, isSigner: false },
-        { name: "takerTokenAccount", isMut: true, isSigner: false },
+        { name: "mint", isMut: false, isSigner: false },
         { name: "tokenProgram", isMut: false, isSigner: false },
       ],
       args: [],
@@ -106,10 +106,11 @@ export const ESCROW_IDL = {
     {
       name: "refund",
       accounts: [
+        { name: "escrow", isMut: true, isSigner: false },
         { name: "maker", isMut: true, isSigner: true },
-        { name: "escrowState", isMut: true, isSigner: false },
+        { name: "makerToken", isMut: true, isSigner: false },
         { name: "vault", isMut: true, isSigner: false },
-        { name: "makerTokenAccount", isMut: true, isSigner: false },
+        { name: "mint", isMut: false, isSigner: false },
         { name: "tokenProgram", isMut: false, isSigner: false },
       ],
       args: [],
@@ -117,7 +118,7 @@ export const ESCROW_IDL = {
   ],
   accounts: [
     {
-      name: "EscrowState",
+      name: "Escrow",
       type: {
         kind: "struct" as const,
         fields: [
@@ -133,12 +134,8 @@ export const ESCROW_IDL = {
   ],
   errors: [
     { code: 6000, name: "ZeroAmount", msg: "Amount must be greater than zero" },
-    { code: 6001, name: "AlreadyReleased", msg: "Escrow has already been released" },
-    { code: 6002, name: "TimeoutNotReached", msg: "Timeout has not been reached yet" },
-    { code: 6003, name: "TimeoutInPast", msg: "Timeout must be in the future" },
-    { code: 6004, name: "Unauthorized", msg: "Unauthorized: signer does not match expected authority" },
-    { code: 6005, name: "InvalidTokenOwner", msg: "Token account owner mismatch" },
-    { code: 6006, name: "InvalidMint", msg: "Token mint mismatch" },
+    { code: 6001, name: "TimeoutNotReached", msg: "Timeout not reached yet" },
+    { code: 6002, name: "AlreadyReleased", msg: "Escrow already released" },
   ],
 } as const;
 
@@ -181,8 +178,8 @@ export class EscrowClient {
   }): Promise<string> {
     const maker = this.program.provider.publicKey!;
     const [escrowState] = deriveEscrowStatePDA(maker, params.taker);
-    const [vault] = deriveVaultPDA(escrowState);
-    const makerTokenAccount = await getAssociatedTokenAddress(
+    const vault = await deriveVaultATA(escrowState, params.mint);
+    const makerToken = await getAssociatedTokenAddress(
       params.mint,
       maker,
     );
@@ -190,42 +187,43 @@ export class EscrowClient {
     return this.program.methods
       .initializeEscrow(params.amount, params.timeout)
       .accounts({
+        escrow: escrowState,
         maker,
         taker: params.taker,
-        mint: params.mint,
-        escrowState,
+        makerToken,
         vault,
-        makerTokenAccount,
+        mint: params.mint,
         tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
-        rent: SYSVAR_RENT_PUBKEY,
       })
       .rpc();
   }
 
   /**
    * Release the escrow — transfer vault funds to the taker.
-   * Must be called by the original maker.
+   * Must be called by the taker.
    */
   async release(params: {
-    taker: PublicKey;
+    maker: PublicKey;
     mint: PublicKey;
   }): Promise<string> {
-    const maker = this.program.provider.publicKey!;
-    const [escrowState] = deriveEscrowStatePDA(maker, params.taker);
-    const [vault] = deriveVaultPDA(escrowState);
-    const takerTokenAccount = await getAssociatedTokenAddress(
+    const taker = this.program.provider.publicKey!;
+    const [escrowState] = deriveEscrowStatePDA(params.maker, taker);
+    const vault = await deriveVaultATA(escrowState, params.mint);
+    const takerToken = await getAssociatedTokenAddress(
       params.mint,
-      params.taker,
+      taker,
     );
 
     return this.program.methods
       .release()
       .accounts({
-        maker,
-        escrowState,
+        escrow: escrowState,
+        taker,
+        takerToken,
         vault,
-        takerTokenAccount,
+        mint: params.mint,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc();
@@ -241,8 +239,8 @@ export class EscrowClient {
   }): Promise<string> {
     const maker = this.program.provider.publicKey!;
     const [escrowState] = deriveEscrowStatePDA(maker, params.taker);
-    const [vault] = deriveVaultPDA(escrowState);
-    const makerTokenAccount = await getAssociatedTokenAddress(
+    const vault = await deriveVaultATA(escrowState, params.mint);
+    const makerToken = await getAssociatedTokenAddress(
       params.mint,
       maker,
     );
@@ -250,10 +248,11 @@ export class EscrowClient {
     return this.program.methods
       .refund()
       .accounts({
+        escrow: escrowState,
         maker,
-        escrowState,
+        makerToken,
         vault,
-        makerTokenAccount,
+        mint: params.mint,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc();
@@ -270,7 +269,7 @@ export class EscrowClient {
     const [escrowState] = deriveEscrowStatePDA(maker, taker);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const account = await (this.program.account as any).escrowState.fetch(escrowState);
+      const account = await (this.program.account as any).escrow.fetch(escrowState);
       return account as unknown as EscrowStateAccount;
     } catch {
       return null;

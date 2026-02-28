@@ -20,7 +20,7 @@ export const svmAddress = process.env.SVM_ADDRESS;
 export const useEscrow = process.env.USE_ESCROW === "true";
 export const escrowProgramId =
   process.env.ESCROW_PROGRAM_ID ??
-  "6a3tn1sZrWVRn2r3F8AkERmtQsVmBNDwTwJMmArDgMk4";
+  "Ab3eX87jUzUHdfwP5rsv9nM9TPj9aSHExkX257Ytzkqv";
 
 if (!facilitatorUrl) {
   console.error("❌ FACILITATOR_URL environment variable is required");
