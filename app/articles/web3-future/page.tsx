@@ -1,13 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import SolanaEscrowInfo from "@/app/components/SolanaEscrowInfo";
+import EscrowPayButton from "@/app/components/EscrowPayButton";
 
-export default function Web3FutureArticle() {
+const CREATOR_ADDRESS = process.env.NEXT_PUBLIC_SVM_ADDRESS ?? "";
+
+export default function Page() {
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
   return (
     <div className="min-h-screen grid-bg pb-12">
-      <div className="crt-overlay"></div>
+      <div className="crt-overlay" />
 
       <article className="max-w-4xl mx-auto px-4 py-12 relative">
         <div className="win95-shadow bg-retro-gray rounded-sm">
+          {/* Title Bar */}
           <div className="bg-gradient-to-r from-blue-900 to-blue-600 px-4 py-2">
             <h1 className="text-2xl font-bold text-white font-mono flex items-center gap-2">
               <span className="material-symbols-outlined">article</span>
@@ -16,104 +25,64 @@ export default function Web3FutureArticle() {
           </div>
 
           <div className="p-8 md:p-12 bg-white">
+            {/* Meta */}
             <div className="mb-8">
-              <div className="flex items-center gap-4 text-gray-600 mb-6 font-mono text-sm">
+              <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-6 font-mono text-sm">
                 <span>👤 By John Doe</span>
                 <span>•</span>
                 <span>📅 January 15, 2024</span>
-                <span>•</span>
-                <span>📖 5 min read</span>
+                <span className="bg-neon-green text-black font-bold px-2 py-0.5 text-xs">$0.01</span>
               </div>
               <div className="border-t-2 border-gray-300 pt-6">
-                <p className="text-lg text-gray-700 font-mono">
-                  Exploring how X402 protocol is revolutionizing content monetization
-                </p>
+                <p className="text-lg text-gray-700 font-mono">Exploring how X402 protocol is revolutionizing content monetization</p>
               </div>
             </div>
 
-            <div className="prose prose-lg max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-6">
-                The digital content landscape is undergoing a revolutionary transformation,
-                and at the heart of this change is the X402 protocol. This innovative
-                payment infrastructure is reshaping how creators monetize their work and
-                how consumers access premium content.
-              </p>
-
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4 font-mono">
-                What is X402?
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-6">
-                X402 is a chain-agnostic payment protocol designed specifically for
-                microtransactions and pay-per-view content. Unlike traditional payment
-                systems that require lengthy sign-ups and complex integrations, X402
-                enables seamless, instant payments across multiple blockchain networks.
-              </p>
-
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4 font-mono">
-                Key Benefits for Creators
-              </h2>
-              <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
-                <li>
-                  <strong>Instant Monetization:</strong> Start earning from your content
-                  immediately without waiting for platform approvals
-                </li>
-                <li>
-                  <strong>Lower Fees:</strong> Blockchain-based payments reduce
-                  intermediary costs significantly
-                </li>
-                <li>
-                  <strong>Global Reach:</strong> Accept payments from anyone, anywhere,
-                  without geographical restrictions
-                </li>
-                <li>
-                  <strong>Direct Ownership:</strong> Maintain full control over your
-                  content and pricing
-                </li>
-              </ul>
-
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4 font-mono">
-                Multi-Chain Support
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-6">
-                One of X402's most powerful features is its support for multiple
-                blockchain networks. Whether your audience prefers Ethereum, Base, or
-                Solana, X402 handles it all seamlessly. This flexibility ensures that you
-                never lose potential customers due to payment method preferences.
-              </p>
-
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4 font-mono">
-                The Creator Economy Revolution
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-6">
-                We're witnessing a fundamental shift in how creators earn a living. The
-                traditional ad-supported model is giving way to direct creator-to-consumer
-                relationships. X402 facilitates this transition by making micropayments
-                practical and efficient.
-              </p>
-
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4 font-mono">
-                Looking Ahead
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-6">
-                As Web3 technology continues to mature, protocols like X402 will become
-                the standard for content monetization. The future is one where creators
-                have complete control over their work, and consumers enjoy frictionless
-                access to premium content.
-              </p>
-
-              <div className="win95-shadow bg-neon-green/20 border-2 border-neon-green p-6 mt-8">
-                <p className="text-gray-800 font-bold mb-2 font-mono">🔑 Key Takeaway</p>
-                <p className="text-gray-700 font-mono text-sm">
-                  X402 protocol represents a paradigm shift in digital payments, enabling
-                  creators to monetize their content efficiently while providing consumers
-                  with a seamless payment experience across multiple blockchain networks.
-                </p>
+            {/* ── Escrow Pay Button — shown when locked ── */}
+            {!isUnlocked && (
+              <div className="my-8">
+                <div className="win95-shadow bg-retro-gray p-3 mb-4">
+                  <div className="bg-gradient-to-r from-gray-700 to-gray-600 px-3 py-1 -mx-3 -mt-3 mb-3">
+                    <span className="text-white text-xs font-bold font-mono">🔒 Premium Article — Purchase to Unlock</span>
+                  </div>
+                  <p className="text-gray-600 font-mono text-xs">
+                    Pay $0.01 USDC via trustless Solana escrow to access the full content.
+                  </p>
+                </div>
+                <EscrowPayButton
+                  creatorAddress={CREATOR_ADDRESS}
+                  priceUsdc={0.01}
+                  contentLabel="The Future of Web3 Payments"
+                  onUnlock={() => setIsUnlocked(true)}
+                />
               </div>
+            )}
 
-              {/* Solana Escrow Integration */}
-              <SolanaEscrowInfo contentType="Article" price="$0.01" />
-            </div>
+            {/* ── Premium content — revealed after unlock ── */}
+            {isUnlocked && (
+              <div className="my-8">
+                <div className="win95-shadow bg-retro-gray rounded-sm mb-6">
+                  <div className="bg-gradient-to-r from-green-800 to-green-600 px-4 py-2">
+                    <span className="text-white text-sm font-bold font-mono">
+                      ✅ Article Unlocked — Full Content Below
+                    </span>
+                  </div>
+                </div>
+                <div className="win95-recessed bg-black rounded-sm overflow-hidden p-1 mb-6">
+                  <pre className="text-neon-green font-mono text-xs terminal-glow p-4">// Full premium content unlocked!\n// Access granted via on-chain escrow.</pre>
+                </div>
+                <div className="win95-shadow bg-neon-green/20 border-2 border-neon-green p-4 mt-4">
+                  <p className="text-gray-800 font-bold font-mono text-sm">
+                    🎉 Thank you for your payment! Enjoy the full ArticleL.
+                  </p>
+                </div>
+              </div>
+            )}
 
+            {/* Escrow info */}
+            <SolanaEscrowInfo contentType="Article" price="$0.01" />
+
+            {/* Footer nav */}
             <div className="mt-12 pt-8 border-t-2 border-gray-300">
               <div className="flex items-center justify-between">
                 <Link
@@ -123,7 +92,7 @@ export default function Web3FutureArticle() {
                   ← Back to Articles
                 </Link>
                 <div className="text-sm text-gray-500 font-mono">
-                  Powered by X402 Protocol + Solana Escrow
+                  Powered by X402 + Solana Escrow
                 </div>
               </div>
             </div>
