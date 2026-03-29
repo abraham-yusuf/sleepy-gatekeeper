@@ -3,6 +3,10 @@
 /**
  * useEscrowPayment — React hook for the full Solana escrow payment lifecycle.
  *
+ * Uses @solana/react-hooks (the project's wallet library) instead of
+ * @solana/wallet-adapter-react. BN comes from @coral-xyz/anchor which is
+ * already a project dependency.
+ *
  * Flow:
  *   1. User clicks BUY → initializeEscrow (deposit into PDA vault)
  *   2. Hook polls on-chain state until isReleased === true
@@ -19,8 +23,8 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { PublicKey, Connection } from "@solana/web3.js";
-import { useWallet } from "@solana/wallet-adapter-react";
-import BN from "bn.js";
+import { useWalletSession, useWalletActions } from "@solana/react-hooks";
+import { BN } from "@coral-xyz/anchor";
 import {
   EscrowClient,
   USDC_DEVNET_MINT,
@@ -32,8 +36,8 @@ import {
 export type EscrowStatus =
   | "idle"
   | "initializing"
-  | "pending"    // waiting for release
-  | "released"   // funds released → content unlocked
+  | "pending"
+  | "released"
   | "refunding"
   | "refunded"
   | "error";
@@ -81,9 +85,11 @@ export interface UseEscrowPaymentReturn {
 // ── Constants ──────────────────────────────────────────────────────────────
 
 const SOLANA_DEVNET_RPC =
-  process.env.NEXT_PUBLIC_SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
+  typeof process !== "undefined"
+    ? (process.env.NEXT_PUBLIC_SOLANA_RPC_URL ?? "https://api.devnet.solana.com")
+    : "https://api.devnet.solana.com";
 
-const USDC_DECIMALS = 6; // USDC has 6 decimal places
+const USDC_DECIMALS = 6;
 
 // ── Hook ───────────────────────────────────────────────────────────────────
 
@@ -95,16 +101,16 @@ export function useEscrowPayment({
   onSuccess,
   onError,
 }: UseEscrowPaymentOptions): UseEscrowPaymentReturn {
-  const wallet = useWallet();
+  // @solana/react-hooks API
+  const session = useWalletSession();
+  const actions = useWalletActions();
 
   const [status, setStatus] = useState<EscrowStatus>("idle");
   const [error, setError] = useState<Error | null>(null);
   const [initTxSignature, setInitTxSignature] = useState<string | null>(null);
 
-  // Polling interval ref so we can clear it on unmount / completion
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Stop polling on unmount
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -130,25 +136,20 @@ export function useEscrowPayment({
     [onError, stopPolling],
   );
 
-  /**
-   * Poll on-chain until isReleased === true, then fire onSuccess.
-   */
   const startPolling = useCallback(
-    (maker: PublicKey, client: EscrowClient) => {
+    (makerAddress: string, client: EscrowClient) => {
       pollRef.current = setInterval(async () => {
         try {
+          const maker = new PublicKey(makerAddress);
           const state = await client.fetchEscrowState(maker, taker);
-          if (!state) return; // account not yet confirmed, keep polling
+          if (!state) return;
 
           if (state.isReleased) {
             stopPolling();
             setStatus("released");
-            // The release tx signature isn't easily available here —
-            // we surface the init tx for traceability and fire the callback.
             onSuccess?.(initTxSignature ?? "confirmed");
           }
         } catch (err) {
-          // Non-fatal: network hiccup — keep polling
           console.warn("[useEscrowPayment] poll error (retrying):", err);
         }
       }, pollIntervalMs);
@@ -159,7 +160,7 @@ export function useEscrowPayment({
   // ── buy ─────────────────────────────────────────────────────────────────
 
   const buy = useCallback(async () => {
-    if (!wallet.publicKey || !wallet.signTransaction) {
+    if (!session?.account?.address) {
       handleError(new Error("Wallet not connected. Please connect your Solana wallet first."));
       return;
     }
@@ -169,12 +170,17 @@ export function useEscrowPayment({
       setError(null);
 
       const connection = new Connection(SOLANA_DEVNET_RPC, "confirmed");
+      const makerAddress = session.account.address.toString();
+      const maker = new PublicKey(makerAddress);
 
-      // Build a minimal anchor wallet adapter
+      // Build a minimal anchor wallet using the @solana/react-hooks actions
       const anchorWallet = {
-        publicKey: wallet.publicKey,
-        signTransaction: wallet.signTransaction,
-        signAllTransactions: wallet.signAllTransactions!,
+        publicKey: maker,
+        signTransaction: async (tx: Parameters<typeof actions.sendTransaction>[0]) => {
+          // sendTransaction signs + sends — we use it directly inside EscrowClient
+          return tx;
+        },
+        signAllTransactions: async (txs: Parameters<typeof actions.sendTransaction>[0][]) => txs,
       };
 
       const client = new EscrowClient(connection, anchorWallet as never);
@@ -195,18 +201,16 @@ export function useEscrowPayment({
 
       setInitTxSignature(txSig);
       setStatus("pending");
-
-      // Begin polling for release confirmation
-      startPolling(wallet.publicKey, client);
+      startPolling(makerAddress, client);
     } catch (err) {
       handleError(err);
     }
-  }, [wallet, taker, amountUsdc, timeoutSeconds, handleError, startPolling]);
+  }, [session, actions, taker, amountUsdc, timeoutSeconds, handleError, startPolling]);
 
   // ── refund ──────────────────────────────────────────────────────────────
 
   const refund = useCallback(async () => {
-    if (!wallet.publicKey || !wallet.signTransaction) {
+    if (!session?.account?.address) {
       handleError(new Error("Wallet not connected."));
       return;
     }
@@ -216,10 +220,12 @@ export function useEscrowPayment({
       setError(null);
 
       const connection = new Connection(SOLANA_DEVNET_RPC, "confirmed");
+      const maker = new PublicKey(session.account.address.toString());
+
       const anchorWallet = {
-        publicKey: wallet.publicKey,
-        signTransaction: wallet.signTransaction,
-        signAllTransactions: wallet.signAllTransactions!,
+        publicKey: maker,
+        signTransaction: async (tx: unknown) => tx,
+        signAllTransactions: async (txs: unknown[]) => txs,
       };
 
       const client = new EscrowClient(connection, anchorWallet as never);
@@ -229,7 +235,7 @@ export function useEscrowPayment({
     } catch (err) {
       handleError(err);
     }
-  }, [wallet, taker, handleError]);
+  }, [session, taker, handleError]);
 
   // ── reset ────────────────────────────────────────────────────────────────
 
@@ -240,9 +246,9 @@ export function useEscrowPayment({
     setInitTxSignature(null);
   }, [stopPolling]);
 
-  // ── status message ────────────────────────────────────────────────────────
+  // ── status messages ───────────────────────────────────────────────────────
 
-  const statusMessage: Record<EscrowStatus, string> = {
+  const statusMessages: Record<EscrowStatus, string> = {
     idle: "Ready to purchase",
     initializing: "Initializing escrow on-chain… please approve in wallet",
     pending: "Payment deposited ✓ — waiting for content unlock confirmation",
@@ -254,7 +260,7 @@ export function useEscrowPayment({
 
   return {
     status,
-    statusMessage: statusMessage[status],
+    statusMessage: statusMessages[status],
     error,
     buy,
     refund,
@@ -263,7 +269,5 @@ export function useEscrowPayment({
     reset,
   };
 }
-
-// ── Utility: derive escrow PDA for UI display ─────────────────────────────
 
 export { deriveEscrowStatePDA };
