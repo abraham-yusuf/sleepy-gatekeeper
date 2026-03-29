@@ -49,8 +49,8 @@ Update tanggal terakhir: February 28, 2026
 - [x] Create missing content detail pages: videos/smart-contracts-tutorial, videos/defi-explained, podcasts/crypto-conversations, podcasts/creator-spotlight
 - [x] Add x402 exact SVM route configs in proxy.ts for all new content pages
 - [x] Implement escrow flow di frontend: init → deposit → release/refund callbacks (SolanaEscrowInfo component with code examples on each page)
-- [ ] Test end-to-end escrow dari frontend: BUY skill → call initialize_escrow → release/refund (requires live devnet wallet)
-- [ ] Integrasi escrow callback di OS: success → unlock content / agent task  
+- [x] Test end-to-end escrow dari frontend: BUY skill → call initialize_escrow → release/refund (requires live devnet wallet)
+- [x] Integrasi escrow callback di OS: success → unlock content / agent task  
 - [ ] Stub machine-to-machine payment (agent release via program-owned signer)
 - [ ] Extend existing x402 proxy untuk protect OS-level apps (bukan hanya content)
 - [ ] Machine-to-machine payment stub: agents bisa trigger payment via wallet prompt
