@@ -3,22 +3,12 @@
 /**
  * EscrowPayButton — Drop-in BUY button with full escrow lifecycle UI.
  *
- * Replaces static "BUY" links on content pages with an interactive button
- * that drives the complete init → pending → unlock flow and renders
- * appropriate feedback at each stage.
- *
- * Usage:
- *   <EscrowPayButton
- *     creatorAddress="YOUR_CREATOR_PUBKEY"
- *     priceUsdc={0.01}
- *     contentLabel="Web3 Future Article"
- *     onUnlock={() => setShowContent(true)}
- *   />
+ * Uses @solana/react-hooks (useWalletSession) — no @solana/wallet-adapter-react needed.
  */
 
 import { useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletSession } from "@solana/react-hooks";
 import { useEscrowPayment, EscrowStatus } from "@/lib/hooks/useEscrowPayment";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -77,7 +67,10 @@ export default function EscrowPayButton({
   className = "",
   timeoutSeconds = 3600,
 }: EscrowPayButtonProps) {
-  const { publicKey: walletPublicKey } = useWallet();
+  // Use @solana/react-hooks instead of @solana/wallet-adapter-react
+  const session = useWalletSession();
+  const walletAddress = session?.account?.address?.toString() ?? null;
+
   const [showDetails, setShowDetails] = useState(false);
 
   // Resolve taker public key
@@ -110,7 +103,7 @@ export default function EscrowPayButton({
   });
 
   // ── Guard: wallet not connected ─────────────────────────────────────────
-  if (!walletPublicKey) {
+  if (!walletAddress) {
     return (
       <div className={`win95-shadow bg-retro-gray p-4 font-mono text-sm ${className}`}>
         <p className="text-black mb-2">
@@ -161,25 +154,17 @@ export default function EscrowPayButton({
   if (status === "pending") {
     return (
       <div className={`win95-shadow bg-retro-gray p-4 font-mono ${className}`}>
-        {/* Title bar */}
         <div className="bg-gradient-to-r from-[#000080] to-[#6a0dad] px-3 py-1 mb-3 -mx-4 -mt-4">
-          <span className="text-white text-xs font-bold">
-            ⏳ Escrow Pending
-          </span>
+          <span className="text-white text-xs font-bold">⏳ Escrow Pending</span>
         </div>
-
         <div className="flex items-start gap-3">
-          {/* Spinner */}
           <div className="mt-1 h-4 w-4 border-2 border-[#000080] border-t-transparent rounded-full animate-spin flex-shrink-0" />
           <div>
-            <p className="text-black text-sm font-bold mb-1">
-              Waiting for content unlock…
-            </p>
+            <p className="text-black text-sm font-bold mb-1">Waiting for content unlock…</p>
             <p className="text-gray-600 text-xs mb-3">
               Your ${priceUsdc.toFixed(2)} USDC is held in the PDA vault.
               The creator will release it once access is confirmed.
             </p>
-
             {initTxSignature && (
               <div className="win95-recessed bg-black p-2 mb-3">
                 <p className="text-neon-green font-mono text-xs terminal-glow">
@@ -195,15 +180,11 @@ export default function EscrowPayButton({
                 </a>
               </div>
             )}
-
             <p className="text-gray-500 text-xs">
-              ℹ️ Refund available after {Math.round(timeoutSeconds / 3600)} hour(s)
-              if release is not confirmed.
+              ℹ️ Refund available after {Math.round(timeoutSeconds / 3600)} hour(s).
             </p>
           </div>
         </div>
-
-        {/* Refund button (always shown when pending so user knows it exists) */}
         <button
           onClick={refund}
           className="mt-4 text-xs text-gray-500 underline hover:text-gray-800 font-mono"
@@ -240,9 +221,7 @@ export default function EscrowPayButton({
           <span className="text-white text-xs font-bold">❌ Payment Error</span>
         </div>
         <p className="text-red-700 text-sm font-bold mb-1">Payment failed</p>
-        <p className="text-gray-700 text-xs mb-3 break-all">
-          {error?.message}
-        </p>
+        <p className="text-gray-700 text-xs mb-3 break-all">{error?.message}</p>
         <button
           onClick={reset}
           className="win95-shadow bg-retro-gray text-black text-xs px-3 py-1 font-mono hover:bg-white transition-colors"
@@ -253,16 +232,13 @@ export default function EscrowPayButton({
     );
   }
 
-  // ── Idle / initializing state ───────────────────────────────────────────
+  // ── Idle / initializing ─────────────────────────────────────────────────
   const isInitializing = status === "initializing";
 
   return (
     <div className={`win95-shadow bg-retro-gray font-mono ${className}`}>
-      {/* Title bar */}
       <div className="bg-gradient-to-r from-[#000080] to-[#1084d0] px-3 py-1 flex items-center justify-between">
-        <span className="text-white text-xs font-bold">
-          🔐 Escrow Payment
-        </span>
+        <span className="text-white text-xs font-bold">🔐 Escrow Payment</span>
         <span className={`text-xs font-bold px-2 py-0.5 ${statusBadgeColor(status)}`}>
           {isInitializing ? "Processing…" : `$${priceUsdc.toFixed(2)} USDC`}
         </span>
@@ -275,11 +251,10 @@ export default function EscrowPayButton({
           until content delivery is confirmed.
         </p>
 
-        {/* Main BUY button */}
         <button
           onClick={buy}
           disabled={isInitializing}
-          className="w-full bg-gradient-to-r from-[#000080] to-[#6a0dad] text-white font-bold py-2 px-4 
+          className="w-full bg-gradient-to-r from-[#000080] to-[#6a0dad] text-white font-bold py-2 px-4
                      win95-shadow font-mono text-sm transition-all
                      hover:from-[#1084d0] hover:to-[#9b30d0]
                      disabled:opacity-60 disabled:cursor-not-allowed
@@ -291,20 +266,16 @@ export default function EscrowPayButton({
               Approving in wallet…
             </>
           ) : (
-            <>
-              🔓 BUY — ${priceUsdc.toFixed(2)} USDC
-            </>
+            <>🔓 BUY — ${priceUsdc.toFixed(2)} USDC</>
           )}
         </button>
 
-        {/* Status message */}
         {isInitializing && (
           <p className="text-gray-600 text-xs mt-2 text-center animate-pulse">
             {statusMessage}
           </p>
         )}
 
-        {/* Toggle details */}
         <button
           onClick={() => setShowDetails((v) => !v)}
           className="mt-3 text-xs text-gray-500 underline hover:text-gray-800 w-full text-center"
