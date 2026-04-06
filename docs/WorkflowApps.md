@@ -238,6 +238,74 @@ sequenceDiagram
     Note over Bankr,Agent: Hybrid dengan x402 + MPP untuk payment autonomous
 ```
 
+#### 11. End-to-End Combined Flow: Full Decentralized Web OS (Existing + Sandbox + MPP + Bankr + Agent Economy)
+
+**Tujuan**: Satu diagram besar yang menggabungkan **semua flow existing** dari dokumen repo (PRD.md, README.md, ROADMAP.md, WorkflowApps.md) + **flow baru untuk Solana Frontier Hackathon** (Sandbox Manager + MPP hybrid x402 + Bankr.bot revenue loop).
+
+**Flow yang sudah ada (Phase 1-2)**:
+- Wallet login + auto username + Desktop OS
+- x402 paywall + Anchor escrow
+- Agents Hub + ElizaOS spawn + ERC-8004
+- ACP Marketplace + machine-to-machine stub
+- IPFS/Arweave storage + Conway Terminal
+
+**Flow baru (Hackathon Sprint April 2026)**:
+- Sandbox Manager (isolated Docker untuk Hermes/ElizaOS)
+- MPP Solana-native (@solana/mpp SDK)
+- Bankr.bot skills (launch token Raydium + trading)
+- Self-funding revenue loop (agent bayar sendiri → earn → repeat)
+
+**Alur Kerja Lengkap (Gabungan Besar)**:
+
+```mermaid
+sequenceDiagram
+    participant User as User / Browser
+    participant OS as Desktop OS (Existing)
+    participant Sandbox as Sandbox Manager App (New)
+    participant Agent as Hermes / ElizaOS Agent
+    participant Payment as MPP + x402 (Solana Anchor Escrow)
+    participant Bankr as Bankr.bot Skills (New)
+    participant Market as Raydium / ACP Marketplace
+    participant Storage as IPFS / Arweave + Conway
+
+    User->>OS: Buka https://0x402.tech/ → Wallet Connect (EVM/SVM)
+    OS->>OS: Generate username (evm@ / svm@) + Animate Gatekeeper Awake
+    OS->>Storage: Load user data & balance (Existing Phase 1)
+    OS->>OS: Render Desktop UI + Taskbar + Icons (Agents Hub, etc.)
+    Note over User,OS: Existing flow dari README + WorkflowApps.md
+
+    OS->>Sandbox: User klik "Spawn Agent" (Quick Taskbar button)
+    Sandbox->>User: Form spawn (Hermes/ElizaOS, resource limit, read-only root)
+    Sandbox->>Agent: Deploy ke isolated Docker sandbox
+    Agent->>Agent: Initialize (PDA wallet, heartbeat, ElizaOS SDK, ERC-8004 registry)
+    Note over Sandbox,Agent: New Sandbox feature (Hackathon)
+
+    Agent->>Payment: Butuh skill / content / trading (machine-to-machine)
+    Payment->>Payment: Trigger MPP challenge-response (@solana/mpp SDK) + x402 fallback
+    Payment->>Payment: Anchor Escrow PDA release (USDC/Token-2022)
+    Payment-->>Agent: Payment confirmed (autonomous, no human prompt)
+    Note over Agent,Payment: Hybrid MPP + x402 (existing machine-to-machine + New Solana-native)
+
+    Agent->>Agent: Execute skill di sandbox (read-only root)
+    Agent->>Market: Optional: Hire via ACP Marketplace (existing Phase 2)
+    Agent->>Bankr: Jalankan Bankr skills (launch token Raydium / swap / limit order)
+    Bankr->>Market: Execute trade di Raydium (agent wallet PDA)
+    Market-->>Bankr: Revenue / token address / PNL
+    Bankr-->>Agent: Revenue earned
+    Agent->>Payment: Auto top-up escrow via MPP
+    Payment-->>Agent: Escrow funded (heartbeat + skill budget bertambah)
+    Note over Agent,Bankr: Self-funding revenue loop (New Hackathon killer feature)
+
+    Agent->>Sandbox: Kirim real-time logs + status + revenue update
+    Sandbox->>OS: Update Dashboard + Notifikasi (live revenue loop)
+    OS->>Storage: Simpan result / token metadata ke IPFS/Arweave
+    OS->>User: Tampilkan Conway Terminal (real-world write jika diperlukan)
+    Note over OS,Storage: Existing decentralized storage & Conway integration (ROADMAP Phase 3)
+
+    Note over User,Agent: Full loop: Spawn → Pay via MPP+x402 → Execute → Earn via Bankr → Repeat<br/>Semua autonomous (Phase 2-3 + Hackathon Sprint)
+    Note over Payment,Bankr: 100% Solana-native (Anchor + MPP + Raydium) untuk Solana Frontier Colosseum
+```
+
 ### Best Practices untuk Coding Agent (Claude Opus 4.6 / Copilot)
 - Gunakan **component composition** (e.g., `<Window title="Agents Hub">...</Window>`).
 - State global via **Zustand** atau **React Context** untuk wallet, username, open windows.
