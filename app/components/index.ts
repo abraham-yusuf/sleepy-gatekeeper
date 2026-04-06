@@ -17,3 +17,4 @@ export { NetworkSwitcher } from "./NetworkSwitcher";
 export { DraggableWindow } from "./DraggableWindow";
 export { ThemeToggle } from "./ThemeToggle";
 export { LiveClock } from "./LiveClock";
+export { SandboxManager } from "./SandboxManager";
