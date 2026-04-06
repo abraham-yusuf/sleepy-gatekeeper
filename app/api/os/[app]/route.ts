@@ -3,13 +3,14 @@ import { withX402 } from "@x402/next";
 import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 import { server, paywall, evmAddress, svmAddress, osAppRoutes } from "../../../../proxy";
 import { verifyReceipt } from "../../../../lib/mpp";
+import {
+  type CanonicalPaymentReceipt,
+  type PaymentMode,
+  upsertCanonicalReceipt,
+} from "../../../../lib/payment-ledger";
 
 // ── OS App definitions ────────────────────────────────────────────────────
 
-/**
- * OS App metadata registry.
- * Maps app IDs to their handlers and payment configs.
- */
 const OS_APPS: Record<
   string,
   {
@@ -90,7 +91,6 @@ const OS_APPS: Record<
         command = "";
       }
 
-      // Stub: echo command back with safe execution note
       const ALLOWED_COMMANDS = ["help", "status", "agents", "wallet", "ipfs", "version"];
       const cmd = command.trim().toLowerCase().split(" ")[0];
       const isAllowed = ALLOWED_COMMANDS.includes(cmd);
@@ -126,7 +126,6 @@ const OS_APPS: Record<
         agentId = "default-agent";
       }
 
-      // M2M stub — in Phase 2 this calls ElizaOS SDK
       return NextResponse.json({
         app: "agent-task",
         agentId,
@@ -145,16 +144,13 @@ const OS_APPS: Record<
   },
 };
 
-// ── Route handler ──────────────────────────────────────────────────────────
-
 /**
- * Dynamic OS app route handler.
- * Each app is protected by x402 micropayment via withX402 wrapper.
+ * Resolve OS app definition and execute its handler.
  *
- * @param req - Incoming Next.js request
- * @param context - Route context with params
- * @param context.params - Async params containing the target app id.
- * @returns JSON response after payment verified
+ * @param req - Incoming request.
+ * @param context - Dynamic route context.
+ * @param context.params - Async params with app id.
+ * @returns App JSON response.
  */
 async function routeHandler(
   req: NextRequest,
@@ -174,25 +170,134 @@ async function routeHandler(
 }
 
 /**
- * Check whether incoming request carries a valid MPP receipt for app access.
+ * Build deterministic canonical receipt identifier.
  *
- * @param req - Incoming request with MPP headers.
- * @param app - Target OS app identifier.
- * @returns True when receipt exists and matches the app.
+ * @param mode - Payment mode.
+ * @param app - Target app id.
+ * @param suffix - Unique proof suffix.
+ * @returns Canonical receipt id string.
  */
-function hasValidMPPReceipt(req: NextRequest, app: string): boolean {
-  const receiptId = req.headers.get("x-mpp-receipt-id");
-  const txSignature = req.headers.get("x-mpp-tx-signature");
-  return Boolean(
-    verifyReceipt({
-      receiptId,
-      txSignature,
-      app,
-    }),
-  );
+function buildCanonicalId(mode: PaymentMode, app: string, suffix: string): string {
+  return `${mode}:${app}:${suffix}`;
 }
 
-// Build x402-wrapped GET handler (payment-gated)
+/**
+ * Validate protocol payment proof from incoming request headers.
+ *
+ * @param req - Request carrying proof headers.
+ * @param app - Target app identifier.
+ * @returns Validation result and canonical receipt on success.
+ */
+async function validatePaymentProof(
+  req: NextRequest,
+  app: string,
+): Promise<{ ok: true; receipt: CanonicalPaymentReceipt } | { ok: false }> {
+  const mode = (req.headers.get("x-payment-mode") ?? "").toLowerCase() as PaymentMode | "";
+
+  if (!mode || !["mpp", "x402", "escrow"].includes(mode)) {
+    return { ok: false };
+  }
+
+  if (mode === "mpp") {
+    const receiptId = req.headers.get("x-mpp-receipt-id");
+    const txSignature = req.headers.get("x-mpp-tx-signature");
+    const record = verifyReceipt({ receiptId, txSignature, app });
+
+    if (!record) return { ok: false };
+
+    const canonical: CanonicalPaymentReceipt = {
+      id: buildCanonicalId(mode, app, record.receiptId),
+      app,
+      mode,
+      amount: record.receipt.amount,
+      payer: record.receipt.payer,
+      payee: record.receipt.payee,
+      proof: {
+        receiptId: record.receiptId,
+        txSignature: record.receipt.txSignature,
+        challengeId: record.challengeId,
+      },
+      verifiedAt: Date.now(),
+    };
+
+    await upsertCanonicalReceipt(canonical);
+    return { ok: true, receipt: canonical };
+  }
+
+  if (mode === "x402") {
+    const signature = req.headers.get("x-payment-signature");
+    const amount = req.headers.get("x-payment-amount");
+
+    if (!signature || !amount) return { ok: false };
+
+    const canonical: CanonicalPaymentReceipt = {
+      id: buildCanonicalId(mode, app, signature),
+      app,
+      mode,
+      amount,
+      proof: {
+        signature,
+      },
+      verifiedAt: Date.now(),
+    };
+
+    await upsertCanonicalReceipt(canonical);
+    return { ok: true, receipt: canonical };
+  }
+
+  const escrowTx = req.headers.get("x-escrow-tx-signature");
+  const escrowState = req.headers.get("x-escrow-state");
+
+  if (!escrowTx || !escrowState) return { ok: false };
+
+  const canonical: CanonicalPaymentReceipt = {
+    id: buildCanonicalId(mode, app, escrowTx),
+    app,
+    mode,
+    amount: OS_APPS[app]?.price ?? "$0.01",
+    proof: {
+      escrowTx,
+      escrowState,
+    },
+    verifiedAt: Date.now(),
+  };
+
+  await upsertCanonicalReceipt(canonical);
+  return { ok: true, receipt: canonical };
+}
+
+/**
+ * Merge canonical receipt into JSON response body and response headers.
+ *
+ * @param response - Original app response.
+ * @param receipt - Canonical payment receipt.
+ * @returns Response decorated with canonical receipt.
+ */
+async function withCanonicalReceipt(
+  response: NextResponse,
+  receipt: CanonicalPaymentReceipt,
+): Promise<NextResponse> {
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+
+  const body =
+    payload && typeof payload === "object"
+      ? { ...(payload as Record<string, unknown>), paymentReceipt: receipt }
+      : { paymentReceipt: receipt };
+
+  const next = NextResponse.json(body, { status: response.status });
+  response.headers.forEach((value, key) => {
+    if (key.toLowerCase() !== "content-type") next.headers.set(key, value);
+  });
+  next.headers.set("x-payment-receipt-id", receipt.id);
+  next.headers.set("x-payment-receipt-mode", receipt.mode);
+  return next;
+}
+
 const paymentConfig = (app: string) => {
   const route = osAppRoutes[`/api/os/${app}` as keyof typeof osAppRoutes];
   if (!route) {
@@ -220,21 +325,26 @@ const paymentConfig = (app: string) => {
 };
 
 /**
- * GET /api/os/[app]
- * Protected OS app endpoint — requires x402 micropayment.
+ * GET /api/os/[app] with protocol-proof fast path and x402 fallback.
  *
  * @param req - Incoming request.
- * @param context - Route context with async app params.
- * @param context.params - Async params containing the target app id.
- * @returns JSON response gated by x402 verification.
+ * @param context - Route params context.
+ * @param context.params - Async params with app id.
+ * @returns Paid app response.
  */
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ app: string }> },
 ): Promise<NextResponse> {
   const { app } = await context.params;
-  const cfg = paymentConfig(app);
 
+  const verified = await validatePaymentProof(req, app);
+  if (verified.ok) {
+    const response = await routeHandler(req, context);
+    return withCanonicalReceipt(response, verified.receipt);
+  }
+
+  const cfg = paymentConfig(app);
   const wrappedHandler = withX402(
     (r: NextRequest) => routeHandler(r, context),
     cfg,
@@ -247,13 +357,12 @@ export async function GET(
 }
 
 /**
- * POST /api/os/[app]
- * Protected OS app POST endpoint — for terminal commands & agent tasks.
+ * POST /api/os/[app] with protocol-proof fast path and x402 fallback.
  *
  * @param req - Incoming request.
- * @param context - Route context with async app params.
- * @param context.params - Async params containing the target app id.
- * @returns JSON response after MPP primary path or x402 fallback path.
+ * @param context - Route params context.
+ * @param context.params - Async params with app id.
+ * @returns Paid app response.
  */
 export async function POST(
   req: NextRequest,
@@ -261,12 +370,12 @@ export async function POST(
 ): Promise<NextResponse> {
   const { app } = await context.params;
 
-  // Primary payment path for agent-task: MPP challenge-response receipt.
-  if (app === "agent-task" && hasValidMPPReceipt(req, app)) {
-    return routeHandler(req, context);
+  const verified = await validatePaymentProof(req, app);
+  if (verified.ok) {
+    const response = await routeHandler(req, context);
+    return withCanonicalReceipt(response, verified.receipt);
   }
 
-  // Explicit fallback path: x402 verification for all apps (including agent-task).
   const cfg = paymentConfig(app);
   const wrappedHandler = withX402(
     (r: NextRequest) => routeHandler(r, context),
@@ -277,11 +386,7 @@ export async function POST(
   );
 
   const response = await wrappedHandler(req);
-
-  if (app === "agent-task") {
-    response.headers.set("x-payment-primary", "mpp");
-    response.headers.set("x-payment-fallback", "x402");
-  }
-
+  response.headers.set("x-payment-primary", "protocol-proof");
+  response.headers.set("x-payment-fallback", "x402");
   return response;
 }
