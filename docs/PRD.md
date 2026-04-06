@@ -107,6 +107,9 @@ Misi: Memberdayakan creators, developers, dan AI agents untuk monetize dan autom
   - Error Handling: Graceful fallback (e.g., facilitator jika blockchain down).
   - Testing: Unit (Anchor/ERC tests), E2E (simulate wallet connects, agent spawns).
   - Example Flow: Buka OS → Connect wallet → Generate username → Load desktop → Spawn agent via ElizaOS → Pay skill via x402 escrow → Agent execute dengan ERC-8004 validation → Interact via Conway Terminal.
+ - @solana/mpp SDK
+ - Docker / node-docker untuk sandbox
+ - BankrBot/skills integration
 
 ## Risks & Mitigations
 - Wallet Friction: Mitigate dengan auto-connect dan tutorials.
