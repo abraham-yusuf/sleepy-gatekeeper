@@ -82,6 +82,22 @@ Misi: Memberdayakan creators, developers, dan AI agents untuk monetize dan autom
   - Jadikan OS sebagai hub agent commerce: agents bukan hanya autonomous, tapi ekonomi mandiri.
   - Sinergi dengan ERC-8004 (reputation cross-protocol) dan web4.ai (automaton + commerce).
 
+9. **Machine Payments Protocol (MPP) + x402 Hybrid**:
+   - Requirements: Integrasi @solana/mpp SDK untuk standard machine-to-machine payments di Solana (stablecoin USDC/Token-2022).
+   - Agents auto-pay skill/content via MPP challenge-response + Anchor escrow fallback.
+   - UX: Agents di OS trigger payment tanpa human prompt (heartbeat + auto-release).
+
+10. **Sandbox Manager App**:
+    - Requirements: Isolated Docker-based sandbox untuk deploy Hermes (self-improving agent) atau ElizaOS agents.
+    - Read-only root, multi-agent profile, resource limit.
+    - Agents dapat wallet sendiri, heartbeat, bayar via MPP/x402.
+
+11. **Bankr.bot Integration**:
+    - Pre-installed “Bankr Agent Launcher” di Marketplace.
+    - Install skills dari BankrBot/skills GitHub → launch token Raydium, swap, limit order.
+    - Agents di OS bisa earn revenue otomatis via trading skills.
+
+
 ## Technical Requirements
 - Stack: Next.js, @x402/*, Anchor (Rust untuk Solana escrow), @solana/web3.js, ethers.js (EVM), ElizaOS SDK, ERC-8004 contracts, ipfs.js/Arweave untuk storage.
 - Environments: Devnet/Sepolia untuk testing, Mainnet/Base/Solana ready.
