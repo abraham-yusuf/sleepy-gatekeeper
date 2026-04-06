@@ -118,8 +118,9 @@ export class M2MPaymentClient {
   constructor(options: M2MClientOptions) {
     this.agentId = options.agentId;
     this.budget = options.budget ?? 1.0;
-    this.maxPerRequest = options.maxPerRequest ?? 0.10;
-    this.baseUrl = options.baseUrl ??
+    this.maxPerRequest = options.maxPerRequest ?? 0.1;
+    this.baseUrl =
+      options.baseUrl ??
       (typeof process !== "undefined"
         ? (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000")
         : "http://localhost:3000");
@@ -234,11 +235,11 @@ export class M2MPaymentClient {
    */
   private estimatePrice(endpoint: string): number {
     const PRICE_MAP: Record<string, number> = {
-      "/api/os/agents-hub":    0.01,
-      "/api/os/marketplace":   0.01,
+      "/api/os/agents-hub": 0.01,
+      "/api/os/marketplace": 0.01,
       "/api/os/file-explorer": 0.005,
-      "/api/os/terminal":      0.02,
-      "/api/os/agent-task":    0.05,
+      "/api/os/terminal": 0.02,
+      "/api/os/agent-task": 0.05,
     };
     const base = endpoint.split("?")[0];
     return PRICE_MAP[base] ?? 0.01;
@@ -266,10 +267,7 @@ export class M2MPaymentClient {
  * @param budget - USDC budget for this session
  * @returns Configured M2M payment client
  */
-export function createAgentClient(
-  agentId: string,
-  budget = 1.0,
-): M2MPaymentClient {
+export function createAgentClient(agentId: string, budget = 1.0): M2MPaymentClient {
   return new M2MPaymentClient({ agentId, budget });
 }
 

@@ -4,6 +4,7 @@
  * useEscrowPayment — React hook for the full Solana escrow payment lifecycle.
  *
  * Uses @solana/react-hooks (the project's wallet library) instead of
+ *
  * @solana/wallet-adapter-react. BN comes from @coral-xyz/anchor which is
  * already a project dependency.
  *
@@ -25,11 +26,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { PublicKey, Connection } from "@solana/web3.js";
 import { useWalletSession, useWalletActions } from "@solana/react-hooks";
 import { BN } from "@coral-xyz/anchor";
-import {
-  EscrowClient,
-  USDC_DEVNET_MINT,
-  deriveEscrowStatePDA,
-} from "@/lib/escrow";
+import { EscrowClient, USDC_DEVNET_MINT, deriveEscrowStatePDA } from "@/lib/escrow";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -93,6 +90,16 @@ const USDC_DECIMALS = 6;
 
 // ── Hook ───────────────────────────────────────────────────────────────────
 
+/**
+ *
+ * @param root0
+ * @param root0.taker
+ * @param root0.amountUsdc
+ * @param root0.timeoutSeconds
+ * @param root0.pollIntervalMs
+ * @param root0.onSuccess
+ * @param root0.onError
+ */
 export function useEscrowPayment({
   taker,
   amountUsdc,
@@ -185,12 +192,8 @@ export function useEscrowPayment({
 
       const client = new EscrowClient(connection, anchorWallet as never);
 
-      const amountLamports = new BN(
-        Math.round(amountUsdc * Math.pow(10, USDC_DECIMALS)),
-      );
-      const timeoutTs = new BN(
-        Math.floor(Date.now() / 1000) + timeoutSeconds,
-      );
+      const amountLamports = new BN(Math.round(amountUsdc * Math.pow(10, USDC_DECIMALS)));
+      const timeoutTs = new BN(Math.floor(Date.now() / 1000) + timeoutSeconds);
 
       const txSig = await client.initializeEscrow({
         taker,
