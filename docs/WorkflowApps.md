@@ -40,10 +40,12 @@ sequenceDiagram
         Frontend->>Browser: Show Wallet Connect Modal
         Browser->>Wallet: User Connects Wallet
         Wallet-->>Browser: Wallet Address
-        Browser->>Frontend: Send Address + Sign Message ("Wake Gatekeeper")
-        Frontend->>Blockchain: Verify Signature (via wagmi/@solana/web3.js)
-        Blockchain-->>Frontend: Valid
-        Frontend->>Frontend: Generate Username (evm@0x... or svm@...)
+        Browser->>Frontend: Send address ke /api/auth/challenge
+        Frontend-->>Browser: Return nonce challenge + message
+        Browser->>Wallet: User sign challenge message
+        Frontend->>Frontend: POST /api/auth/verify (address + signature)
+        Frontend-->>Browser: Receive verified session proof/token
+        Frontend->>Frontend: Generate Username (evm@0x... or svm@...) + persist proof
         Frontend->>Browser: Animate Gatekeeper Awake (Framer Motion)
     else Valid Session
         Frontend->>Frontend: Load Cached Username & State
@@ -74,10 +76,10 @@ sequenceDiagram
 
 **Alur Kerja**:
 1. User buka situs → detect wallet → jika belum connect → tampil modal.
-2. User connect → sign message sederhana ("Wake the Gatekeeper").
-3. Generate username → simpan di localStorage (tied to address).
-4. Animasi: Gatekeeper bangun, mata terbuka neon → fade ke desktop.
-5. Redirect ke desktop utama.
+2. User connect wallet → frontend request nonce challenge ke `POST /api/auth/challenge`.
+3. User sign challenge message di wallet (EVM/SVM), lalu frontend kirim signature ke `POST /api/auth/verify`.
+4. Server verify signature dan issue session proof/token, lalu frontend simpan proof tervalidasi (bukan hanya address/network) di localStorage.
+5. Generate username dan animasi Gatekeeper bangun → fade ke desktop utama.
 
 
 #### 2. Desktop Home (Main View)
@@ -269,6 +271,7 @@ sequenceDiagram
     participant Storage as IPFS / Arweave + Conway
 
     User->>OS: Buka https://0x402.tech/ → Wallet Connect (EVM/SVM)
+    OS->>OS: Request challenge + wallet sign + verify token
     OS->>OS: Generate username (evm@ / svm@) + Animate Gatekeeper Awake
     OS->>Storage: Load user data & balance (Existing Phase 1)
     OS->>OS: Render Desktop UI + Taskbar + Icons (Agents Hub, etc.)

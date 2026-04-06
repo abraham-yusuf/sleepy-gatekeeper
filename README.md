@@ -22,7 +22,7 @@ Membangun OS decentralized di browser di mana setiap user punya desktop on-chain
 ## Fitur Utama
 
 - **Wallet Login & Identity**  
-  Mandatory connect EVM (MetaMask/Coinbase) atau SVM (Phantom). Username auto-generated: `evm@0x...` atau `svm@...`. Semua sessions via wallet signatures — no central auth.
+  Mandatory connect EVM (MetaMask/Coinbase) atau SVM (Phantom). Setelah connect, client request nonce challenge (`POST /api/auth/challenge`), user sign message wallet, lalu server verify signature (`POST /api/auth/verify`) sebelum issue session proof/token. Username auto-generated: `evm@0x...` atau `svm@...`.
 
 - **Browser-Based Decentralized Desktop**  
   Desktop UI dengan icons (Agents Hub, Marketplace, File Explorer untuk on-chain assets), taskbar (username, balance, quick agent spawn), tema "sleepy" dengan animasi gatekeeper.
@@ -49,7 +49,7 @@ Membangun OS decentralized di browser di mana setiap user punya desktop on-chain
 
 | Feature | Status | What runs today | Code reference |
 |---|---|---|---|
-| Wallet login + auto username (`evm@...` / `svm@...`) | **implemented** | Detect EVM/Solana wallet, derive username, persist local session/theme/window state. | `app/context/WalletContext.tsx` |
+| Wallet login + wallet-signature session proof (`evm@...` / `svm@...`) | **implemented** | Detect EVM/Solana wallet, request auth challenge, sign + verify server-side, lalu persist verified session proof/token + desktop state di localStorage. | `app/context/WalletContext.tsx`, `app/api/auth/challenge/route.ts`, `app/api/auth/verify/route.ts` |
 | Browser desktop UI (icons, taskbar, windows) | **implemented** | Desktop layout, draggable windows, start/taskbar UX berjalan di app utama. | `app/page.tsx`, `app/components/*` |
 | x402 paywall for premium content routes | **implemented** | Proxy middleware melindungi articles/podcasts/videos/skills dengan dual network config. | `proxy.ts` |
 | OS app protected endpoints (`/api/os/[app]`) | **partial** | Endpoint ada dan diproteksi x402 wrapper; business logic kebanyakan mock response. | `app/api/os/[app]/route.ts`, `proxy.ts` |
