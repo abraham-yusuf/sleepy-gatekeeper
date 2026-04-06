@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   DesktopIcon,
@@ -32,10 +32,99 @@ const DESKTOP_ICONS = [
   { id: "help", icon: "help_center", label: "Help Docs", color: "text-[#1084d0]" },
 ] as const;
 
+type AgentTaskStatus = "created" | "running" | "settled" | "completed" | "failed";
+
+interface AgentTaskLog {
+  at: string;
+  status: AgentTaskStatus;
+  message: string;
+}
+
+interface AgentTaskView {
+  taskId: string;
+  agentId: string;
+  task: string;
+  status: AgentTaskStatus;
+  createdAt: string;
+  updatedAt: string;
+  payment: {
+    amount: string;
+    network: "x402";
+    settled: boolean;
+  };
+  result?: Record<string, unknown>;
+  error?: string;
+  logs: AgentTaskLog[];
+}
+
 export default function Home() {
   const { wallet, desktop } = useWalletContext();
   const [showStartMenu, setShowStartMenu] = useState(false);
+  const [taskPrompt, setTaskPrompt] = useState("Run status diagnostics");
+  const [activeTask, setActiveTask] = useState<AgentTaskView | null>(null);
+  const [agentRuntimeError, setAgentRuntimeError] = useState<string | null>(null);
+  const [isSubmittingTask, setIsSubmittingTask] = useState(false);
   const router = useRouter();
+
+  const pollTaskStatus = useCallback(async (taskId: string) => {
+    const res = await fetch(`/api/agent-task/${taskId}`, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Polling failed (${res.status})`);
+    }
+
+    const data = (await res.json()) as AgentTaskView;
+    setActiveTask(data);
+    return data;
+  }, []);
+
+  const handleSpawnAgentTask = useCallback(async () => {
+    setIsSubmittingTask(true);
+    setAgentRuntimeError(null);
+
+    try {
+      const response = await fetch("/api/os/agent-task", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-payment-mode": "x402",
+          "x-payment-signature": `ui-sig-${Date.now()}`,
+          "x-payment-amount": "$0.05",
+        },
+        body: JSON.stringify({
+          agentId: "agents-hub-ui",
+          task: taskPrompt,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create task (${response.status})`);
+      }
+
+      const data = (await response.json()) as AgentTaskView;
+      setActiveTask(data);
+    } catch (error) {
+      setAgentRuntimeError(error instanceof Error ? error.message : "Unknown task error");
+    } finally {
+      setIsSubmittingTask(false);
+    }
+  }, [taskPrompt]);
+
+  useEffect(() => {
+    if (!activeTask?.taskId) return;
+    if (activeTask.status === "completed" || activeTask.status === "failed") return;
+
+    const intervalId = setInterval(() => {
+      void pollTaskStatus(activeTask.taskId).catch((error) => {
+        setAgentRuntimeError(error instanceof Error ? error.message : "Polling error");
+      });
+    }, 1200);
+
+    return () => clearInterval(intervalId);
+  }, [activeTask?.status, activeTask?.taskId, pollTaskStatus]);
 
   // Start menu items
   const startMenuItems = [
@@ -199,20 +288,80 @@ export default function Home() {
             <div className="bg-retro-gray p-4">
               <div className="bg-white win95-recessed p-4 min-h-[300px]">
                 <h3 className="text-lg font-bold text-black mb-4">🤖 Agents Hub</h3>
-                <p className="text-sm text-black/70 mb-4">Deploy and manage autonomous AI agents tied to your OS identity.</p>
+                <p className="text-sm text-black/70 mb-4">Spawn agent → execute task → settle payment → show result.</p>
 
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 border border-gray-300 bg-gray-50">
-                    <span className="material-symbols-outlined text-2xl text-primary">add_circle</span>
-                    <div>
-                      <div className="text-sm font-bold text-black">Spawn New Agent</div>
-                      <div className="text-xs text-black/60">Create an autonomous agent via wallet transaction</div>
+                  <div className="p-3 border border-gray-300 bg-gray-50 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-2xl text-primary">add_circle</span>
+                      <div>
+                        <div className="text-sm font-bold text-black">Spawn New Agent Task</div>
+                        <div className="text-xs text-black/60">Creates task and starts realtime status polling</div>
+                      </div>
                     </div>
+
+                    <input
+                      value={taskPrompt}
+                      onChange={(e) => setTaskPrompt(e.target.value)}
+                      className="w-full border border-gray-400 px-2 py-1 text-xs text-black font-mono bg-white"
+                      placeholder="Describe task for the agent..."
+                    />
+
+                    <button
+                      onClick={() => void handleSpawnAgentTask()}
+                      disabled={isSubmittingTask}
+                      className="px-3 py-1 text-xs font-bold bg-primary text-white border border-black disabled:opacity-50"
+                    >
+                      {isSubmittingTask ? "SPAWNING..." : "SPAWN + EXECUTE"}
+                    </button>
                   </div>
 
-                  <div className="text-xs text-black/40 text-center py-6 font-mono">
-                    No agents deployed yet. Connect wallet &amp; spawn your first agent.
-                  </div>
+                  {agentRuntimeError && (
+                    <div className="text-xs text-red-700 bg-red-100 border border-red-300 px-2 py-2 font-mono">
+                      Runtime error: {agentRuntimeError}
+                    </div>
+                  )}
+
+                  {!activeTask && (
+                    <div className="text-xs text-black/40 text-center py-6 font-mono">
+                      No task yet. Spawn one to view created → running → settled → completed flow.
+                    </div>
+                  )}
+
+                  {activeTask && (
+                    <div className="p-3 border border-gray-400 bg-white text-black space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-mono">Task: {activeTask.taskId}</div>
+                        <div className="text-xs font-bold uppercase">Status: {activeTask.status}</div>
+                      </div>
+                      <div className="text-xs font-mono">Agent: {activeTask.agentId}</div>
+                      <div className="text-xs font-mono">Prompt: {activeTask.task || "(empty task)"}</div>
+                      <div className="text-xs font-mono">
+                        Payment: {activeTask.payment.amount} via {activeTask.payment.network} ·{" "}
+                        {activeTask.payment.settled ? "settled" : "pending"}
+                      </div>
+
+                      {activeTask.result && (
+                        <pre className="text-[10px] bg-gray-100 border border-gray-300 p-2 overflow-x-auto">
+                          {JSON.stringify(activeTask.result, null, 2)}
+                        </pre>
+                      )}
+
+                      {activeTask.error && (
+                        <div className="text-xs text-red-700 bg-red-100 border border-red-300 p-2">
+                          Error: {activeTask.error}
+                        </div>
+                      )}
+
+                      <div className="text-[10px] font-mono max-h-28 overflow-y-auto border border-gray-300 bg-gray-50 p-2 space-y-1">
+                        {activeTask.logs.map((log) => (
+                          <div key={`${log.at}-${log.message}`}>
+                            [{new Date(log.at).toLocaleTimeString()}] {log.status}: {log.message}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
