@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "@x402/next";
 import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 import { server, paywall, evmAddress, svmAddress, osAppRoutes } from "../../../../proxy";
+import { verifyReceipt } from "../../../../lib/mpp";
 
 // ── OS App definitions ────────────────────────────────────────────────────
 
@@ -20,7 +21,7 @@ const OS_APPS: Record<
   "agents-hub": {
     price: "$0.01",
     description: "OS App: Agents Hub — spawn & manage AI agents",
-    handler: async (_req: NextRequest) => {
+    handler: async (_: NextRequest) => {
       return NextResponse.json({
         app: "agents-hub",
         status: "active",
@@ -36,7 +37,7 @@ const OS_APPS: Record<
   marketplace: {
     price: "$0.01",
     description: "OS App: Marketplace — browse skills & services",
-    handler: async (_req: NextRequest) => {
+    handler: async (_: NextRequest) => {
       return NextResponse.json({
         app: "marketplace",
         status: "active",
@@ -152,7 +153,7 @@ const OS_APPS: Record<
  *
  * @param req - Incoming Next.js request
  * @param context - Route context with params
- * @param context.params
+ * @param context.params - Async params containing the target app id.
  * @returns JSON response after payment verified
  */
 async function routeHandler(
@@ -170,6 +171,25 @@ async function routeHandler(
   }
 
   return appDef.handler(req);
+}
+
+/**
+ * Check whether incoming request carries a valid MPP receipt for app access.
+ *
+ * @param req - Incoming request with MPP headers.
+ * @param app - Target OS app identifier.
+ * @returns True when receipt exists and matches the app.
+ */
+function hasValidMPPReceipt(req: NextRequest, app: string): boolean {
+  const receiptId = req.headers.get("x-mpp-receipt-id");
+  const txSignature = req.headers.get("x-mpp-tx-signature");
+  return Boolean(
+    verifyReceipt({
+      receiptId,
+      txSignature,
+      app,
+    }),
+  );
 }
 
 // Build x402-wrapped GET handler (payment-gated)
@@ -203,9 +223,10 @@ const paymentConfig = (app: string) => {
  * GET /api/os/[app]
  * Protected OS app endpoint — requires x402 micropayment.
  *
- * @param req
- * @param context
- * @param context.params
+ * @param req - Incoming request.
+ * @param context - Route context with async app params.
+ * @param context.params - Async params containing the target app id.
+ * @returns JSON response gated by x402 verification.
  */
 export async function GET(
   req: NextRequest,
@@ -229,17 +250,24 @@ export async function GET(
  * POST /api/os/[app]
  * Protected OS app POST endpoint — for terminal commands & agent tasks.
  *
- * @param req
- * @param context
- * @param context.params
+ * @param req - Incoming request.
+ * @param context - Route context with async app params.
+ * @param context.params - Async params containing the target app id.
+ * @returns JSON response after MPP primary path or x402 fallback path.
  */
 export async function POST(
   req: NextRequest,
   context: { params: Promise<{ app: string }> },
 ): Promise<NextResponse> {
   const { app } = await context.params;
-  const cfg = paymentConfig(app);
 
+  // Primary payment path for agent-task: MPP challenge-response receipt.
+  if (app === "agent-task" && hasValidMPPReceipt(req, app)) {
+    return routeHandler(req, context);
+  }
+
+  // Explicit fallback path: x402 verification for all apps (including agent-task).
+  const cfg = paymentConfig(app);
   const wrappedHandler = withX402(
     (r: NextRequest) => routeHandler(r, context),
     cfg,
@@ -248,5 +276,12 @@ export async function POST(
     paywall,
   );
 
-  return wrappedHandler(req);
+  const response = await wrappedHandler(req);
+
+  if (app === "agent-task") {
+    response.headers.set("x-payment-primary", "mpp");
+    response.headers.set("x-payment-fallback", "x402");
+  }
+
+  return response;
 }
