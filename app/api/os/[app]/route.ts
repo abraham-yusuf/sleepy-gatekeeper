@@ -9,11 +9,14 @@ import { server, paywall, evmAddress, svmAddress, osAppRoutes } from "../../../.
  * OS App metadata registry.
  * Maps app IDs to their handlers and payment configs.
  */
-const OS_APPS: Record<string, {
-  price: string;
-  description: string;
-  handler: (req: NextRequest) => Promise<NextResponse>;
-}> = {
+const OS_APPS: Record<
+  string,
+  {
+    price: string;
+    description: string;
+    handler: (req: NextRequest) => Promise<NextResponse>;
+  }
+> = {
   "agents-hub": {
     price: "$0.01",
     description: "OS App: Agents Hub — spawn & manage AI agents",
@@ -24,11 +27,13 @@ const OS_APPS: Record<string, {
         agents: [],
         message: "Agents Hub is ready. Spawn your first autonomous agent.",
         capabilities: ["spawn", "monitor", "terminate", "fund"],
-        escrowProgram: process.env.NEXT_PUBLIC_ESCROW_PROGRAM_ID ?? "62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU",
+        escrowProgram:
+          process.env.NEXT_PUBLIC_ESCROW_PROGRAM_ID ??
+          "62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU",
       });
     },
   },
-  "marketplace": {
+  marketplace: {
     price: "$0.01",
     description: "OS App: Marketplace — browse skills & services",
     handler: async (_req: NextRequest) => {
@@ -36,9 +41,19 @@ const OS_APPS: Record<string, {
         app: "marketplace",
         status: "active",
         listings: [
-          { id: "ai-prompt-mastery",   title: "AI Prompt Engineering", price: "$0.05", type: "skill" },
-          { id: "web3-development",    title: "Web3 Dev Starter Kit",  price: "$0.10", type: "skill" },
-          { id: "blockchain-security", title: "Blockchain Security",   price: "$0.08", type: "skill" },
+          {
+            id: "ai-prompt-mastery",
+            title: "AI Prompt Engineering",
+            price: "$0.05",
+            type: "skill",
+          },
+          { id: "web3-development", title: "Web3 Dev Starter Kit", price: "$0.10", type: "skill" },
+          {
+            id: "blockchain-security",
+            title: "Blockchain Security",
+            price: "$0.08",
+            type: "skill",
+          },
         ],
         message: "Marketplace loaded. Browse and purchase skills via x402.",
       });
@@ -62,13 +77,13 @@ const OS_APPS: Record<string, {
       });
     },
   },
-  "terminal": {
+  terminal: {
     price: "$0.02",
     description: "OS App: Terminal — execute agent commands",
     handler: async (req: NextRequest) => {
       let command = "";
       try {
-        const body = await req.json() as { command?: string };
+        const body = (await req.json()) as { command?: string };
         command = body.command ?? "";
       } catch {
         command = "";
@@ -89,7 +104,8 @@ const OS_APPS: Record<string, {
       };
 
       if (cmd === "version") output.version = "0.1.0-alpha";
-      if (cmd === "status")  output.status = { escrow: "deployed", ipfs: "pending", agents: "pending" };
+      if (cmd === "status")
+        output.status = { escrow: "deployed", ipfs: "pending", agents: "pending" };
 
       return NextResponse.json(output);
     },
@@ -101,7 +117,7 @@ const OS_APPS: Record<string, {
       let task = "";
       let agentId = "";
       try {
-        const body = await req.json() as { task?: string; agentId?: string };
+        const body = (await req.json()) as { task?: string; agentId?: string };
         task = body.task ?? "";
         agentId = body.agentId ?? "default-agent";
       } catch {
@@ -136,6 +152,7 @@ const OS_APPS: Record<string, {
  *
  * @param req - Incoming Next.js request
  * @param context - Route context with params
+ * @param context.params
  * @returns JSON response after payment verified
  */
 async function routeHandler(
@@ -161,8 +178,18 @@ const paymentConfig = (app: string) => {
   if (!route) {
     return {
       accepts: [
-        { scheme: "exact" as const, price: "$0.01", network: "eip155:84532" as const, payTo: evmAddress },
-        { scheme: "exact" as const, price: "$0.01", network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const, payTo: svmAddress },
+        {
+          scheme: "exact" as const,
+          price: "$0.01",
+          network: "eip155:84532" as const,
+          payTo: evmAddress,
+        },
+        {
+          scheme: "exact" as const,
+          price: "$0.01",
+          network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" as const,
+          payTo: svmAddress,
+        },
       ],
       description: `OS App: ${app}`,
       mimeType: "application/json",
@@ -175,6 +202,10 @@ const paymentConfig = (app: string) => {
 /**
  * GET /api/os/[app]
  * Protected OS app endpoint — requires x402 micropayment.
+ *
+ * @param req
+ * @param context
+ * @param context.params
  */
 export async function GET(
   req: NextRequest,
@@ -197,6 +228,10 @@ export async function GET(
 /**
  * POST /api/os/[app]
  * Protected OS app POST endpoint — for terminal commands & agent tasks.
+ *
+ * @param req
+ * @param context
+ * @param context.params
  */
 export async function POST(
   req: NextRequest,
