@@ -70,6 +70,10 @@ Update tanggal terakhir: February 28, 2026
 
 ## Phase 2: Agentic & Trustless Enhancements (Q2 2026 – Target April–Juni)
 
+- [ ] Integrate @solana/mpp SDK
+- [ ] Build Sandbox Manager (Docker)
+- [ ] Bankr.bot integration + skills launcher
+
 ### ElizaOS Integration
 - [ ] Install & configure ElizaOS SDK di frontend
 - [ ] Build Agents Hub app: list existing agents, create new agent form
