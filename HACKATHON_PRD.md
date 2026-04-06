@@ -7,7 +7,7 @@
 | Web OS UI | **implemented** | Desktop shell, windows, dan navigation berjalan di Next.js app. |
 | Payment-aware proxy x402 | **implemented** | x402 route protection berjalan untuk content + OS API routes tertentu. |
 | Agent runtime simple execution | **stub** | Endpoint terminal/agent-task masih mock-safe execution, belum runtime agent production. |
-| Autonomous paid API by real agent wallet | **partial** | Payment flow ada, namun M2M client masih stub simulation untuk header/receipt. |
+| Autonomous paid API by real agent wallet | **partial** | Payment flow ada, dan sekarang sudah ada MPP challenge-response path + x402 fallback eksplisit. |
 
 ## 🚀 Vision
 Build the **Operating System for Agent Economy** where AI agents can run, interact, and pay each other using **Solana + x402**.
@@ -25,31 +25,90 @@ AI agents today cannot:
 ## 💡 Solution
 Gatekeeper OS provides:
 - Agent runtime (simple execution)
-- Payment-aware proxy (x402 middleware)
+- Payment-aware proxy (MPP primary + x402 fallback)
 - Web OS UI
 
 ---
 
 ## 🧪 MVP (Hackathon Scope)
-1. User runs an agent
-2. Agent calls paid API
-3. Proxy injects x402 payment
-4. Response returned
+1. Agent requests payment challenge (`/api/mpp/challenge`)
+2. Agent signs/submits settlement (`/api/mpp/settle`)
+3. Agent calls paid OS endpoint with receipt headers
+4. For `agent-task`, route accepts MPP first and falls back to x402 explicitly
 
-> Catatan transparansi: flow di atas sudah dapat didemokan pada level prototype, tetapi komponen “agent runtime real + autonomous wallet signing penuh” masih tahap lanjutan.
+> Catatan transparansi: flow di atas executable untuk demo, tetapi komponen “agent runtime real + autonomous wallet signing penuh” masih tahap lanjutan.
 
 ---
 
 ## 🏗 Architecture
 - Frontend: Next.js
 - Proxy: Node (proxy.ts)
-- Payment: x402
+- Payment primary: MPP challenge-response
+- Fallback payment: x402
 - Chain: Solana
 
 ---
 
-## 🔥 Demo Flow
-User → Run Agent → Agent calls API → x402 payment → Response
+## 🔥 Demo Flow (Executable)
+
+> Prasyarat: server jalan di `http://localhost:3000`.
+
+### Step 1 — Request challenge
+
+```bash
+curl -sS -X POST http://localhost:3000/api/mpp/challenge \
+  -H 'content-type: application/json' \
+  -d '{
+    "app":"agent-task",
+    "payer":"agent-wallet-001",
+    "payee":"gatekeeper-treasury",
+    "mint":"USDC",
+    "amount":"0.05"
+  }'
+```
+
+Simpan nilai `challenge.id` dari respons JSON.
+
+### Step 2 — Settle challenge (submit tx signature)
+
+```bash
+curl -sS -X POST http://localhost:3000/api/mpp/settle \
+  -H 'content-type: application/json' \
+  -d '{
+    "challengeId":"<challenge_id>",
+    "txSignature":"5nN3yDemoTxSigForHackathon123",
+    "payer":"agent-wallet-001"
+  }'
+```
+
+Simpan `receiptId` dan `receipt.txSignature`.
+
+### Step 3 — Execute paid agent task with MPP receipt
+
+```bash
+curl -sS -X POST http://localhost:3000/api/os/agent-task \
+  -H 'content-type: application/json' \
+  -H 'x-mpp-receipt-id: <receipt_id>' \
+  -H 'x-mpp-tx-signature: <tx_signature>' \
+  -d '{
+    "agentId":"agent-wallet-001",
+    "task":"analyze market spread"
+  }'
+```
+
+Expected: task accepted (`status: queued`) tanpa perlu x402 header.
+
+### Step 4 — Explicit x402 fallback
+
+Panggil endpoint yang sama tanpa header MPP. Route akan masuk ke jalur fallback x402 verification.
+
+```bash
+curl -i -X POST http://localhost:3000/api/os/agent-task \
+  -H 'content-type: application/json' \
+  -d '{"agentId":"agent-wallet-001","task":"fallback-path-test"}'
+```
+
+Expected: respons payment challenge/x402 gating (mis. HTTP 402) jika belum attach payment x402.
 
 ---
 
