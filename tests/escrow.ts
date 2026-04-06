@@ -1,19 +1,75 @@
-import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
+import assert from "node:assert/strict";
+import { Keypair } from "@solana/web3.js";
+import {
+  ESCROW_IDL,
+  USDC_DEVNET_MINT,
+  deriveEscrowStatePDA,
+  deriveVaultATA,
+} from "../lib/escrow";
 
-// IDL will be generated after `anchor build` — import it then:
-// import type { Escrow } from "../target/types/escrow";
+type TestCase = {
+  name: string;
+  run: () => Promise<void> | void;
+};
 
-describe("escrow", () => {
-  // Configure the client to use the local cluster (or devnet).
-  const provider = anchor.AnchorProvider.env();
-  anchor.setProvider(provider);
+const tests: TestCase[] = [
+  {
+    name: "initialize_escrow path: deriveEscrowStatePDA is deterministic",
+    run: () => {
+      const maker = Keypair.generate().publicKey;
+      const taker = Keypair.generate().publicKey;
 
-  // After `anchor build`, uncomment:
-  // const program = anchor.workspace.Escrow as Program<Escrow>;
+      const [pdaA, bumpA] = deriveEscrowStatePDA(maker, taker);
+      const [pdaB, bumpB] = deriveEscrowStatePDA(maker, taker);
 
-  it("placeholder — run after anchor build generates IDL", async () => {
-    console.log("Escrow program test placeholder — implement in Step 2");
-    // TODO: Step 2 — add initialize_escrow, release, refund tests
-  });
-});
+      assert.equal(pdaA.toBase58(), pdaB.toBase58());
+      assert.equal(bumpA, bumpB);
+    },
+  },
+  {
+    name: "initialize_escrow path: deriveVaultATA returns stable associated token account",
+    run: async () => {
+      const maker = Keypair.generate().publicKey;
+      const taker = Keypair.generate().publicKey;
+      const [escrowPda] = deriveEscrowStatePDA(maker, taker);
+
+      const vaultA = await deriveVaultATA(escrowPda, USDC_DEVNET_MINT);
+      const vaultB = await deriveVaultATA(escrowPda, USDC_DEVNET_MINT);
+
+      assert.equal(vaultA.toBase58(), vaultB.toBase58());
+    },
+  },
+  {
+    name: "release path: IDL exposes release instruction",
+    run: () => {
+      const instructionNames = ESCROW_IDL.instructions.map((ix) => ix.name);
+      assert.ok(instructionNames.includes("release"));
+    },
+  },
+  {
+    name: "refund path: IDL exposes refund instruction",
+    run: () => {
+      const instructionNames = ESCROW_IDL.instructions.map((ix) => ix.name);
+      assert.ok(instructionNames.includes("refund"));
+    },
+  },
+];
+
+async function main(): Promise<void> {
+  let passed = 0;
+
+  for (const t of tests) {
+    try {
+      await t.run();
+      console.log(`✅ ${t.name}`);
+      passed += 1;
+    } catch (error) {
+      console.error(`❌ ${t.name}`);
+      throw error;
+    }
+  }
+
+  console.log(`\nEscrow tests passed: ${passed}/${tests.length}`);
+}
+
+await main();
