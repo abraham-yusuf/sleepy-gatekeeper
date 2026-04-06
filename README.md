@@ -58,9 +58,15 @@ Membangun OS decentralized di browser di mana setiap user punya desktop on-chain
 | ElizaOS live agent orchestration | **planned** | Belum ada dependency/runtime integration aktif. | _(roadmap only)_ |
 | ERC-8004 live registry integration | **planned** | Belum ada contract calls/SDK integration aktif di codebase. | _(roadmap only)_ |
 | web4.ai automaton + Conway terminal write access | **planned** | Belum ada live integration/sandbox runtime untuk production flow. | _(roadmap only)_ |
-| OpenClaw ACP / Bankr launcher / Hermes sandbox | **planned** | Belum ada implementasi API/runtime nyata; masih arah hackathon roadmap. | _(roadmap only)_ |
+| OpenClaw ACP / Bankr launcher / Hermes sandbox | **partial** | Sudah ada mock API contract untuk sandbox lifecycle (`/api/os/sandbox`) dan Bankr launcher flow (`/api/os/bankr`); integrasi runtime/wallet provider asli masih planned. | `lib/sandbox.ts`, `app/api/os/sandbox/route.ts`, `app/api/os/bankr/route.ts` |
 
 > Pitch tetap: Sleepy Gatekeeper sudah punya **working browser OS shell + payment-gated experience**. Komponen agent economy lanjutan diposisikan jelas sebagai roadmap agar tidak misleading.
+
+### Mock vs Real Integration (Hackathon Clarity)
+
+- **Real integration (running):** wallet auth challenge/verify, desktop UI runtime, x402-protected routes, dan fondasi Anchor escrow (program + client flow).
+- **Mock with final API contract:** sandbox lifecycle runtime (`create/start/stop/status`) via `/api/os/sandbox`, dan Bankr launcher orchestration (`connect wallet`, `quote/swap intent`, `execution status`) via `/api/os/bankr`.
+- **Planned next:** mengganti mock layer dengan sandbox container runtime aktual + Bankr SDK/wallet connector live tanpa mengubah contract endpoint yang sudah dipakai UI.
 
 ## UI/UX & Workflow Documentation
 - [WorkflowApps.md](/docs/WorkflowApps.md) – Full UI/UX flows, app structures, and Mermaid diagrams for all major apps (Agents Hub, ACP Marketplace, Conway Terminal, etc.).

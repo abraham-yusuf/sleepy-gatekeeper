@@ -15,6 +15,7 @@ import {
   ThemeToggle,
   LiveClock,
   ConnectWallet,
+  SandboxManager,
 } from "./components";
 import { useWalletContext } from "./context/WalletContext";
 
@@ -30,6 +31,7 @@ const DESKTOP_ICONS = [
   { id: "videos", icon: "videocam", label: "Videos", color: "text-[#ff9f43]" },
   { id: "skills", icon: "school", label: "Skills", color: "text-primary" },
   { id: "help", icon: "help_center", label: "Help Docs", color: "text-[#1084d0]" },
+  { id: "sandbox", icon: "deployed_code", label: "Sandbox Manager", color: "text-neon-green" },
 ] as const;
 
 type AgentTaskStatus = "created" | "running" | "settled" | "completed" | "failed";
@@ -118,7 +120,7 @@ export default function Home() {
     if (activeTask.status === "completed" || activeTask.status === "failed") return;
 
     const intervalId = setInterval(() => {
-      void pollTaskStatus(activeTask.taskId).catch((error) => {
+      void pollTaskStatus(activeTask.taskId).catch(error => {
         setAgentRuntimeError(error instanceof Error ? error.message : "Polling error");
       });
     }, 1200);
@@ -131,12 +133,18 @@ export default function Home() {
     {
       icon: <span className="material-symbols-outlined text-[18px]">smart_toy</span>,
       label: "Agents Hub",
-      onClick: () => { desktop.openWindow("agents-hub"); setShowStartMenu(false); },
+      onClick: () => {
+        desktop.openWindow("agents-hub");
+        setShowStartMenu(false);
+      },
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">storefront</span>,
       label: "Marketplace",
-      onClick: () => { desktop.openWindow("marketplace"); setShowStartMenu(false); },
+      onClick: () => {
+        desktop.openWindow("marketplace");
+        setShowStartMenu(false);
+      },
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">group</span>,
@@ -169,17 +177,34 @@ export default function Home() {
     {
       icon: <span className="material-symbols-outlined text-[18px]">terminal</span>,
       label: "Terminal",
-      onClick: () => { desktop.openWindow("terminal"); setShowStartMenu(false); },
+      onClick: () => {
+        desktop.openWindow("terminal");
+        setShowStartMenu(false);
+      },
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">settings</span>,
       label: "Settings",
-      onClick: () => { desktop.openWindow("settings"); setShowStartMenu(false); },
+      onClick: () => {
+        desktop.openWindow("settings");
+        setShowStartMenu(false);
+      },
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">help_center</span>,
       label: "Help Docs",
-      onClick: () => { desktop.openWindow("help"); setShowStartMenu(false); },
+      onClick: () => {
+        desktop.openWindow("help");
+        setShowStartMenu(false);
+      },
+    },
+    {
+      icon: <span className="material-symbols-outlined text-[18px]">deployed_code</span>,
+      label: "Sandbox Manager",
+      onClick: () => {
+        desktop.openWindow("sandbox");
+        setShowStartMenu(false);
+      },
     },
     {
       icon: <span className="material-symbols-outlined text-[18px]">group</span>,
@@ -198,8 +223,8 @@ export default function Home() {
   ];
 
   // Taskbar buttons - reflect open windows
-  const taskbarButtons = desktop.openWindows.map((winId) => {
-    const iconDef = DESKTOP_ICONS.find((i) => i.id === winId);
+  const taskbarButtons = desktop.openWindows.map(winId => {
+    const iconDef = DESKTOP_ICONS.find(i => i.id === winId);
     return {
       icon: (
         <span className="material-symbols-outlined text-[16px] text-black">
@@ -247,7 +272,10 @@ export default function Home() {
           <>
             <div className="absolute inset-0 bg-gradient-to-br from-[#0a0520] via-[#0f0a2a] to-[#050215] opacity-90" />
             <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-primary/5 rounded-full blur-[150px] animate-pulse" />
-            <div className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-blue-600/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "2s", animationDuration: "4s" }} />
+            <div
+              className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-blue-600/5 rounded-full blur-[120px] animate-pulse"
+              style={{ animationDelay: "2s", animationDuration: "4s" }}
+            />
           </>
         )}
         {desktop.theme === "dark" && (
@@ -258,11 +286,13 @@ export default function Home() {
       {/* Desktop Icons Grid */}
       <div className="relative z-10 p-6 pt-8">
         <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-10 gap-2 max-w-5xl">
-          {DESKTOP_ICONS.map((icon) => (
+          {DESKTOP_ICONS.map(icon => (
             <DesktopIcon
               key={icon.id}
               icon={
-                <span className={`material-symbols-outlined text-4xl ${icon.color} group-hover:scale-110 transition-transform`}>
+                <span
+                  className={`material-symbols-outlined text-4xl ${icon.color} group-hover:scale-110 transition-transform`}
+                >
                   {icon.icon}
                 </span>
               }
@@ -288,21 +318,27 @@ export default function Home() {
             <div className="bg-retro-gray p-4">
               <div className="bg-white win95-recessed p-4 min-h-[300px]">
                 <h3 className="text-lg font-bold text-black mb-4">🤖 Agents Hub</h3>
-                <p className="text-sm text-black/70 mb-4">Spawn agent → execute task → settle payment → show result.</p>
+                <p className="text-sm text-black/70 mb-4">
+                  Spawn agent → execute task → settle payment → show result.
+                </p>
 
                 <div className="space-y-3">
                   <div className="p-3 border border-gray-300 bg-gray-50 space-y-3">
                     <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-2xl text-primary">add_circle</span>
+                      <span className="material-symbols-outlined text-2xl text-primary">
+                        add_circle
+                      </span>
                       <div>
                         <div className="text-sm font-bold text-black">Spawn New Agent Task</div>
-                        <div className="text-xs text-black/60">Creates task and starts realtime status polling</div>
+                        <div className="text-xs text-black/60">
+                          Creates task and starts realtime status polling
+                        </div>
                       </div>
                     </div>
 
                     <input
                       value={taskPrompt}
-                      onChange={(e) => setTaskPrompt(e.target.value)}
+                      onChange={e => setTaskPrompt(e.target.value)}
                       className="w-full border border-gray-400 px-2 py-1 text-xs text-black font-mono bg-white"
                       placeholder="Describe task for the agent..."
                     />
@@ -332,10 +368,14 @@ export default function Home() {
                     <div className="p-3 border border-gray-400 bg-white text-black space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="text-xs font-mono">Task: {activeTask.taskId}</div>
-                        <div className="text-xs font-bold uppercase">Status: {activeTask.status}</div>
+                        <div className="text-xs font-bold uppercase">
+                          Status: {activeTask.status}
+                        </div>
                       </div>
                       <div className="text-xs font-mono">Agent: {activeTask.agentId}</div>
-                      <div className="text-xs font-mono">Prompt: {activeTask.task || "(empty task)"}</div>
+                      <div className="text-xs font-mono">
+                        Prompt: {activeTask.task || "(empty task)"}
+                      </div>
                       <div className="text-xs font-mono">
                         Payment: {activeTask.payment.amount} via {activeTask.payment.network} ·{" "}
                         {activeTask.payment.settled ? "settled" : "pending"}
@@ -354,7 +394,7 @@ export default function Home() {
                       )}
 
                       <div className="text-[10px] font-mono max-h-28 overflow-y-auto border border-gray-300 bg-gray-50 p-2 space-y-1">
-                        {activeTask.logs.map((log) => (
+                        {activeTask.logs.map(log => (
                           <div key={`${log.at}-${log.message}`}>
                             [{new Date(log.at).toLocaleTimeString()}] {log.status}: {log.message}
                           </div>
@@ -380,14 +420,16 @@ export default function Home() {
             <div className="bg-retro-gray p-4">
               <div className="bg-white win95-recessed p-4 min-h-[350px]">
                 <h3 className="text-lg font-bold text-black mb-4">🛒 Skills Marketplace</h3>
-                <p className="text-sm text-black/70 mb-4">Browse, buy and sell AI skills with escrow-backed payments.</p>
+                <p className="text-sm text-black/70 mb-4">
+                  Browse, buy and sell AI skills with escrow-backed payments.
+                </p>
 
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { name: "AI Prompt Mastery", price: "$0.05", icon: "psychology" },
                     { name: "Web3 Dev Kit", price: "$0.10", icon: "code" },
                     { name: "Blockchain Security", price: "$0.08", icon: "security" },
-                  ].map((skill) => (
+                  ].map(skill => (
                     <div key={skill.name} className="p-3 border border-gray-300 bg-gray-50">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="material-symbols-outlined text-primary">{skill.icon}</span>
@@ -427,7 +469,9 @@ export default function Home() {
               <div className="flex items-center gap-2 px-2 py-1 bg-retro-gray border-b border-gray-400">
                 <span className="text-xs text-black font-bold">Address:</span>
                 <div className="flex-1 win95-recessed bg-white px-2 py-0.5 text-xs text-black font-mono">
-                  {wallet.isConnected ? `/${wallet.walletNetwork}/${wallet.address?.slice(0, 12)}...` : "/guest"}
+                  {wallet.isConnected
+                    ? `/${wallet.walletNetwork}/${wallet.address?.slice(0, 12)}...`
+                    : "/guest"}
                 </div>
               </div>
               {/* File list */}
@@ -439,8 +483,11 @@ export default function Home() {
                       { icon: "folder", name: "Agent Configs", type: "Folder" },
                       { icon: "description", name: "wallet_backup.json", type: "JSON" },
                       { icon: "image", name: "avatar.png", type: "Image" },
-                    ].map((file) => (
-                      <div key={file.name} className="flex items-center gap-2 px-2 py-1 hover:bg-primary hover:text-white text-black cursor-pointer text-xs">
+                    ].map(file => (
+                      <div
+                        key={file.name}
+                        className="flex items-center gap-2 px-2 py-1 hover:bg-primary hover:text-white text-black cursor-pointer text-xs"
+                      >
                         <span className="material-symbols-outlined text-[16px]">{file.icon}</span>
                         <span className="flex-1 font-mono">{file.name}</span>
                         <span className="text-black/40">{file.type}</span>
@@ -495,6 +542,19 @@ export default function Home() {
             <HelpDocs />
           </DraggableWindow>
         )}
+
+        {/* Sandbox Manager Window */}
+        {desktop.isWindowOpen("sandbox") && (
+          <DraggableWindow
+            id="sandbox"
+            title="Sandbox Manager"
+            icon={<span className="material-symbols-outlined text-sm">deployed_code</span>}
+            onClose={() => desktop.closeWindow("sandbox")}
+            defaultSize={{ width: 720, height: 520 }}
+          >
+            <SandboxManager />
+          </DraggableWindow>
+        )}
       </div>
 
       {/* Mandatory Wallet Connect Modal */}
@@ -530,7 +590,9 @@ export default function Home() {
               className="h-full px-2 flex items-center gap-1 bg-retro-gray win95-shadow hover:bg-white transition-colors"
               title="Spawn Agent"
             >
-              <span className="material-symbols-outlined text-[14px] text-neon-green">smart_toy</span>
+              <span className="material-symbols-outlined text-[14px] text-neon-green">
+                smart_toy
+              </span>
             </button>
           )}
 
@@ -543,7 +605,9 @@ export default function Home() {
           {/* System Tray */}
           <div className="h-full px-2 win95-recessed flex items-center gap-2 bg-retro-gray/30">
             <div className="flex items-center gap-1.5">
-              <div className={`size-1.5 rounded-full ${wallet.isConnected ? "bg-neon-green shadow-[0_0_4px_#39ff14]" : "bg-red-500"}`} />
+              <div
+                className={`size-1.5 rounded-full ${wallet.isConnected ? "bg-neon-green shadow-[0_0_4px_#39ff14]" : "bg-red-500"}`}
+              />
               <LiveClock />
             </div>
           </div>

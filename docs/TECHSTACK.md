@@ -48,8 +48,8 @@ Sleepy Gatekeeper OS adalah decentralized web-based operating system yang dibang
   - **ElizaOS SDK** (sudah ada)
 - **Hermes Agent (Nous Research)** — **planned**.
 - **@solana/mpp SDK** — **planned**.
-- **Bankr.bot Skills** — **planned**.
-- **Sandbox Backend**: Docker (node-docker / child_process) + read-only root — **planned**.
+- **Bankr Launcher Flow** — **partial/mock** via `app/api/os/bankr/route.ts` (contract endpoint sudah final untuk connect wallet, quote/swap intent, execution status; provider execution masih mock).
+- **Sandbox Runtime Layer** — **partial/mock** via `lib/sandbox.ts` + `app/api/os/sandbox/route.ts` (lifecycle create/start/stop/status sudah tersedia dengan mock in-memory runtime; container backend nyata masih planned).
 
 ### Storage & Decentralized Data
 - **IPFS (via ipfs-http-client)** - Decentralized file storage untuk user data dan apps. [Dokumentasi Resmi](https://docs.ipfs.tech/)
@@ -1063,3 +1063,13 @@ export default nextConfig;
 - [Virtuals App ACP Marketplace](https://app.virtuals.io/acp)
 
 ---
+
+
+### Integration Clarity for Judges
+
+| Area | Current state | Notes |
+|---|---|---|
+| `/api/os/sandbox` + `lib/sandbox.ts` | **Mock contract active** | Contract lifecycle sudah stabil (`create`, `start`, `stop`, `status`, `list`), runtime saat ini in-memory mock. |
+| `/api/os/bankr` | **Mock contract active** | Flow launcher tersedia (`connect-wallet`, `quote-swap-intent`, `execute-intent`, `execution-status`), settlement provider masih mock. |
+| Wallet auth, desktop UI, x402 routes | **Real integration active** | Sudah dipakai di runtime utama app. |
+| Anchor escrow | **Partial real integration** | Program/client/test ada; aktivasi runtime bergantung env + deploy. |
