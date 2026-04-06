@@ -6,6 +6,13 @@ Roadmap ini menguraikan evolusi Sleepy Gatekeeper dari payment gateway x402 menj
 
 Fokus: Modular development, test-driven, community-driven. Timeline dimulai dari Q1 2026 (current phase).
 
+## Current Build Snapshot (What runs today)
+
+- **Implemented**: wallet connect + auto username, desktop UI shell, x402 paywall untuk premium content, OS app payment routes.
+- **Partial**: Anchor escrow integration (program/client tersedia, deployment/runtime tergantung env), OS app logic mayoritas masih mock.
+- **Stub**: machine-to-machine payment client (simulasi receipt/header).
+- **Planned**: ElizaOS live orchestration, ERC-8004, web4.ai runtime, Conway write access, ACP, MPP, Hermes sandbox, Bankr launcher.
+
 ## Phase 1: Core OS Foundation (Q1 2026 – Current to March 2026)
 
 - Wallet-based login mandatory (EVM: MetaMask/Coinbase, SVM: Phantom) dengan auto-username generation.
@@ -32,7 +39,7 @@ Fokus: Modular development, test-driven, community-driven. Timeline dimulai dari
   - Dokumentasi: guide spawn agent → connect ACP → first hire.
 - Target: Submit ke hackathon (Base atau Solana grants) dengan demo agent spawning & trustless validation.
 
-## Hackathon Sprint – Solana Frontier Colosseum (April 2026)
+## Hackathon Sprint – Solana Frontier Colosseum (April 2026, planned scope)
 - Integrate @solana/mpp SDK ke escrow layer (hybrid x402 + MPP).
 - Build Sandbox Manager app (Docker-based) untuk Hermes & ElizaOS agents.
 - Pre-install Bankr.bot skills + Agent Launcher di Marketplace.

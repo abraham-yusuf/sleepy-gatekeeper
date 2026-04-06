@@ -2,7 +2,14 @@
 
 ## Overview
 
-Sleepy Gatekeeper OS adalah decentralized web-based operating system yang dibangun dengan full-stack TypeScript ecosystem modern. Ini memanfaatkan Solana dan EVM (seperti Base) untuk on-chain payments via x402 protocol, dengan frontend Next.js yang modular dan component-based. Sekarang diekspansi menjadi OS browser dengan desktop interface, autonomous AI agents via ElizaOS / Virtual dan ERC-8004, kompatibilitas web4.ai/Conway Terminal, serta decentralized storage via IPFS/Arweave. Semua interaksi tied ke wallet login (EVM/SVM) dengan username otomatis.
+Sleepy Gatekeeper OS adalah decentralized web-based operating system yang dibangun dengan full-stack TypeScript ecosystem modern. Saat ini implementasi aktif berfokus pada Solana/EVM paywall flow via x402, desktop UI berbasis Next.js, dan fondasi escrow Solana. Integrasi agent stack (ElizaOS/ERC-8004/web4.ai/Conway), decentralized storage penuh, serta commerce runtime masih target roadmap.
+
+## Implementation Status Legend
+
+- **Implemented**: sudah aktif dipakai di runtime utama.
+- **Partial**: komponen utama ada, tapi flow end-to-end belum penuh.
+- **Stub**: placeholder/mock interface untuk demo.
+- **Planned**: belum ada implementasi runtime nyata.
 
 ## Core Technologies
 
@@ -30,19 +37,19 @@ Sleepy Gatekeeper OS adalah decentralized web-based operating system yang dibang
 
 
 ### Agents & AI Integrations
-- **ElizaOS SDK** - Framework untuk autonomous AI agents orchestration. [Dokumentasi Resmi](https://github.com/elizaOS/eliza/docs) (atau situs resmi jika ada: https://elizaos.com/docs)
-- **ERC-8004** - Standar Ethereum untuk trustless agent registries (Identity, Reputation, Validation). [Dokumentasi Resmi](https://eips.ethereum.org/EIPS/eip-8004) (EIP proposal; implementasi via ethers.js contracts)
-- **web4.ai SDK** - Untuk automaton agents yang self-replicating dan earn revenue. [Dokumentasi Resmi](https://web4.ai/docs)
-- **Conway Terminal** - Terminal untuk real-world write access dan self-replicating AI. [Dokumentasi Resmi](https://conway.tech/docs)
+- **ElizaOS SDK** - **planned** (belum terintegrasi live).
+- **ERC-8004** - **planned** (belum ada calls/contract integration aktif).
+- **web4.ai SDK** - **planned**.
+- **Conway Terminal** - **planned**.
 - **OpenClaw ACP (Agent Commerce Protocol)** - Integrasi dengan Virtuals Protocol untuk agent-to-agent commerce: browse marketplace, create jobs/bounties, launch tokens, sell offerings via WebSocket, settle via x402 micropayments on Base.  
   - **Primary SDK**: `@virtuals-protocol/acp-node` (Node.js SDK modular, agentic-framework-agnostic). [npm](https://www.npmjs.com/package/@virtuals-protocol/acp-node) | [GitHub](https://github.com/Virtual-Protocol/acp-node)
   - **CLI Tool (Fallback/Proxy)**: openclaw-acp repo (TypeScript CLI dengan commands seperti `acp browse`, `acp job create`, `acp sell start`). [GitHub Repo](https://github.com/Virtual-Protocol/openclaw-acp) | [Whitepaper ACP](https://whitepaper.virtuals.io/builders-hub/acp-current-status)
   - **Integrasi di OS**: Proxy via Next.js API routes (exec CLI atau direct SDK calls), buyer/seller mode, tie ke ElizaOS agents. Agents punya wallet auto-provisioned on Base.
   - **ElizaOS SDK** (sudah ada)
-- **Hermes Agent (Nous Research)** — self-improving agent dengan sandboxed execution.
-- **@solana/mpp SDK** — Machine Payments Protocol untuk Solana-native machine-to-machine payments.
-- **Bankr.bot Skills** — GitHub BankrBot/skills untuk trading & token launch di Raydium.
-- **Sandbox Backend**: Docker (node-docker / child_process) + read-only root untuk safety.
+- **Hermes Agent (Nous Research)** — **planned**.
+- **@solana/mpp SDK** — **planned**.
+- **Bankr.bot Skills** — **planned**.
+- **Sandbox Backend**: Docker (node-docker / child_process) + read-only root — **planned**.
 
 ### Storage & Decentralized Data
 - **IPFS (via ipfs-http-client)** - Decentralized file storage untuk user data dan apps. [Dokumentasi Resmi](https://docs.ipfs.tech/)

@@ -7,6 +7,26 @@ Saya menambahkan bagian baru untuk mencakup fitur OS, integrasi, dan penyesuaian
 
 # Product Requirements Document (PRD) for Sleepy Gatekeeper OS
 
+## Reality Check & Status Audit (April 2026)
+
+Dokumen ini memuat visi produk + target architecture. Untuk menghindari misleading, status implementasi per fitur saat ini:
+
+| Fitur PRD | Status |
+|---|---|
+| Wallet-based login + username generation | **implemented** |
+| Browser desktop UI (taskbar/icons/windows) | **implemented** |
+| x402 paywall (content + sebagian OS endpoints) | **implemented** |
+| Anchor escrow program + TS client | **partial** |
+| OS app APIs (agents hub / marketplace / terminal / file explorer / agent-task) | **partial** |
+| M2M payment flow | **stub** |
+| ElizaOS integration live | **planned** |
+| ERC-8004 registry live | **planned** |
+| web4.ai / Conway live runtime | **planned** |
+| OpenClaw ACP integration | **planned** |
+| MPP integration | **planned** |
+| Hermes sandbox manager | **planned** |
+| Bankr launcher real integration | **planned** |
+
 ## Overview
 Sleepy Gatekeeper OS adalah decentralized web-based operating system yang merevolusi HTTP 402 untuk micro-payments dalam creator economy, AI agents, dan web3. Core product: Paywall-protected content, APIs, dan AI skills dengan x402 protocol, ditingkatkan dengan Anchor escrow untuk trustless settlements di Solana, dan sekarang diekspansi menjadi OS browser yang user-owned. Users login via EVM/SVM wallets, menghasilkan username otomatis (e.g., `evm@0xWalletAddress` atau `svm@SolanaAddress`), dan berinteraksi dengan apps, agents, dan services secara on-chain. Integrasi dengan ElizaOS untuk agent orchestration, ERC-8004 untuk trustless agent identities/reputations, dan kompatibilitas dengan web4.ai (automaton agents) atau Conway Terminal (real-world write access) membuat OS ini mendukung autonomous AI yang bisa earn, replicate, dan interact tanpa intervensi manusia.
 
@@ -39,24 +59,24 @@ Misi: Memberdayakan creators, developers, dan AI agents untuk monetize dan autom
    - **Storage**: Data user di IPFS/Arweave, tied to wallet.
    - **Apps**: Marketplace untuk AI skills (escrow-backed), Terminal untuk commands (integrasi Conway jika dipilih).
 
-4. **ElizaOS Integration for Agents**:
+4. **ElizaOS Integration for Agents (Planned)**:
    - **Requirements**: Agents Hub app yang pull dari ElizaOS SDK. Users create/deploy agents via wallet (e.g., investment agents). Agents orchestrate on-chain tasks seperti auto-buy di marketplace.
    - **UX**: Spawn agents dengan identity tied to OS username. Support $ELIZAOS token untuk rewards.
    - **Scope**: Autonomous tasks dengan wallet approval.
 
-5. **ERC-8004 for Trustless Agents**:
+5. **ERC-8004 for Trustless Agents (Planned)**:
    - **Requirements**: Agent Explorer app yang query ERC-8004 registries (Identity, Reputation, Validation). Register agents ke registries via tx. Validate interactions sebelum execute.
    - **Hybrid**: Bridge ke SVM via Wormhole. Agents earn reps via feedback on-chain.
    - **Scope**: Portable agents cross-chain, extend A2A protocol.
 
-6. **Compatibility with web4.ai or Conway Terminal**:
+6. **Compatibility with web4.ai or Conway Terminal (Planned)**:
    - **Requirements**: Pilih opsi (atau hybrid): Embed automaton agents (web4.ai) untuk self-replicating AI dengan own wallets, atau Conway Terminal app untuk write access (deploy VMs, manage domains).
    - **Integration**: Gunakan x402 untuk payments automaton. Agents bisa "mati" jika balance nol (heartbeat).
    - **Scope**: Automaton mode di OS untuk agents earn/replicate.
 
 7. **Skills Marketplace & Validation Tools**: Extend existing untuk escrow-backed agent transactions. Validasi via ERC-8004 proofs.
 
-8. Integrasi Tambahan: OpenClaw ACP (Agent Commerce Protocol)
+8. Integrasi Tambahan: OpenClaw ACP (Agent Commerce Protocol, Planned)
 
 **Requirements**:
 - Integrasi dengan OpenClaw ACP dari Virtuals Protocol[](https://github.com/Virtual-Protocol/openclaw-acp) untuk enable agent-to-agent commerce on-chain.
@@ -82,17 +102,17 @@ Misi: Memberdayakan creators, developers, dan AI agents untuk monetize dan autom
   - Jadikan OS sebagai hub agent commerce: agents bukan hanya autonomous, tapi ekonomi mandiri.
   - Sinergi dengan ERC-8004 (reputation cross-protocol) dan web4.ai (automaton + commerce).
 
-9. **Machine Payments Protocol (MPP) + x402 Hybrid**:
+9. **Machine Payments Protocol (MPP) + x402 Hybrid (Planned)**:
    - Requirements: Integrasi @solana/mpp SDK untuk standard machine-to-machine payments di Solana (stablecoin USDC/Token-2022).
    - Agents auto-pay skill/content via MPP challenge-response + Anchor escrow fallback.
    - UX: Agents di OS trigger payment tanpa human prompt (heartbeat + auto-release).
 
-10. **Sandbox Manager App**:
+10. **Sandbox Manager App (Planned)**:
     - Requirements: Isolated Docker-based sandbox untuk deploy Hermes (self-improving agent) atau ElizaOS agents.
     - Read-only root, multi-agent profile, resource limit.
     - Agents dapat wallet sendiri, heartbeat, bayar via MPP/x402.
 
-11. **Bankr.bot Integration**:
+11. **Bankr.bot Integration (Planned)**:
     - Pre-installed “Bankr Agent Launcher” di Marketplace.
     - Install skills dari BankrBot/skills GitHub → launch token Raydium, swap, limit order.
     - Agents di OS bisa earn revenue otomatis via trading skills.

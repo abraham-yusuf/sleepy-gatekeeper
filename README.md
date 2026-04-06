@@ -2,9 +2,9 @@
 
 Dormant since '97, woke up just to tax your robot... and now to run your entire decentralized desktop.
 
-Sleepy Gatekeeper OS adalah **operating system berbasis browser yang sepenuhnya decentralized**, di mana users login via EVM/SVM wallet untuk mendapatkan username otomatis (misalnya `evm@0x1234...` atau `svm@1111...`). Ini bukan lagi sekadar payment gateway — ini adalah portal Web4: desktop virtual di browser dengan apps, autonomous AI agents, trustless paywalls (x402 + Anchor escrow), dan real-world write access.
+Sleepy Gatekeeper OS adalah **operating system berbasis browser untuk eksperimen decentralized UX**, di mana users login via EVM/SVM wallet untuk mendapatkan username otomatis (misalnya `evm@0x1234...` atau `svm@1111...`). Saat ini fokus utama yang sudah berjalan adalah desktop UI + paywall x402 + fondasi escrow Solana. Visi Web4 yang lebih luas (agent autonomy penuh dan real-world write access) masih berada di roadmap.
 
-Core tetap HTTP 402 revival: lindungi konten, APIs, AI skills, dan sekarang **seluruh OS apps** dengan micropayments on-chain. Agents menjadi "citizens" dengan identity via ERC-8004, orchestration via ElizaOS, dan autonomy via web4.ai / Conway Terminal.
+Core tetap HTTP 402 revival: lindungi konten, APIs, AI skills, dan sebagian endpoint OS apps dengan micropayments on-chain. Konsep agents sebagai "citizens" (ERC-8004), orchestration ElizaOS, serta autonomy via web4.ai / Conway Terminal adalah arah roadmap.
 
 Live demo: https://www.0x402.tech/
 
@@ -27,23 +27,40 @@ Membangun OS decentralized di browser di mana setiap user punya desktop on-chain
 - **Browser-Based Decentralized Desktop**  
   Desktop UI dengan icons (Agents Hub, Marketplace, File Explorer untuk on-chain assets), taskbar (username, balance, quick agent spawn), tema "sleepy" dengan animasi gatekeeper.
 
-- **x402 Paywalls + Trustless Anchor Escrow**  
-  Protect apps, content, APIs, dan agent skills. Escrow on Solana via Anchor PDA vault (init/release/refund). Hybrid: facilitator untuk UX cepat, escrow untuk security maksimal. Agents bisa auto-pay via machine-to-machine.
+- **x402 Paywalls + Anchor Escrow Foundation**  
+  Protect content/APIs dan OS app endpoints tertentu dengan x402. Escrow Solana (Anchor PDA vault: init/release/refund) sudah ada pada level program + client, dengan toggle `USE_ESCROW` untuk hybrid mode.
 
-- **ElizaOS Integration**  
-  Agents Hub app: create/deploy autonomous agents (investment, monitoring, automation) tied to OS username. Orchestrate on-chain tasks dengan ElizaOS SDK.
+- **Agents Hub (UI/API Stub, ElizaOS Planned)**  
+  Agents Hub app sudah ada sebagai UI window + endpoint mock. Integrasi ElizaOS SDK untuk create/deploy autonomous agents masih planned.
 
-- **ERC-8004 Trustless Agent Registry**  
-  Agent Explorer: discover agents via on-chain registries (Identity ERC-721, Reputation, Validation). Register agents Anda, earn reps via feedback, validate interactions sebelum execute. Bridgeable ke SVM.
+- **ERC-8004 Trustless Agent Registry (Planned)**  
+  Agent registry on-chain, reputation, validation proofs, dan bridgeability ke SVM masih planned.
 
-- **web4.ai / Conway Terminal Compatibility**  
-  Automaton mode: spawn self-replicating agents dengan own wallets (web4.ai). Conway Terminal app untuk real-world write access (deploy VMs, manage domains, external APIs). Agents earn revenue, heartbeat untuk survival.
+- **web4.ai / Conway Terminal Compatibility (Planned)**  
+  Automaton mode dan real-world write access terminal belum terintegrasi live; masuk roadmap.
 
-- **Skills Marketplace**  
-  Jual/beli AI skills & tools dengan escrow-backed payments. Agents bisa auto-beli skills untuk self-improve.
+- **Skills Marketplace (UI + Protected Routes)**  
+  Marketplace UI dan protected content/skills routes sudah ada. Settlement lanjutan untuk commerce agent-to-agent masih planned.
 
-- **Decentralized Storage**  
-  User data & apps disimpan di IPFS/Arweave, tied ke wallet address.
+- **Decentralized Storage (Planned)**  
+  Integrasi live IPFS/Arweave untuk user data belum diaktifkan.
+
+## Implementation Status
+
+| Feature | Status | What runs today | Code reference |
+|---|---|---|---|
+| Wallet login + auto username (`evm@...` / `svm@...`) | **implemented** | Detect EVM/Solana wallet, derive username, persist local session/theme/window state. | `app/context/WalletContext.tsx` |
+| Browser desktop UI (icons, taskbar, windows) | **implemented** | Desktop layout, draggable windows, start/taskbar UX berjalan di app utama. | `app/page.tsx`, `app/components/*` |
+| x402 paywall for premium content routes | **implemented** | Proxy middleware melindungi articles/podcasts/videos/skills dengan dual network config. | `proxy.ts` |
+| OS app protected endpoints (`/api/os/[app]`) | **partial** | Endpoint ada dan diproteksi x402 wrapper; business logic kebanyakan mock response. | `app/api/os/[app]/route.ts`, `proxy.ts` |
+| Anchor escrow integration (Solana) | **partial** | Program + TS client + tests tersedia; deployment/use di runtime bergantung env + wallet flow. | `programs/escrow/src/lib.rs`, `lib/escrow.ts`, `tests/escrow.ts` |
+| M2M autonomous payments | **stub** | Client budget/receipt simulation ada, namun payment header masih stub. | `lib/m2m-payment.ts` |
+| ElizaOS live agent orchestration | **planned** | Belum ada dependency/runtime integration aktif. | _(roadmap only)_ |
+| ERC-8004 live registry integration | **planned** | Belum ada contract calls/SDK integration aktif di codebase. | _(roadmap only)_ |
+| web4.ai automaton + Conway terminal write access | **planned** | Belum ada live integration/sandbox runtime untuk production flow. | _(roadmap only)_ |
+| OpenClaw ACP / Bankr launcher / Hermes sandbox | **planned** | Belum ada implementasi API/runtime nyata; masih arah hackathon roadmap. | _(roadmap only)_ |
+
+> Pitch tetap: Sleepy Gatekeeper sudah punya **working browser OS shell + payment-gated experience**. Komponen agent economy lanjutan diposisikan jelas sebagai roadmap agar tidak misleading.
 
 ## UI/UX & Workflow Documentation
 - [WorkflowApps.md](/docs/WorkflowApps.md) – Full UI/UX flows, app structures, and Mermaid diagrams for all major apps (Agents Hub, ACP Marketplace, Conway Terminal, etc.).
