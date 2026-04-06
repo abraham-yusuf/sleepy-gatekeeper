@@ -1,11 +1,23 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import { useWalletConnection } from "@solana/react-hooks";
 
 type WalletNetwork = "solana" | "evm" | null;
 type ThemeMode = "dark" | "light" | "sleepy";
+
+interface SessionProof {
+  token: string;
+  proof: {
+    network: Exclude<WalletNetwork, null>;
+    address: string;
+    challengeId: string;
+    message: string;
+    issuedAt: number;
+    expiresAt: number;
+  };
+}
 
 interface WalletState {
   isConnected: boolean;
@@ -13,6 +25,8 @@ interface WalletState {
   address: string | null;
   username: string | null;
   chainLabel: string;
+  authToken: string | null;
+  isAuthenticating: boolean;
   disconnect: () => void;
 }
 
@@ -46,12 +60,29 @@ function generateUsername(network: WalletNetwork, address: string): string {
   return "guest";
 }
 
-function saveSession(network: WalletNetwork, address: string | null) {
+function saveSession(session: SessionProof | null) {
   if (typeof window === "undefined") return;
-  if (network && address) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ network, address }));
+  if (session) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   } else {
     localStorage.removeItem(SESSION_KEY);
+  }
+}
+
+function loadSession(): SessionProof | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as SessionProof;
+    if (!parsed.token || !parsed.proof) return null;
+    if (Date.now() > parsed.proof.expiresAt) return null;
+
+    return parsed;
+  } catch {
+    return null;
   }
 }
 
@@ -70,10 +101,50 @@ function loadWindows(): string[] {
   }
 }
 
+async function createChallenge(network: Exclude<WalletNetwork, null>, address: string) {
+  const res = await fetch("/api/auth/challenge", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ network, address }),
+  });
+
+  if (!res.ok) {
+    const payload = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(payload?.error ?? "Failed to request challenge");
+  }
+
+  return (await res.json()) as {
+    challengeId: string;
+    message: string;
+    expiresAt: number;
+  };
+}
+
+async function verifyChallenge(params: {
+  challengeId: string;
+  network: Exclude<WalletNetwork, null>;
+  address: string;
+  signature: string;
+}) {
+  const res = await fetch("/api/auth/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+
+  if (!res.ok) {
+    const payload = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(payload?.error ?? "Failed to verify challenge");
+  }
+
+  return (await res.json()) as SessionProof;
+}
+
 export function WalletProvider({ children }: { children: React.ReactNode }) {
   // EVM state
   const { address: evmAddress, isConnected: evmConnected, chain } = useAccount();
   const { disconnect: evmDisconnect } = useDisconnect();
+  const { signMessageAsync } = useSignMessage();
 
   // Solana state
   const solanaWallet = useWalletConnection();
@@ -82,11 +153,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>("dark");
   const [openWindows, setOpenWindows] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [sessionProof, setSessionProof] = useState<SessionProof | null>(null);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // Hydrate from localStorage on mount
   useEffect(() => {
     setThemeState(loadTheme());
     setOpenWindows(loadWindows());
+    setSessionProof(loadSession());
     setHydrated(true);
   }, []);
 
@@ -101,23 +175,95 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   // Chain label
   const chainLabel = evmConnected
-    ? chain?.name ?? "EVM"
+    ? (chain?.name ?? "EVM")
     : solanaConnected
       ? "Solana Devnet"
       : "Not Connected";
 
-  // Persist session when wallet connects/disconnects
+  // Session/challenge authentication after connect.
   useEffect(() => {
-    if (hydrated) {
-      saveSession(walletNetwork, address);
+    if (!hydrated) return;
+
+    if (!walletNetwork || !address) {
+      setSessionProof(null);
+      saveSession(null);
+      return;
     }
-  }, [walletNetwork, address, hydrated]);
+
+    const proof = sessionProof?.proof;
+    const normalizedAddress = walletNetwork === "evm" ? address.toLowerCase() : address;
+    const currentProofAddress =
+      proof && proof.network === "evm" ? proof.address.toLowerCase() : proof?.address;
+
+    const matchesCurrentWallet =
+      proof?.network === walletNetwork &&
+      currentProofAddress === normalizedAddress &&
+      Date.now() < proof.expiresAt;
+
+    if (matchesCurrentWallet || isAuthenticating) {
+      return;
+    }
+
+    const authenticate = async () => {
+      try {
+        setIsAuthenticating(true);
+
+        const challenge = await createChallenge(walletNetwork, address);
+
+        let signature: string;
+        if (walletNetwork === "evm") {
+          if (!evmAddress) throw new Error("Missing EVM address for signature");
+          signature = await signMessageAsync({
+            account: evmAddress as `0x${string}`,
+            message: challenge.message,
+          });
+        } else {
+          const signMessage = solanaWallet.wallet?.signMessage;
+
+          if (!signMessage) {
+            throw new Error("Connected Solana wallet does not support message signing");
+          }
+
+          const payload = await signMessage(new TextEncoder().encode(challenge.message));
+          signature = btoa(String.fromCharCode(...payload));
+        }
+
+        const verified = await verifyChallenge({
+          challengeId: challenge.challengeId,
+          network: walletNetwork,
+          address,
+          signature,
+        });
+
+        setSessionProof(verified);
+        saveSession(verified);
+      } catch (error) {
+        console.error("Wallet auth verification failed:", error);
+        setSessionProof(null);
+        saveSession(null);
+      } finally {
+        setIsAuthenticating(false);
+      }
+    };
+
+    void authenticate();
+  }, [
+    hydrated,
+    walletNetwork,
+    address,
+    sessionProof,
+    isAuthenticating,
+    signMessageAsync,
+    solanaWallet.wallet,
+    evmAddress,
+  ]);
 
   // Disconnect handler
   const disconnect = useCallback(() => {
     if (evmConnected) evmDisconnect();
     if (solanaConnected) solanaWallet.disconnect();
-    saveSession(null, null);
+    setSessionProof(null);
+    saveSession(null);
   }, [evmConnected, evmDisconnect, solanaConnected, solanaWallet]);
 
   // Theme
@@ -130,7 +276,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   // Window management
   const openWindow = useCallback((id: string) => {
-    setOpenWindows((prev) => {
+    setOpenWindows(prev => {
       if (prev.includes(id)) return prev;
       const next = [...prev, id];
       if (typeof window !== "undefined") localStorage.setItem(WINDOWS_KEY, JSON.stringify(next));
@@ -139,17 +285,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const closeWindow = useCallback((id: string) => {
-    setOpenWindows((prev) => {
-      const next = prev.filter((w) => w !== id);
+    setOpenWindows(prev => {
+      const next = prev.filter(w => w !== id);
       if (typeof window !== "undefined") localStorage.setItem(WINDOWS_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
 
-  const isWindowOpen = useCallback(
-    (id: string) => openWindows.includes(id),
-    [openWindows],
-  );
+  const isWindowOpen = useCallback((id: string) => openWindows.includes(id), [openWindows]);
 
   const value: WalletContextType = {
     wallet: {
@@ -158,6 +301,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       address,
       username,
       chainLabel,
+      authToken: sessionProof?.token ?? null,
+      isAuthenticating,
       disconnect,
     },
     desktop: {
