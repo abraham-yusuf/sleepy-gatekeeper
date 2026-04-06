@@ -27,6 +27,8 @@ Sleepy Gatekeeper OS adalah decentralized web-based operating system yang dibang
 - **@solana/wallet-adapter** - Wallet connector untuk SVM (Phantom, dll.). [Dokumentasi Resmi](https://github.com/anza-xyz/wallet-adapter)
 - **@x402/paywall** - Payment integration library. [Dokumentasi Resmi](https://www.x402.org/docs/paywall)
 - **Wormhole** - Cross-chain bridge untuk EVM-SVM interoperability (penting untuk hybrid ACP jobs). [Dokumentasi Resmi](https://docs.wormhole.com/)
+
+
 ### Agents & AI Integrations
 - **ElizaOS SDK** - Framework untuk autonomous AI agents orchestration. [Dokumentasi Resmi](https://github.com/elizaOS/eliza/docs) (atau situs resmi jika ada: https://elizaos.com/docs)
 - **ERC-8004** - Standar Ethereum untuk trustless agent registries (Identity, Reputation, Validation). [Dokumentasi Resmi](https://eips.ethereum.org/EIPS/eip-8004) (EIP proposal; implementasi via ethers.js contracts)
@@ -36,6 +38,11 @@ Sleepy Gatekeeper OS adalah decentralized web-based operating system yang dibang
   - **Primary SDK**: `@virtuals-protocol/acp-node` (Node.js SDK modular, agentic-framework-agnostic). [npm](https://www.npmjs.com/package/@virtuals-protocol/acp-node) | [GitHub](https://github.com/Virtual-Protocol/acp-node)
   - **CLI Tool (Fallback/Proxy)**: openclaw-acp repo (TypeScript CLI dengan commands seperti `acp browse`, `acp job create`, `acp sell start`). [GitHub Repo](https://github.com/Virtual-Protocol/openclaw-acp) | [Whitepaper ACP](https://whitepaper.virtuals.io/builders-hub/acp-current-status)
   - **Integrasi di OS**: Proxy via Next.js API routes (exec CLI atau direct SDK calls), buyer/seller mode, tie ke ElizaOS agents. Agents punya wallet auto-provisioned on Base.
+  - **ElizaOS SDK** (sudah ada)
+- **Hermes Agent (Nous Research)** — self-improving agent dengan sandboxed execution.
+- **@solana/mpp SDK** — Machine Payments Protocol untuk Solana-native machine-to-machine payments.
+- **Bankr.bot Skills** — GitHub BankrBot/skills untuk trading & token launch di Raydium.
+- **Sandbox Backend**: Docker (node-docker / child_process) + read-only root untuk safety.
 
 ### Storage & Decentralized Data
 - **IPFS (via ipfs-http-client)** - Decentralized file storage untuk user data dan apps. [Dokumentasi Resmi](https://docs.ipfs.tech/)
