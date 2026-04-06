@@ -3,6 +3,7 @@ import { withX402 } from "@x402/next";
 import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 import { server, paywall, evmAddress, svmAddress, osAppRoutes } from "../../../../proxy";
 import { verifyReceipt } from "../../../../lib/mpp";
+import { createAgentTask } from "../../../../agents/runtime";
 import {
   type CanonicalPaymentReceipt,
   type PaymentMode,
@@ -126,19 +127,23 @@ const OS_APPS: Record<
         agentId = "default-agent";
       }
 
+      const created = createAgentTask({
+        task,
+        agentId,
+        paymentAmount: "$0.05",
+      });
+
       return NextResponse.json({
         app: "agent-task",
-        agentId,
-        task,
-        status: "queued",
-        taskId: `task_${Date.now()}`,
-        message: "Task queued. Agent will execute and settle payment on completion.",
-        note: "ElizaOS integration coming in Phase 2. This endpoint accepts x402 payments from other agents (machine-to-machine).",
-        payment: {
-          settled: true,
-          amount: "$0.05",
-          network: "x402",
-        },
+        taskId: created.taskId,
+        agentId: created.agentId,
+        task: created.task,
+        status: created.status,
+        createdAt: created.createdAt,
+        updatedAt: created.updatedAt,
+        payment: created.payment,
+        logs: created.logs,
+        message: "Task created. Runtime will process execution and settlement.",
       });
     },
   },
