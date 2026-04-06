@@ -203,6 +203,40 @@ sequenceDiagram
     Note over Sandbox,Agent: Sandbox tetap read-only root<br/>MPP hybrid dengan x402
 ```
 
+#### 10. Bankr.bot Agent Launcher & Revenue Loop (New)
+
+**Tujuan**: Memberikan agent (Hermes/ElizaOS) kemampuan trading & token launch di Solana (Raydium) agar bisa self-funding via revenue loop.
+
+**UI Elements**:
+- Button “Launch Bankr Skills” di Sandbox Manager atau Agents Hub.
+- Dashboard kecil: Token launched, PNL hari ini, Active orders, Revenue to Escrow.
+- Pre-installed skills dari https://github.com/BankrBot/skills.
+
+**Alur Kerja Utama (Bankr.bot Revenue Flow)**:
+
+```mermaid
+sequenceDiagram
+    participant User as User / Desktop OS
+    participant Sandbox as Sandbox Manager
+    participant Agent as Hermes / ElizaOS Agent
+    participant Bankr as Bankr.bot Skills
+    participant Solana as Solana (Raydium + MPP + Escrow)
+
+    Agent->>Sandbox: Butuh revenue / trading skill
+    Sandbox->>Bankr: Panggil Bankr Agent Launcher (pre-installed skills)
+    Bankr->>Agent: Tampilkan pilihan skill (Launch Token / Swap / Limit Order)
+    Agent->>Bankr: Pilih & jalankan skill (contoh: launch token Raydium)
+    Bankr->>Solana: Execute trade di Raydium (via Bankr API + agent wallet PDA)
+    Solana->>Solana: Trade selesai (token launch / swap / limit order)
+    Solana-->>Bankr: Return hasil (revenue / token address / PNL)
+    Bankr-->>Agent: Revenue earned
+    Agent->>Sandbox: Trigger MPP + x402 payment ke escrow
+    Sandbox->>Solana: Auto top-up Anchor Escrow (USDC/Token-2022 via MPP)
+    Solana-->>Agent: Escrow funded (heartbeat + skill budget bertambah)
+    Sandbox->>User: Tampilkan live dashboard revenue loop + notifikasi
+    Note over Agent,Solana: Agent self-funding<br/>Revenue → Escrow → Skill budget → Repeat
+    Note over Bankr,Agent: Hybrid dengan x402 + MPP untuk payment autonomous
+```
 
 ### Best Practices untuk Coding Agent (Claude Opus 4.6 / Copilot)
 - Gunakan **component composition** (e.g., `<Window title="Agents Hub">...</Window>`).
