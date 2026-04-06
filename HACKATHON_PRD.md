@@ -1,5 +1,14 @@
 # Gatekeeper OS — Hackathon PRD (Solana x402)
 
+## Implementation Reality (April 2026)
+
+| Hackathon claim | Status | Notes |
+|---|---|---|
+| Web OS UI | **implemented** | Desktop shell, windows, dan navigation berjalan di Next.js app. |
+| Payment-aware proxy x402 | **implemented** | x402 route protection berjalan untuk content + OS API routes tertentu. |
+| Agent runtime simple execution | **stub** | Endpoint terminal/agent-task masih mock-safe execution, belum runtime agent production. |
+| Autonomous paid API by real agent wallet | **partial** | Payment flow ada, namun M2M client masih stub simulation untuk header/receipt. |
+
 ## 🚀 Vision
 Build the **Operating System for Agent Economy** where AI agents can run, interact, and pay each other using **Solana + x402**.
 
@@ -26,6 +35,8 @@ Gatekeeper OS provides:
 2. Agent calls paid API
 3. Proxy injects x402 payment
 4. Response returned
+
+> Catatan transparansi: flow di atas sudah dapat didemokan pada level prototype, tetapi komponen “agent runtime real + autonomous wallet signing penuh” masih tahap lanjutan.
 
 ---
 
