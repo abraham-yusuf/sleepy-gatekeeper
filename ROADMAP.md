@@ -32,6 +32,14 @@ Fokus: Modular development, test-driven, community-driven. Timeline dimulai dari
   - Dokumentasi: guide spawn agent → connect ACP → first hire.
 - Target: Submit ke hackathon (Base atau Solana grants) dengan demo agent spawning & trustless validation.
 
+## Hackathon Sprint – Solana Frontier Colosseum (April 2026)
+- Integrate @solana/mpp SDK ke escrow layer (hybrid x402 + MPP).
+- Build Sandbox Manager app (Docker-based) untuk Hermes & ElizaOS agents.
+- Pre-install Bankr.bot skills + Agent Launcher di Marketplace.
+- Demo video: Spawn Hermes/ElizaOS → bayar skill via MPP + x402 → launch token Raydium via Bankr → revenue loop.
+- Submit ke arena.colosseum.org dengan live demo di 0x402.tech.
+
+
 ## Phase 3: Full Agent Economy & Autonomy (Q3 2026 – July to September 2026)
 
 - **Skills Marketplace** — Jual/beli AI skills & tools via x402 + escrow, dengan agent auto-purchase untuk self-improvement.
