@@ -306,6 +306,69 @@ sequenceDiagram
     Note over Payment,Bankr: 100% Solana-native (Anchor + MPP + Raydium) untuk Solana Frontier Colosseum
 ```
 
+#### 12. End-to-End Combined Flow: Full Decentralized Web OS (Flowchart Version)
+
+**Tujuan**: **Versi Flowchart** (bukan sequence) yang menggabungkan **semua flow existing** dari dokumen repo (PRD.md, README.md, ROADMAP.md, WorkflowApps.md) + **flow baru untuk Solana Frontier Hackathon** (Sandbox Manager + MPP hybrid x402 + Bankr.bot revenue loop).
+
+**Flow yang sudah ada (Phase 1-2)**:
+- Wallet login + Desktop OS
+- x402 paywall + Anchor escrow
+- Agents Hub + ElizaOS + ERC-8004
+- ACP Marketplace + IPFS/Arweave + Conway Terminal
+
+**Flow baru (Hackathon Sprint April 2026)**:
+- Sandbox Manager (isolated Docker)
+- MPP Solana-native (@solana/mpp SDK)
+- Bankr.bot skills (Raydium launch token + trading)
+- Self-funding revenue loop
+
+**Diagram Flowchart Lengkap (Gabungan Besar)**:
+
+```mermaid
+flowchart TD
+    A[Start: User Buka 0x402.tech] --> B[Wallet Connect EVM/SVM\nExisting Phase 1]
+    B --> C[Generate Auto Username\n+ Gatekeeper Awake Animation]
+    C --> D[Desktop OS UI\nTaskbar + Icons\nExisting]
+    
+    D --> E[Agents Hub / Spawn Agent Button]
+    E --> F[Sandbox Manager App\nNew Hackathon]
+    F --> G[Deploy Hermes / ElizaOS Agent\nIsolated Docker Sandbox\nread-only root]
+    
+    G --> H[Agent Initialize\nPDA Wallet + Heartbeat\nElizaOS SDK + ERC-8004\nExisting + New]
+    
+    H --> I[Butuh Skill / Content / Trading?]
+    I -->|Ya| J[Trigger Payment\nMPP + x402 Hybrid\n@ solana/mpp SDK\nNew]
+    J --> K[Anchor Escrow PDA Release\nUSDC / Token-2022\nExisting]
+    K --> L[Payment Confirmed\nAutonomous]
+    
+    L --> M[Execute Skill di Sandbox]
+    M --> N[Optional: Hire via ACP Marketplace\nExisting Phase 2]
+    
+    M --> O[Bankr.bot Skills Launcher\nNew Hackathon]
+    O --> P[Launch Token / Swap / Limit Order\nRaydium via Agent PDA]
+    P --> Q[Trade Selesai\nRevenue / PNL / Token Address]
+    Q --> R[Revenue Earned]
+    R --> S[Auto Top-up Escrow via MPP]
+    S --> K
+    
+    subgraph "Revenue Loop Self-Funding\nKiller Feature Hackathon"
+        O --> P --> Q --> R --> S
+    end
+    
+    M --> T[Simpan Result ke IPFS/Arweave\n+ Conway Terminal\nExisting Phase 3]
+    T --> U[Live Dashboard Update\nRevenue + Logs\nUser Notifikasi]
+    
+    style F fill:#22c55e,stroke:#166534
+    style J fill:#22c55e,stroke:#166534
+    style O fill:#22c55e,stroke:#166534
+    style K fill:#eab308,stroke:#854d0e
+    
+    classDef existing fill:#e0f2fe,stroke:#0369a1
+    classDef new fill:#ecfdf5,stroke:#10b981
+    class B,C,D,H,K,N,T existing
+    class F,J,O new
+```
+
 ### Best Practices untuk Coding Agent (Claude Opus 4.6 / Copilot)
 - Gunakan **component composition** (e.g., `<Window title="Agents Hub">...</Window>`).
 - State global via **Zustand** atau **React Context** untuk wallet, username, open windows.
