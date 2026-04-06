@@ -4,22 +4,50 @@ import { createWallet } from "../lib/solana";
 const walletA = createWallet();
 const walletB = createWallet();
 
-// Agent A hires Agent B (pays for task)
+/**
+ * Run the multi-agent demo where Agent A pays Agent B and calls protected local API.
+ *
+ * @returns Payment proof, task result, and verification metadata.
+ */
 export async function runMultiAgent() {
-  console.log("🤖 Agent A requesting service from Agent B...");
+  const localEndpoint = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/os/agent-task`;
 
-  // simulate payment from A → B
-  const paymentHeaders = await attachRealPayment(walletA, "agent-b-service");
+  console.log("🤖 Agent A requesting protected local service from Agent B...");
 
-  console.log("💸 Agent A paid Agent B");
+  // payment from A → B with real recipient public key
+  const paymentProof = await attachRealPayment(
+    walletA,
+    walletB.publicKey.toBase58(),
+    localEndpoint,
+  );
 
-  // Agent B performs task (calls API)
-  const response = await fetch("https://api.coingecko.com/api/v3/price?ids=solana&vs_currencies=usd");
-  const data = await response.json();
+  console.log("💸 Agent A paid Agent B and is calling protected endpoint");
+
+  // Agent A calls protected local OS endpoint
+  const response = await fetch(localEndpoint, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      ...paymentProof,
+    },
+    body: JSON.stringify({
+      agentId: walletA.publicKey.toBase58(),
+      task: "analyze market spread and return execution plan",
+    }),
+  });
+
+  const taskResult = await response.json();
 
   return {
-    step: "Agent A → Agent B",
-    payment: paymentHeaders,
-    result: data,
+    step: "Agent A → paid local protected endpoint",
+    paymentProof,
+    taskResult,
+    verification: {
+      endpoint: localEndpoint,
+      httpStatus: response.status,
+      paymentReceiptId: response.headers.get("x-payment-receipt-id"),
+      paymentReceiptMode: response.headers.get("x-payment-receipt-mode"),
+      verified: response.ok,
+    },
   };
 }
