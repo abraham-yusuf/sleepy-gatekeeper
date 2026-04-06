@@ -6,7 +6,11 @@
  * already project dependencies.
  */
 
-import { PublicKey, Connection, SystemProgram } from "@solana/web3.js";
+import {
+  PublicKey,
+  Connection,
+  SystemProgram,
+} from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -26,7 +30,9 @@ export const ESCROW_PROGRAM_ID = new PublicKey(
 );
 
 /** USDC mint on Solana devnet. */
-export const USDC_DEVNET_MINT = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+export const USDC_DEVNET_MINT = new PublicKey(
+  "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+);
 
 // ---------------------------------------------------------------------------
 // PDA derivation helpers
@@ -35,10 +41,6 @@ export const USDC_DEVNET_MINT = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEER
 /**
  * Derive the escrow state PDA for a given maker/taker pair.
  * Seeds: ["escrow", maker, taker]
- *
- * @param maker
- * @param taker
- * @param programId
  */
 export function deriveEscrowStatePDA(
   maker: PublicKey,
@@ -54,11 +56,11 @@ export function deriveEscrowStatePDA(
 /**
  * Derive the vault associated token account for a given escrow PDA and mint.
  * The vault is an Associated Token Account owned by the escrow PDA.
- *
- * @param escrowState
- * @param mint
  */
-export async function deriveVaultATA(escrowState: PublicKey, mint: PublicKey): Promise<PublicKey> {
+export async function deriveVaultATA(
+  escrowState: PublicKey,
+  mint: PublicKey,
+): Promise<PublicKey> {
   return getAssociatedTokenAddress(mint, escrowState, true);
 }
 
@@ -150,18 +152,10 @@ export interface EscrowStateAccount {
   bump: number;
 }
 
-/**
- *
- */
 export class EscrowClient {
   private program: anchor.Program;
   private connection: Connection;
 
-  /**
-   *
-   * @param connection
-   * @param wallet
-   */
   constructor(connection: Connection, wallet: anchor.Wallet) {
     this.connection = connection;
     const provider = new anchor.AnchorProvider(connection, wallet, {
@@ -174,12 +168,6 @@ export class EscrowClient {
   /**
    * Initialize an escrow: deposit `amount` (in token base units) into a PDA
    * vault. The escrow can be released to `taker` or refunded after `timeout`.
-   *
-   * @param params
-   * @param params.taker
-   * @param params.mint
-   * @param params.amount
-   * @param params.timeout
    */
   async initializeEscrow(params: {
     taker: PublicKey;
@@ -191,7 +179,10 @@ export class EscrowClient {
     const maker = this.program.provider.publicKey!;
     const [escrowState] = deriveEscrowStatePDA(maker, params.taker);
     const vault = await deriveVaultATA(escrowState, params.mint);
-    const makerToken = await getAssociatedTokenAddress(params.mint, maker);
+    const makerToken = await getAssociatedTokenAddress(
+      params.mint,
+      maker,
+    );
 
     return this.program.methods
       .initializeEscrow(params.amount, params.timeout)
@@ -212,16 +203,18 @@ export class EscrowClient {
   /**
    * Release the escrow — transfer vault funds to the taker.
    * Must be called by the taker.
-   *
-   * @param params
-   * @param params.maker
-   * @param params.mint
    */
-  async release(params: { maker: PublicKey; mint: PublicKey }): Promise<string> {
+  async release(params: {
+    maker: PublicKey;
+    mint: PublicKey;
+  }): Promise<string> {
     const taker = this.program.provider.publicKey!;
     const [escrowState] = deriveEscrowStatePDA(params.maker, taker);
     const vault = await deriveVaultATA(escrowState, params.mint);
-    const takerToken = await getAssociatedTokenAddress(params.mint, taker);
+    const takerToken = await getAssociatedTokenAddress(
+      params.mint,
+      taker,
+    );
 
     return this.program.methods
       .release()
@@ -239,16 +232,18 @@ export class EscrowClient {
   /**
    * Refund the escrow — return vault funds to the maker after timeout.
    * Must be called by the original maker.
-   *
-   * @param params
-   * @param params.taker
-   * @param params.mint
    */
-  async refund(params: { taker: PublicKey; mint: PublicKey }): Promise<string> {
+  async refund(params: {
+    taker: PublicKey;
+    mint: PublicKey;
+  }): Promise<string> {
     const maker = this.program.provider.publicKey!;
     const [escrowState] = deriveEscrowStatePDA(maker, params.taker);
     const vault = await deriveVaultATA(escrowState, params.mint);
-    const makerToken = await getAssociatedTokenAddress(params.mint, maker);
+    const makerToken = await getAssociatedTokenAddress(
+      params.mint,
+      maker,
+    );
 
     return this.program.methods
       .refund()
@@ -266,11 +261,11 @@ export class EscrowClient {
   /**
    * Fetch the on-chain state for a given maker/taker escrow.
    * Returns `null` if the account does not exist.
-   *
-   * @param maker
-   * @param taker
    */
-  async fetchEscrowState(maker: PublicKey, taker: PublicKey): Promise<EscrowStateAccount | null> {
+  async fetchEscrowState(
+    maker: PublicKey,
+    taker: PublicKey,
+  ): Promise<EscrowStateAccount | null> {
     const [escrowState] = deriveEscrowStatePDA(maker, taker);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

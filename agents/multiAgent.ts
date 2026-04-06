@@ -5,9 +5,6 @@ const walletA = createWallet();
 const walletB = createWallet();
 
 // Agent A hires Agent B (pays for task)
-/**
- *
- */
 export async function runMultiAgent() {
   console.log("🤖 Agent A requesting service from Agent B...");
 
@@ -17,9 +14,7 @@ export async function runMultiAgent() {
   console.log("💸 Agent A paid Agent B");
 
   // Agent B performs task (calls API)
-  const response = await fetch(
-    "https://api.coingecko.com/api/v3/price?ids=solana&vs_currencies=usd",
-  );
+  const response = await fetch("https://api.coingecko.com/api/v3/price?ids=solana&vs_currencies=usd");
   const data = await response.json();
 
   return {

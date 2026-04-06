@@ -18,7 +18,8 @@ export const svmAddress = process.env.SVM_ADDRESS;
  */
 export const useEscrow = process.env.USE_ESCROW === "true";
 export const escrowProgramId =
-  process.env.ESCROW_PROGRAM_ID ?? "62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU";
+  process.env.ESCROW_PROGRAM_ID ??
+  "62JwzB8fcuLe7bZ5gUGWbJNYMg59Uq7qLR6vja9YNRDU";
 
 if (!facilitatorUrl) {
   console.error("❌ FACILITATOR_URL environment variable is required");
@@ -63,7 +64,11 @@ export const paywall = createPaywall()
  * @param mimeType - Response MIME type
  * @returns Route configuration object
  */
-function makeRoute(price: string, description: string, mimeType = "text/html") {
+function makeRoute(
+  price: string,
+  description: string,
+  mimeType = "text/html",
+) {
   return {
     accepts: [
       {
@@ -92,42 +97,18 @@ function makeRoute(price: string, description: string, mimeType = "text/html") {
 // ---------------------------------------------------------------------------
 
 export const contentRoutes = {
-  "/articles/web3-future": makeRoute("$0.01", "Premium Article: The Future of Web3 Payments"),
-  "/articles/creator-economy": makeRoute(
-    "$0.02",
-    "Premium Article: Building in the Creator Economy",
-  ),
-  "/articles/decentralized-content": makeRoute(
-    "$0.015",
-    "Premium Article: Decentralized Content Distribution",
-  ),
-  "/podcasts/web3-insights": makeRoute("$0.02", "Premium Podcast: Web3 Insights Episode 1"),
-  "/podcasts/crypto-conversations": makeRoute(
-    "$0.015",
-    "Premium Podcast: Crypto Conversations - NFTs and Beyond",
-  ),
-  "/podcasts/creator-spotlight": makeRoute(
-    "$0.025",
-    "Premium Podcast: Creator Spotlight - Building Your Brand",
-  ),
-  "/videos/blockchain-basics": makeRoute(
-    "$0.05",
-    "Premium Video: Blockchain Basics - A Complete Guide",
-  ),
-  "/videos/smart-contracts-tutorial": makeRoute(
-    "$0.08",
-    "Premium Video: Smart Contracts Tutorial for Beginners",
-  ),
-  "/videos/defi-explained": makeRoute(
-    "$0.06",
-    "Premium Video: DeFi Explained - The Future of Finance",
-  ),
-  "/skills/ai-prompt-mastery": makeRoute("$0.05", "Premium Skill: AI Prompt Engineering Mastery"),
-  "/skills/web3-development": makeRoute("$0.10", "Premium Skill: Web3 Development Starter Kit"),
-  "/skills/blockchain-security": makeRoute(
-    "$0.08",
-    "Premium Skill: Blockchain Security Best Practices",
-  ),
+  "/articles/web3-future":          makeRoute("$0.01",  "Premium Article: The Future of Web3 Payments"),
+  "/articles/creator-economy":      makeRoute("$0.02",  "Premium Article: Building in the Creator Economy"),
+  "/articles/decentralized-content":makeRoute("$0.015", "Premium Article: Decentralized Content Distribution"),
+  "/podcasts/web3-insights":        makeRoute("$0.02",  "Premium Podcast: Web3 Insights Episode 1"),
+  "/podcasts/crypto-conversations": makeRoute("$0.015", "Premium Podcast: Crypto Conversations - NFTs and Beyond"),
+  "/podcasts/creator-spotlight":    makeRoute("$0.025", "Premium Podcast: Creator Spotlight - Building Your Brand"),
+  "/videos/blockchain-basics":      makeRoute("$0.05",  "Premium Video: Blockchain Basics - A Complete Guide"),
+  "/videos/smart-contracts-tutorial":makeRoute("$0.08", "Premium Video: Smart Contracts Tutorial for Beginners"),
+  "/videos/defi-explained":         makeRoute("$0.06",  "Premium Video: DeFi Explained - The Future of Finance"),
+  "/skills/ai-prompt-mastery":      makeRoute("$0.05",  "Premium Skill: AI Prompt Engineering Mastery"),
+  "/skills/web3-development":       makeRoute("$0.10",  "Premium Skill: Web3 Development Starter Kit"),
+  "/skills/blockchain-security":    makeRoute("$0.08",  "Premium Skill: Blockchain Security Best Practices"),
 };
 
 // ---------------------------------------------------------------------------
@@ -138,35 +119,15 @@ export const contentRoutes = {
 
 export const osAppRoutes = {
   // Agents Hub — access to spawn/manage AI agents
-  "/api/os/agents-hub": makeRoute(
-    "$0.01",
-    "OS App: Agents Hub — spawn & manage AI agents",
-    "application/json",
-  ),
+  "/api/os/agents-hub":   makeRoute("$0.01", "OS App: Agents Hub — spawn & manage AI agents", "application/json"),
   // Marketplace — browse & buy skills/services
-  "/api/os/marketplace": makeRoute(
-    "$0.01",
-    "OS App: Marketplace — browse skills & services",
-    "application/json",
-  ),
+  "/api/os/marketplace":  makeRoute("$0.01", "OS App: Marketplace — browse skills & services", "application/json"),
   // File Explorer — decentralized file system access
-  "/api/os/file-explorer": makeRoute(
-    "$0.005",
-    "OS App: File Explorer — IPFS-backed file system",
-    "application/json",
-  ),
+  "/api/os/file-explorer":makeRoute("$0.005","OS App: File Explorer — IPFS-backed file system", "application/json"),
   // Terminal — execute OS-level commands
-  "/api/os/terminal": makeRoute(
-    "$0.02",
-    "OS App: Terminal — execute agent commands",
-    "application/json",
-  ),
+  "/api/os/terminal":     makeRoute("$0.02", "OS App: Terminal — execute agent commands", "application/json"),
   // Agent task execution — machine-to-machine endpoint
-  "/api/os/agent-task": makeRoute(
-    "$0.05",
-    "OS App: Agent Task — execute an autonomous task",
-    "application/json",
-  ),
+  "/api/os/agent-task":   makeRoute("$0.05", "OS App: Agent Task — execute an autonomous task", "application/json"),
 };
 
 // ---------------------------------------------------------------------------
@@ -182,7 +143,12 @@ export const routeConfigurations = {
 // Build proxy (content routes only — OS routes use withX402 per-handler)
 // ---------------------------------------------------------------------------
 
-export const proxy = paymentProxy(contentRoutes, server, undefined, paywall);
+export const proxy = paymentProxy(
+  contentRoutes,
+  server,
+  undefined,
+  paywall,
+);
 
 // Configure which paths the middleware/proxy runs on
 export const config = {
