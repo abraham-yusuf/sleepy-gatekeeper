@@ -166,6 +166,42 @@ sequenceDiagram
 
 Loop sederhana di dalam terminal window: input command → process → output → repeat.
 
+#### 9. Sandbox Manager App (New – Deploy Hermes/ElizaOS + MPP Payments)
+
+**Tujuan**: Isolated environment untuk menjalankan AI agent (Hermes atau ElizaOS) dengan safety tinggi + machine-to-machine payment via **MPP + x402 hybrid**.
+
+**UI Elements**:
+- Window dengan tabs: My Sandboxes, Spawn New Agent, Live Logs, Resource Monitor.
+- Card agent: status (Running / Paused / Error), dedicated wallet address, resource usage.
+- Form spawn: Pilih Hermes/ElizaOS, resource limit, read-only root toggle, initial prompt.
+- Quick button di Taskbar: “Spawn Agent” (langsung buka Sandbox Manager).
+
+**Alur Kerja Utama (Sandbox + MPP Flow)**:
+
+```mermaid
+sequenceDiagram
+    participant User as User / Desktop OS
+    participant Sandbox as Sandbox Manager App
+    participant Agent as Hermes / ElizaOS Agent
+    participant Solana as Solana (MPP + Anchor Escrow)
+    participant Bankr as Bankr.bot Skills (Optional)
+
+    User->>Sandbox: Buka Sandbox Manager
+    Sandbox->>User: Tampilkan form spawn (Hermes / ElizaOS)
+    User->>Sandbox: Pilih agent + configure (Docker, read-only root, resource limit)
+    Sandbox->>Agent: Deploy ke isolated Docker sandbox
+    Agent->>Agent: Initialize (wallet PDA, heartbeat, ElizaOS SDK)
+    Agent->>Sandbox: Butuh skill / content / trading
+    Sandbox->>Solana: Trigger MPP + x402 payment request
+    Solana->>Solana: Challenge-response MPP → Anchor Escrow release
+    Solana-->>Agent: Payment confirmed
+    Agent->>Agent: Execute skill di sandbox
+    Agent->>Bankr: Optional: Jalankan Bankr skills (launch token Raydium)
+    Bankr-->>Agent: Revenue earned → auto top-up escrow
+    Agent->>Sandbox: Kirim log & status update (real-time)
+    Sandbox->>User: Tampilkan live dashboard + revenue loop
+    Note over Sandbox,Agent: Sandbox tetap read-only root<br/>MPP hybrid dengan x402
+```
 
 
 ### Best Practices untuk Coding Agent (Claude Opus 4.6 / Copilot)
