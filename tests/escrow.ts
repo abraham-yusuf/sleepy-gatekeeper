@@ -12,6 +12,13 @@ type TestCase = {
   run: () => Promise<void> | void;
 };
 
+function formatError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.stack ?? error.message;
+  }
+  return String(error);
+}
+
 const tests: TestCase[] = [
   {
     name: "initialize_escrow path: deriveEscrowStatePDA is deterministic",
@@ -55,8 +62,9 @@ const tests: TestCase[] = [
   },
 ];
 
-async function main(): Promise<void> {
+async function runEscrowTests(): Promise<void> {
   let passed = 0;
+  let failed = 0;
 
   for (const t of tests) {
     try {
@@ -65,11 +73,16 @@ async function main(): Promise<void> {
       passed += 1;
     } catch (error) {
       console.error(`❌ ${t.name}`);
-      throw error;
+      console.error(formatError(error));
+      failed += 1;
     }
   }
 
   console.log(`\nEscrow tests passed: ${passed}/${tests.length}`);
+  if (failed > 0) {
+    console.error(`Escrow tests failed: ${failed}/${tests.length}`);
+    process.exitCode = 1;
+  }
 }
 
-await main();
+await runEscrowTests();
