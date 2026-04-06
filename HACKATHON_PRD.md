@@ -116,3 +116,47 @@ Expected: respons payment challenge/x402 gating (mis. HTTP 402) jika belum attac
 - AI + Payments
 - Real working demo
 - Platform potential
+
+
+### Step 5 — Multi-agent local paid call demo (Agent A → /api/os/agent-task)
+
+```bash
+NEXT_PUBLIC_APP_URL=http://localhost:3000 npx tsx -e "import { runMultiAgent } from './agents/multiAgent.ts'; runMultiAgent().then((out) => console.log(JSON.stringify(out, null, 2)));"
+```
+
+Expected output shape:
+
+```json
+{
+  "step": "Agent A → paid local protected endpoint",
+  "paymentProof": {
+    "x-payment-mode": "x402",
+    "x-payment-signature": "<solana_tx_signature>",
+    "x-payment-amount": "1000",
+    "x-payment-recipient": "<agent_b_public_key>"
+  },
+  "taskResult": {
+    "app": "agent-task",
+    "status": "queued",
+    "taskId": "...",
+    "paymentReceipt": {
+      "mode": "x402",
+      "proof": {
+        "signature": "<same_as_payment_signature>"
+      }
+    }
+  },
+  "verification": {
+    "endpoint": "http://localhost:3000/api/os/agent-task",
+    "httpStatus": 200,
+    "paymentReceiptId": "x402:agent-task:<signature>",
+    "paymentReceiptMode": "x402",
+    "verified": true
+  }
+}
+```
+
+Poin presentasi utama:
+- **Payment proof** ada di `paymentProof` (signature, amount, recipient).
+- **Task result** berasal dari endpoint lokal terproteksi (`/api/os/agent-task`).
+- **Verification step** memastikan receipt header + status berhasil tervalidasi.
