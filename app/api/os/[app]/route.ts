@@ -9,6 +9,7 @@ import {
   type PaymentMode,
   upsertCanonicalReceipt,
 } from "../../../../lib/payment-ledger";
+import { verifyProgramOwnedSignerProof } from "../../../../lib/agent-signer";
 
 // ── OS App definitions ────────────────────────────────────────────────────
 
@@ -235,6 +236,29 @@ async function validatePaymentProof(
 
     if (!signature || !amount) return { ok: false };
 
+    const programSigner = req.headers.get("x-program-signer");
+    const programSignerTimestamp = req.headers.get("x-program-signer-timestamp");
+    const programSignerNonce = req.headers.get("x-program-signer-nonce");
+    const programSignerProof = req.headers.get("x-program-signer-proof");
+    const agentId = req.headers.get("x-agent-id") ?? "unknown-agent";
+
+    const hasProgramSignerHeaders =
+      !!programSigner && !!programSignerTimestamp && !!programSignerNonce && !!programSignerProof;
+
+    if (app === "agent-task" && hasProgramSignerHeaders) {
+      const verifiedSigner = verifyProgramOwnedSignerProof({
+        signer: programSigner,
+        agentId,
+        app,
+        amount,
+        timestamp: programSignerTimestamp,
+        nonce: programSignerNonce,
+        signature: programSignerProof,
+      });
+
+      if (!verifiedSigner) return { ok: false };
+    }
+
     const canonical: CanonicalPaymentReceipt = {
       id: buildCanonicalId(mode, app, signature),
       app,
@@ -242,6 +266,14 @@ async function validatePaymentProof(
       amount,
       proof: {
         signature,
+        ...(hasProgramSignerHeaders
+          ? {
+              programSigner,
+              programSignerTimestamp,
+              programSignerNonce,
+              programSignerProof,
+            }
+          : {}),
       },
       verifiedAt: Date.now(),
     };

@@ -15,6 +15,7 @@ import {
   resetAgentSpendRecord,
   saveAgentSpendRecord,
 } from "./payment-ledger";
+import { buildProgramOwnedSignerProof } from "./agent-signer";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -41,6 +42,10 @@ export interface PaymentProofInput {
   // x402
   paymentSignature?: string;
   paymentAmount?: string;
+  programSigner?: string;
+  programSignerTimestamp?: string;
+  programSignerNonce?: string;
+  programSignerProof?: string;
 
   // Escrow
   escrowTxSignature?: string;
@@ -89,6 +94,11 @@ const STRATEGIES: Record<PaymentMode, PaymentStrategy> = {
       const headers: Record<string, string> = { "x-payment-mode": "x402" };
       if (proof?.paymentSignature) headers["x-payment-signature"] = proof.paymentSignature;
       if (proof?.paymentAmount) headers["x-payment-amount"] = proof.paymentAmount;
+      if (proof?.programSigner) headers["x-program-signer"] = proof.programSigner;
+      if (proof?.programSignerTimestamp)
+        headers["x-program-signer-timestamp"] = proof.programSignerTimestamp;
+      if (proof?.programSignerNonce) headers["x-program-signer-nonce"] = proof.programSignerNonce;
+      if (proof?.programSignerProof) headers["x-program-signer-proof"] = proof.programSignerProof;
       return headers;
     },
     toReceiptRef: proof => proof?.paymentSignature,
@@ -262,6 +272,38 @@ export class M2MPaymentClient {
  */
 export function createAgentClient(agentId: string, budget = 1.0): M2MPaymentClient {
   return new M2MPaymentClient({ agentId, budget });
+}
+
+/**
+ * Build x402 proof headers with a program-owned signer stub for agent release flows.
+ *
+ * @param params - Agent/app/amount context.
+ * @param params.agentId - Agent identifier.
+ * @param params.app - Target OS app.
+ * @param params.amount - Settled payment amount string.
+ * @param params.paymentSignature - x402 payment signature reference.
+ * @returns Header-friendly payment proof input.
+ */
+export function buildProgramSignerPaymentProof(params: {
+  agentId: string;
+  app: string;
+  amount: string;
+  paymentSignature: string;
+}): PaymentProofInput {
+  const proof = buildProgramOwnedSignerProof({
+    agentId: params.agentId,
+    app: params.app,
+    amount: params.amount,
+  });
+
+  return {
+    paymentSignature: params.paymentSignature,
+    paymentAmount: params.amount,
+    programSigner: proof.signer,
+    programSignerTimestamp: proof.timestamp,
+    programSignerNonce: proof.nonce,
+    programSignerProof: proof.signature,
+  };
 }
 
 /**
